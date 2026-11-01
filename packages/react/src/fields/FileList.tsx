@@ -53,20 +53,22 @@ export function FileList(props: FieldComponentProps) {
               <span className="fh-file-list__name" dir="auto">
                 {name}
               </span>
-              <button
-                type="button"
-                className="fh-form-actions__button fh-form-actions__button--text fh-file-list__remove"
-                aria-label={text('removeItemNamed', { label: remove, item: name })}
-                disabled={disabled || loading}
-                onClick={() => {
-                  focus.current = position;
-                  setNotice('');
-                  onChange(removeFile(value, index));
-                  announce(setStatus, text('itemRemoved', { item: name }));
-                }}
-              >
-                {remove}
-              </button>
+              {!props.readOnly && (
+                <button
+                  type="button"
+                  className="fh-form-actions__button fh-form-actions__button--text fh-file-list__remove"
+                  aria-label={text('removeItemNamed', { label: remove, item: name })}
+                  disabled={disabled || loading}
+                  onClick={() => {
+                    focus.current = position;
+                    setNotice('');
+                    onChange(removeFile(value, index));
+                    announce(setStatus, text('itemRemoved', { item: name }));
+                  }}
+                >
+                  {remove}
+                </button>
+              )}
             </li>
           ))}
         </ul>

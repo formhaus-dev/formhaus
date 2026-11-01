@@ -5,11 +5,13 @@ import {
   engineLabel,
   errorDomId,
   fieldDomId,
+  fieldRules,
   focusItem,
   itemDomId,
   itemHasContent,
   itemLimits,
   itemTitle,
+  movedFocusId,
   optionKey,
   autofilled,
   recalled,
@@ -48,13 +50,14 @@ const remove = computed(() => props.group.removeLabel ?? label('removeItem'));
 
 function itemProps(index: number, field: FormField) {
   const key = `${props.group.key}.${index}.${field.key}`;
-  const options = shownOptions(props.engine, key, field, props.options[optionKey(props.group.key, field.key)], mounted.value);
+  const shown = shownOptions(props.engine, key, field, props.options[optionKey(props.group.key, field.key)], mounted.value);
+  const rules = fieldRules(props.engine, field, shown, key);
   const update = (value: unknown) => emit('update', key, value);
   return {
     id: errorDomId(props.engine, props.formId, key),
     field: autofilled(
       props.engine,
-      recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
+      recalled(props.engine, { ...field, ...(rules.options && { options: rules.options }), key, autoAdvance: undefined }, key),
       key,
     ),
     modelValue: values.value[index]?.[field.key],
@@ -62,6 +65,7 @@ function itemProps(index: number, field: FormField) {
     loading: props.fieldLoading[key],
     busy: props.busy[optionKey(props.group.key, field.key)],
     disabled: props.disabled,
+    readOnly: props.readOnly || rules.readOnly,
     components: props.components,
     ...fieldTestIds(props.testId, key),
     'onUpdate:modelValue': update,
@@ -92,6 +96,16 @@ function drop(index: number) {
   announcements.value++;
   void focusAfter(index, false);
 }
+function move(index: number, to: number) {
+  const item = title(index);
+  if (!props.onItemsChange(props.group.key, () => props.engine.moveItem(props.group.key, index, to))) return;
+  status.value = label('itemMoved', { item, position: to + 1 });
+  announcements.value++;
+  void focusId(
+    movedFocusId(itemDomId(props.formId, props.group.key, to, undefined, props.engine.definition), index, to, props.items.length),
+  );
+}
+
 async function focusId(target: string) {
   await nextTick();
   document.getElementById(target)?.focus();
@@ -142,16 +156,20 @@ const groupProps = computed((): GroupComponentProps => {
       index,
       title: title(index),
       titleId: itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition),
-      canRemove: props.items.length > limits.value[0],
+      canRemove: !props.readOnly && props.items.length > limits.value[0],
       remove: () => drop(index),
       requestRemove: () => ask(index),
       hasContent: itemHasContent(props.engine, props.group.key, index),
       removeLabel: remove.value,
       removeName: label('removeItemNamed', { label: remove.value, item: title(index) }),
       disabled: props.disabled,
+      ...(props.group.reorderable && {
+        move: props.readOnly ? undefined : (to: number) => move(index, to),
+        count: props.items.length,
+      }),
       fields: fieldsOf(item.id),
     })),
-    canAdd: props.items.length < limits.value[1],
+    canAdd: !props.readOnly && props.items.length < limits.value[1],
     add,
     remove: (key) => drop(props.items.findIndex((item) => item.id === key)),
     requestRemove: (key) => ask(props.items.findIndex((item) => item.id === key)),

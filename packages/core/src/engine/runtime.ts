@@ -4,7 +4,7 @@ import type { FieldOption, FormDefinition, FormField, FormNode, FormStep } from 
 import type { FormEngineOptions, GoToStepResult, SubmitHandler } from './engine-options';
 import { initialState, keptChanged, keptValues } from './engine-utils';
 import { reportErrors, startEvents, trackChanges } from './form-events';
-import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
+import { addItem, groupItems, moveItem, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
@@ -78,7 +78,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get submitting(): boolean {
     return this.state.submitting;
   }
-
   get isMultiStep(): boolean {
     return !!this.definition.steps?.length;
   }
@@ -103,7 +102,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get canGoNext(): boolean {
     return this.visibility.getCanGoNext(this.state.values, this.currentStepIndex, this.validators);
   }
-
   get stepErrors(): Record<string, string[]> {
     const result: Record<string, string[]> = Object.create(null);
     for (const step of this.visibleSteps) {
@@ -117,7 +115,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     const total = this.visibleSteps.length;
     return { current: Math.min(this.currentStepIndex + 1, total), total };
   }
-
   subscribe(listener: () => void): () => void {
     return this.subscriptions.subscribe(listener);
   }
@@ -168,6 +165,9 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
   removeItem(key: string, index: number): boolean {
     return removeItem(this as never, key, index);
+  }
+  moveItem(key: string, from: number, to: number): boolean {
+    return moveItem(this as never, key, from, to);
   }
   setItemValue(key: string, index: number, field: string, value: unknown): void {
     setItemValue(this as never, key, index, field, value);

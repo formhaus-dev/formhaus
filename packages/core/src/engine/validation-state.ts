@@ -1,6 +1,7 @@
 import { validateFieldValue } from '../validation';
 import { baselineFields, emit } from './form-events';
-import { customRules, validateShown } from '../validation/validate-step';
+import { customRules, itemHolds, validateShown } from '../validation/validate-step';
+import type { ValidateOptions } from '../validation/validate-field';
 import { withPatternBudget } from '../validation/validate-field';
 import { isPlainEntry, trimValue } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, keptValues, shownError } from './engine-utils';
@@ -30,17 +31,23 @@ function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
 
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
   const scope = engine.visibility.conditionValues(engine.state.values);
-  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine));
+  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, checks(engine)));
 }
 
-function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
-  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine));
+const checks = ({ validators, messages, visibility }: EngineInternals): ValidateOptions => ({
+  validators,
+  messages,
+  previousValues: visibility.previousValues(),
+});
+
+function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine), options = checks(engine)) {
+  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, options));
 }
 
 function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
   const values = getSubmitValues(engine);
   const scope = itemScope(group, itemsOf(values[group.key])[index], values);
-  return fieldError(engine, field, scope[field.key], scope);
+  return fieldError(engine, field, scope[field.key], scope, itemHolds(checks(engine), group, itemsOf(values[group.key]))(index));
 }
 
 export function applyValidationErrors(

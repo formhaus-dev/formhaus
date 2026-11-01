@@ -1,5 +1,6 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
+import { conditionsMet } from '../visibility/evaluate-condition';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
 import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, fileLimit, isFileList, MAX_STRING_LENGTH, trimValue } from './type-checks';
 import { fileItems, isFileItem } from '../fields/files';
@@ -9,6 +10,7 @@ export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) =
 export interface ValidateOptions {
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
+  previousValues?: Record<string, unknown>;
 }
 
 function isEmpty(value: unknown, field: FormField): boolean {
@@ -77,11 +79,19 @@ function sizeError(value: unknown, rules: FieldValidation, field: FormField, res
   return boundError(value.length, 'Length', bounds, (key, params) => resolve(`${key}${unit}`, params, field));
 }
 
+function disabledError(field: FormField, value: unknown, values: Record<string, unknown>, previous: unknown): boolean {
+  const held = ([] as unknown[]).concat(previous, field.defaultValue);
+  const chosen = ([] as unknown[]).concat(value);
+  return !!field.options?.some(
+    (option) => chosen.includes(option.value) && !held.includes(option.value) && conditionsMet(option.disabled, values),
+  );
+}
+
 export function validateFieldValue(
   field: FormField,
   input: unknown,
   allValues: Record<string, unknown>,
-  { validators, messages }: ValidateOptions = {},
+  { validators, messages, previousValues }: ValidateOptions = {},
 ): string | null {
   const files = isFileList(field);
   const value = files ? fileItems(input) : trimValue(field, input);
@@ -94,6 +104,7 @@ export function validateFieldValue(
   }
   const typeIssue = files && !(value as unknown[]).every(isFileItem) ? resolve('file', {}, field) : clientTypeError(field, value, resolve);
   if (typeIssue) return typeIssue;
+  if (disabledError(field, value, allValues, previousValues?.[field.key])) return resolve('option', {}, field);
   return (
     (sizeError(value, rules, field, resolve) ??
       patternError(value, rules, () => resolve('pattern', {}, field)) ??

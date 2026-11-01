@@ -10,5 +10,5 @@ export function useComponentWarnings(props: FormRendererProps): void {
       if (process.env.NODE_ENV !== 'production') warn = () => warnMissingComponents(props.definition, props, warned, props.onWarning);
     } catch {}
     warn?.();
-  }, [props.definition, props.components, props.actionsComponent, props.progressComponent]);
+  }, [props.definition, props.components, props.layout, props.actionsComponent, props.progressComponent]);
 }

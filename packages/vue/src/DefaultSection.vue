@@ -16,7 +16,7 @@ defineSlots<{ default(): unknown }>();
     <p v-if="description" :id="descriptionId" class="fh-field__helper fh-section__description">{{ description }}</p>
     <div class="fh-section__body">
       <div v-if="columns" class="fh-section__matrix-header" aria-hidden="true">
-        <span v-for="option in columns" :key="option.value">{{ option.label }}</span>
+        <span v-for="option in columns" :key="option.value" :class="option.disabled === true && 'fh-section__matrix-disabled'">{{ option.label }}</span>
       </div>
       <slot />
     </div>

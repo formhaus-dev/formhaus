@@ -26,6 +26,7 @@ const I18N_DEFINITIONS = [
   'FieldI18n',
   'GroupI18n',
   'LabelI18n',
+  'OptionI18n',
   'ValidationI18n',
 ];
 
@@ -92,6 +93,7 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
   const fields = { type: 'object', additionalProperties: { $ref: '#/definitions/field' } };
   const sections = { type: 'object', additionalProperties: texts(['title', 'description']) };
   field.properties.options = { type: 'object', additionalProperties: text };
+  field.properties.optionDescriptions = { type: 'object', additionalProperties: text };
   field.properties.validation = texts(names('ValidationI18n'));
   field.properties.fields = fields;
   const step = texts(['title', 'description']);
@@ -112,7 +114,7 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
     $id: 'https://formhaus.dev/schema/form-translation.json',
     title: 'Formhaus translation overlay',
     description:
-      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. locale is the language tag. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every text is a string, and a message or label may also be an object of plural forms; empty strings fall back to the source text.',
+      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. Option descriptions are under optionDescriptions.<value>. locale is the language tag. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every text is a string, and a message or label may also be an object of plural forms; empty strings fall back to the source text.',
     ...overlay,
     definitions: { field, step, plural },
   };

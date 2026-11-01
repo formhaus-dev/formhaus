@@ -1,4 +1,4 @@
-import type { FormField, FormSection } from '../types';
+import type { FormDefinition, FormField, FormSection } from '../types';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, pointer, warning } from './issues';
@@ -11,17 +11,26 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options randomize layout columns optionsFrom optionsDependsOn accept multiple rows mask inputMode autocomplete props i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options randomize layout columns optionsFrom optionsDependsOn accept multiple rows mask inputMode autocomplete readOnly props i18n',
   section: 'key type title description layout show showAny fields i18n',
-  group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
-  option: 'value label image exclusive pinned i18n',
+  group: 'key type label helperText itemLabel addLabel removeLabel defaultItems reorderable show showAny validation fields i18n',
+  option: 'value label image exclusive pinned description disabled i18n',
   action: 'label variant disabled i18n',
   route: 'to show showAny',
   validation:
     'required minLength minLengthMessage maxLength maxLengthMessage min minMessage max maxMessage pattern patternMessage matchField matchFieldMessage validator i18n',
 };
 
-const BEFORE_FILE_LISTS = PROPERTIES.field.replace(' multiple', '');
+const SINCE: [number, string][] = [
+  [7, 'multiple'],
+  [8, 'readOnly'],
+  [8, 'reorderable'],
+  [8, 'description'],
+  [8, 'disabled'],
+];
+
+const known = (list: string, definition: FormDefinition) =>
+  SINCE.reduce((text, [minor, key]) => (formatAtLeast(definition, minor) ? text : text.replace(` ${key} `, ' ')), list);
 
 const LABEL_HINT = 'Add a label so screen readers can name the input';
 
@@ -73,7 +82,26 @@ const misplaced = (key: string) =>
 const optionValues = ({ options, optionsFrom }: Partial<FormField>) =>
   !optionsFrom && Array.isArray(options) ? JSON.stringify(options.map((option) => option?.value)) : undefined;
 
-function fieldWarnings({ field, path, parent }: FieldEntry, files: boolean): DefinitionIssue[] {
+function disabledDefault(field: FormField, path: string, definition: FormDefinition): DefinitionIssue[] {
+  const defaults = ([] as unknown[]).concat(field.defaultValue);
+  const option = formatAtLeast(definition, 8)
+    ? field.options?.find(
+        (item) => (item.disabled === true || !!(item.disabled as unknown[] | undefined)?.length) && defaults.includes(item.value),
+      )
+    : undefined;
+  return option
+    ? [
+        warning(
+          'default-disabled-option',
+          `${path}/defaultValue`,
+          `the defaultValue of "${field.key}" is the disabled option "${option.value}"`,
+          'Pick an enabled option as the default',
+        ),
+      ]
+    : [];
+}
+
+function fieldWarnings({ field, path, parent }: FieldEntry, definition: FormDefinition): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const matrix = (parent as FormSection | undefined)?.layout === 'matrix';
   const choice = /^(radio|multiselect)$/.test(field.type);
@@ -82,10 +110,20 @@ function fieldWarnings({ field, path, parent }: FieldEntry, files: boolean): Def
   return [
     ...(visible ? labeled(field, path, LABEL_HINT) : []),
     ...(empty ? [warning('missing-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
-    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : files ? PROPERTIES.field : BEFORE_FILE_LISTS, misplaced),
+    ...unknown(field, path, known(field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, definition), misplaced),
     ...(field.options ?? []).flatMap((option, index) => [
       ...labeled(option, `${path}/options/${index}`),
-      ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
+      ...unknown(option, `${path}/options/${index}`, known(PROPERTIES.option, definition)),
+      ...(option.disabled !== undefined && !RANDOMIZED_TYPES.includes(field.type) && formatAtLeast(definition, 8)
+        ? [
+            warning(
+              'disabled-not-applicable',
+              `${path}/options/${index}/disabled`,
+              `"disabled" on an option of "${field.key}" applies to radio, multiselect and select fields`,
+              'Remove "disabled"',
+            ),
+          ]
+        : []),
       ...(typeof option.image === 'string' && !/^(https:|data:image\/)/i.test(option.image)
         ? [
             warning(
@@ -117,7 +155,8 @@ function fieldWarnings({ field, path, parent }: FieldEntry, files: boolean): Def
           ),
         ]
       : []),
-    ...(files && field.multiple !== undefined && field.type !== 'file'
+    ...disabledDefault(field, path, definition),
+    ...(formatAtLeast(definition, 7) && field.multiple !== undefined && field.type !== 'file'
       ? [warning('multiple-not-applicable', `${path}/multiple`, `"multiple" of "${field.key}" applies to file fields`, 'Remove "multiple"')]
       : []),
     ...(columns && choice && (optionValues(field) ?? columns) !== columns
@@ -164,6 +203,6 @@ export function propertyWarnings({ definition, entries, nodes }: CheckContext): 
     ...nodes.flatMap(({ node, path }) =>
       node.type === 'section' ? [...required(node, path, 'title'), ...unknown(node, path, PROPERTIES.section)] : [],
     ),
-    ...entries.flatMap((entry) => fieldWarnings(entry, formatAtLeast(definition, 7))),
+    ...entries.flatMap((entry) => fieldWarnings(entry, definition)),
   ];
 }

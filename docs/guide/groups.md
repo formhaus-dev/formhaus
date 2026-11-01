@@ -84,7 +84,7 @@ Item errors use `<group>.<index>.<field>` with a 0-based index. Count errors use
 }
 ```
 
-`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed, the errors of later items move with them.
+`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed or moved, the errors of the other items move with them.
 
 ## Engine API
 
@@ -93,10 +93,39 @@ engine.addItem('participants');
 engine.setItemValue('participants', 0, 'email', 'ada@example.com');
 engine.setValue('participants.0.email', 'ada@example.com');
 engine.removeItem('participants', 1);
+engine.moveItem('participants', 1, 0);
 engine.items('participants');
 ```
 
 `items(key)` returns `{ id, fields }` for each item: a stable id for list keys and the visible fields of that item. See the [FormEngine reference](/api/form-engine#groups).
+
+## Reorder items
+
+Set `"reorderable": true` and pass the reorder item from the `reorder` entry. Each item gets Move up and Move down buttons, and a move is announced.
+
+```json
+{ "key": "tasks", "type": "group", "label": "Tasks", "reorderable": true, "fields": [{ "key": "title", "type": "text", "label": "Title" }] }
+```
+
+::: code-group
+```tsx [React]
+import { ReorderGroupItem } from '@formhaus/react/reorder';
+
+<FormRenderer definition={definition} layout={{ groupItem: ReorderGroupItem }} onSubmit={save} />
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { ReorderGroupItem } from '@formhaus/vue/reorder';
+</script>
+
+<template>
+  <FormRenderer :definition="definition" :layout="{ groupItem: ReorderGroupItem }" @submit="save" />
+</template>
+```
+:::
+
+Without it, the group works without Move buttons and a `missing-component` warning is logged in development. A custom `groupItem` gets `move(to)` and `count` and draws its own buttons. Requires `"formatVersion": "1.8"`.
 
 ## Rendering and focus
 

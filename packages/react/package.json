@@ -20,6 +20,10 @@
       "types": "./dist/controls.d.ts",
       "default": "./dist/controls.js"
     },
+    "./reorder": {
+      "types": "./dist/reorder.d.ts",
+      "default": "./dist/reorder.js"
+    },
     "./dirty": {
       "types": "./dist/dirty.d.ts",
       "default": "./dist/dirty.js"

@@ -5,6 +5,7 @@ import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
 import { formatAtLeast } from './format';
+import { isEntry, ruleShape } from './shape';
 
 function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLength', max: 'max' | 'maxLength'): DefinitionIssue[] {
   const low = rules[min];
@@ -21,6 +22,22 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
   } catch {
     return [error('invalid-pattern', `${path}/validation/pattern`, pattern)];
   }
+}
+
+function newerIssues({ field, path }: FieldEntry): DefinitionIssue[] {
+  const { reorderable } = field as { reorderable?: unknown };
+  return [
+    ...ruleShape(field.readOnly, `${path}/readOnly`),
+    ...(reorderable === undefined || typeof reorderable === 'boolean'
+      ? []
+      : [error('invalid-type', `${path}/reorderable`, 'boolean', 'reorderable')]),
+    ...(Array.isArray(field.options) ? field.options : []).flatMap((option, index) => [
+      ...(isEntry(option) ? ruleShape(option.disabled, `${path}/options/${index}/disabled`) : []),
+      ...(option?.description === undefined || typeof option.description === 'string'
+        ? []
+        : [error('invalid-type', `${path}/options/${index}/description`, 'string', 'description')]),
+    ]),
+  ];
 }
 
 function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry, files: boolean): DefinitionIssue[] {
@@ -54,5 +71,10 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
 
 export function fieldIssues(context: CheckContext): DefinitionIssue[] {
   const files = formatAtLeast(context.definition, 7);
-  return context.entries.flatMap((entry) => [...ruleIssues(context, entry, files), ...optionIssues(entry)]);
+  const newer = formatAtLeast(context.definition, 8);
+  return context.entries.flatMap((entry) => [
+    ...ruleIssues(context, entry, files),
+    ...optionIssues(entry),
+    ...(newer ? newerIssues(entry) : []),
+  ]);
 }

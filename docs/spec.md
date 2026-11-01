@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.7 specification"
-description: "Formhaus form definition format 1.7: fields, sections, groups, conditions, validation, steps, routes, recall, option order, file lists and translations."
+title: "Form definition 1.8 specification"
+description: "Formhaus form definition format 1.8: fields, groups, conditions, validation, steps, routes, recall, file lists, option rules, read-only fields and translations."
 ---
 
-# Formhaus form definition 1.7
+# Formhaus form definition 1.8
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.7**. `@formhaus/core` 1.7 and later implement it. Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.8**. `@formhaus/core` 1.9 and later implement it. Format 1.7, implemented by `@formhaus/core` 1.7 and 1.8, is 1.8 without [option descriptions and disabled options](#option-descriptions-and-disabled-options), [read-only fields](#read-only-fields) and [reorderable groups](#reordering-items). Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.7"`. Without it, core reads the definition as 1.7, but shows `{{key}}` tokens as written and keeps one file in a `file` field. A minor version newer than 1.7 is also read as 1.7. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.8"`. Without it, core reads the definition as 1.8, but shows `{{key}}` tokens as written, keeps one file in a `file` field and ignores the 1.8 properties. A minor version newer than 1.8 is also read as 1.8. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -48,6 +48,8 @@ A definition with a field `autocomplete` MAY declare `"formatVersion": "1.5"`. C
 A definition with a field `randomize` or an option `pinned` MAY declare `"formatVersion": "1.6"`. Core 1.0 and older report them as `unknown-property` and show the written order. `checkDefinition()` warns about `randomize` or `pinned` without format 1.6.
 
 A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients. The renderers of core 1.6 and older draw a file list as a picker for one file and submit one file, which a 1.7 server reads as a list of one. A `minLength` above 1 then fails on the server.
+
+An option `description` or `disabled`, a field `readOnly` and a group `reorderable` MUST declare `"formatVersion": "1.8"` or newer. Without it, and in core 1.8 and older, core reports them as `unknown-property`, and the engine, `validateSubmission()` and the renderers ignore them, so a definition written before 1.8 behaves as before. `checkDefinition()` warns about them without format 1.8. The `validateSubmission()` of core 1.8 and older accepts a disabled option. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ## Document structure
 
@@ -86,7 +88,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
-| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean, pinned?: boolean }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
+| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean, pinned?: boolean, description?: string, disabled?: boolean \| condition[] }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
 | `randomize` | boolean | Shows the options in a random order per respondent. See [Option order](#option-order). Added in 1.6. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
 | `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
@@ -99,10 +101,11 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
 | `autocomplete` | string | HTML autofill token, such as `given-name`. See [Autocomplete](#autocomplete). Added in 1.5. |
+| `readOnly` | boolean or [condition](#conditions)[] | Shows the value without letting the user change it. See [Read-only fields](#read-only-fields). Added in 1.8. |
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
-An option MAY have `i18n: { label }`, an [`image`](#picture-options), [`exclusive`](#exclusive-options) and [`pinned`](#option-order). `validation` MAY have `i18n` with keys by rule name.
+An option MAY have `i18n: { label, description }`, an [`image`](#picture-options), [`exclusive`](#exclusive-options), [`pinned`](#option-order), and a [`description` and `disabled`](#option-descriptions-and-disabled-options). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
@@ -183,6 +186,26 @@ A `file` field with `"multiple": true` keeps a list of files. `multiple` takes e
 - **Cloud.** The Cloud uploader uploads each `File` of the list and submits the list of upload ids in the same order.
 
 The corpus file `file-multiple.json` and the scenarios in `scenarios/file-multiple.json` pin these rules.
+
+### Read-only fields
+
+A field MAY have `readOnly`: `true`, or a list of [conditions](#conditions) that must all match, evaluated like `show`. An empty list is never read-only.
+
+```json
+{
+  "formatVersion": "1.8",
+  "id": "account",
+  "title": "Account",
+  "submit": { "label": "Save" },
+  "fields": [{ "key": "accountId", "type": "text", "label": "Account ID", "readOnly": true }]
+}
+```
+
+- **Value.** A read-only field keeps its value from the initial values, `defaultValue`, its `source` or `setValue()`. The engine submits it like any visible value. The user cannot change it.
+- **Validation.** `readOnly` changes nothing in validation. A read-only field runs every rule like any other field, in `validate()`, on Continue, in `validateFieldValue()` and in `validateSubmission()`, so a stored value that breaks a rule fails and the user cannot fix it.
+- **Server.** `readOnly` is not a server guarantee: a client can send any value, and `validateSubmission()` checks it like any other field. An app that needs a fixed value writes it on the server.
+- **Renderers.** The built-in renderers draw the control read-only, not disabled, so it stays focusable and its text can be copied. Text, number, date and time inputs get the `readonly` attribute; other controls get `aria-readonly="true"` and ignore changes. Radio, scale and rating fields put it on the group, which gets `role="radiogroup"`. The renderer `readOnly` prop makes every field read-only and hides the group Add, Remove and Move buttons. It does not change validation.
+- `readOnly` that is not a boolean or a list of conditions is an `invalid-type` error. Its conditions are checked like `show` conditions.
 
 ### Scale and rating
 
@@ -313,6 +336,41 @@ The conformance corpus file `option-order.json` lists vectors of seeds, keys and
 - The order is not applied to other field types, to a field in a section with `layout: "matrix"`, or when fewer than two options are unpinned. `randomize` on another type or in a matrix section, and `pinned` on a field without `randomize`, are `randomize-not-applicable` warnings.
 - The built-in renderers draw the options in the shown order in the DOM, so keyboard and screen reader order match what is seen. A native `select` keeps its placeholder first. Without a `seed` option, they render the written order on the server and during hydration, and the shown order after mount.
 
+### Option descriptions and disabled options
+
+An option of a `radio`, `select` or `multiselect` field MAY have `description`, a short text shown under its label, and `disabled`: `true`, or a list of [conditions](#conditions) that must all match. Inside a group, the conditions read the fields of the same item first, like `show`. An empty list never disables.
+
+```json
+{
+  "formatVersion": "1.8",
+  "id": "workspace",
+  "title": "Workspace",
+  "submit": { "label": "Save" },
+  "fields": [
+    { "key": "seats", "type": "number", "label": "Seats" },
+    {
+      "key": "plan",
+      "type": "radio",
+      "label": "Plan",
+      "options": [
+        { "value": "starter", "label": "Starter", "description": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
+        { "value": "pro", "label": "Pro", "description": "Any number of seats" },
+        { "value": "legacy", "label": "Legacy", "disabled": true }
+      ]
+    }
+  ]
+}
+```
+
+- **Description.** A translatable text with the address `fields.<key>.optionDescriptions.<value>` and the translation key `i18n.description`. The built-in renderers show it under the option label and point the option's `aria-describedby` at it. A `select` shows no description. Option descriptions do not recall answers.
+- **Disabled option.** The built-in renderers draw it with the `disabled` attribute, so it cannot be picked. It keeps its place, and values, conditions and the submit payload do not change.
+- **Validation.** A value that holds a disabled option fails with the `option` message, after the type check, unless the stored answer of the field already holds that option. A list fails when any of its options is disabled and not stored.
+- **Stored answer.** The field's `defaultValue` is always held. In the engine, the other stored answers are the values the engine started with: the initial values, `reset(values)` and the `source` of a field. `validateSubmission()` takes them from its `previousValues` option, an object of the same shape as the submitted values. `previousValues` MUST come from the stored record, never from the request. A respondent can keep a stored answer that is now disabled, or pick it again, but cannot pick a disabled option the field did not hold.
+- **Group items.** For an item field, a disabled option is held as many times as it appears in that field across the stored items of the group, counting each value of a `multiselect` list. The current items use these holds in order. A moved or re-added item keeps its option. A new item past the count fails with `option`, so a submission cannot copy a held option into more items. The engine and `validateSubmission()` apply the same rule.
+- `disabled` on an option of another field type is a `disabled-not-applicable` warning and is ignored. A `description` that is not a string, or a `disabled` that is not a boolean or a list of conditions, is an `invalid-type` error. Conditions of `disabled` are checked like `show` conditions.
+
+The corpus file `option-rules.json`, the scenarios in `scenarios/option-rules.json` and `fixtures/submissions/option-rules.json` pin these rules.
+
 ## Sections
 
 A section is a node with `type: "section"`. It groups fields under a title and shares its conditions with them.
@@ -420,6 +478,7 @@ A group is a node with `type: "group"`. Its value is an array of items. Each ite
 | `itemLabel` | string | Item heading. `{index}` is the item number, starting at 1. `{label}` is the group label. Default: the `itemLabel` [label](#message-and-label-catalogs). |
 | `addLabel`, `removeLabel` | string | Texts of the Add and Remove buttons. Defaults: the `addItem` and `removeItem` labels. |
 | `defaultItems` | integer | Number of items the group starts with, at most `maxLength`, or 100 without `maxLength`, and never more than 1000. |
+| `reorderable` | boolean | Lets the user move items up and down. See [Reordering items](#reordering-items). Added in 1.8. |
 | `show`, `showAny` | [condition](#conditions)[] | Group visibility. |
 | `validation` | `required`, `minLength`, `maxLength`, their messages, `validator` | Item count rules. |
 | `fields` | [field](#fields)[], required | Fields of one item. |
@@ -434,7 +493,7 @@ Rules:
 
 A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is a `group-item-limit` warning.
 
-An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
+An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed or moved, and removing an item forgets its own.
 
 A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility).
 
@@ -442,7 +501,7 @@ A hidden group is cleared like a field. A group that becomes visible again gets 
 
 ### Error paths
 
-Editing an item field keeps the error under the group key; adding, removing or replacing items clears it. Errors of item fields use the path `<group>.<index>.<field>`, with a 0-based index, such as `participants.1.email`. Count rules and the group `validator` use the group key. `errors`, `stepErrors`, `validate()`, `setErrors()` and [server errors](#server-errors) use these paths. When an item is removed, the errors of later items move to their new index.
+Editing an item field keeps the error under the group key; adding, removing or replacing items clears it. Errors of item fields use the path `<group>.<index>.<field>`, with a 0-based index, such as `participants.1.email`. Count rules and the group `validator` use the group key. `errors`, `stepErrors`, `validate()`, `setErrors()` and [server errors](#server-errors) use these paths. When an item is removed or moved, the errors of the items it passes move to their new index.
 
 ### Engine operations
 
@@ -450,9 +509,18 @@ Editing an item field keeps the error under the group key; adding, removing or r
 |---|---|
 | `addItem(key)` | Adds an item. Returns `false` at the maximum or when the group is not visible. |
 | `removeItem(key, index)` | Removes an item. Returns `false` at the minimum or for an index out of range. |
+| `moveItem(key, from, to)` | Moves the item at `from` to `to`. Returns `false` when the group is not visible, an index is out of range or `from` equals `to`. |
 | `setItemValue(key, index, field, value)` | Writes one item field. `setValue('<group>.<index>.<field>', value)` does the same. |
 | `setValue(key, items)` | Replaces the whole array. |
 | `items(key)` | The items of a visible group: a stable `id` for rendering and the visible item fields. |
+
+### Reordering items
+
+`moveItem(key, from, to)` takes the item out at `from` and inserts it at `to`, both 0-based. The item keeps its values, its id, the last values of its hidden fields and its stored answers. Its errors, server errors and loading states move with it, and those of the items between `from` and `to` shift by one. It writes the group like `setValue(key, items)`: it clears the error under the group key and emits no form event of its own.
+
+A group with `"reorderable": true` lets the user move items. Renderers that support it show Move up and Move down buttons on each item, with the `moveUp` and `moveDown` labels, and announce the `itemMoved` label with the item title as `item` and its new 1-based position as `position`. In `@formhaus/react` and `@formhaus/vue` the buttons are opt-in, from the `reorder` entry; without it, a reorderable group works without them and logs a warning in development. `reorderable` that is not a boolean is an `invalid-type` error.
+
+The scenarios in `scenarios/move-item.json` pin these rules.
 
 ## Conditions
 
@@ -578,10 +646,11 @@ Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
 2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds, milliseconds and a `Z` or `±HH:mm` offset, and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values and without an [exclusive option](#exclusive-options) next to other values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
-3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
-4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched. One validation matches at most 10,000 values against patterns: each `validate()`, each step check on Continue, each `validateFields()` call and each `validateSubmission()` call counts from zero. Values are matched in validation order: the fields of each step on the active path in definition order, and the items of a group, item by item, right after the group field. After 10,000 matches, `pattern` fails without matching, so the field gets its `pattern` error. The limit bounds the work of one request with many fields, items and patterns. The engine and `validateSubmission()` run every pattern that `checkDefinition()` reports as `slow-pattern`; the report is only a warning.
-5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
-6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
+3. A value that holds a [disabled option](#option-descriptions-and-disabled-options) the stored answer does not hold fails with the `option` message.
+4. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
+5. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched. One validation matches at most 10,000 values against patterns: each `validate()`, each step check on Continue, each `validateFields()` call and each `validateSubmission()` call counts from zero. Values are matched in validation order: the fields of each step on the active path in definition order, and the items of a group, item by item, right after the group field. After 10,000 matches, `pattern` fails without matching, so the field gets its `pattern` error. The limit bounds the work of one request with many fields, items and patterns. The engine and `validateSubmission()` run every pattern that `checkDefinition()` reports as `slow-pattern`; the report is only a warning.
+6. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
+7. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
 Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. After a failed Continue or Submit, built-in renderers focus the invalid field when the error summary lists one error. When it lists two or more, they focus the error summary, which has `tabindex="-1"` and `role="alert"`, and scroll it into view. With `errorSummary` off, they focus the first invalid field.
 
@@ -991,6 +1060,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `stepTitle` | `Step {index}` | `index` (1-based) |
 | `stepErrors` | `Errors: {count}` | `count` |
 | `fileCount` | `Files: {count}` | `count` |
+| `moveUp`, `moveDown` | `Move up`, `Move down` | |
+| `itemMoved` | `{item} moved to position {position}` | `item`, `position` |
 | `or` | `or` | |
 | `select` | `Select` | |
 
@@ -1003,7 +1074,7 @@ A message for a failed rule comes from the first of:
 5. The catalogs of the `locale` option, in order.
 6. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `moveUp`, `moveDown` and `itemMoved` name the Move buttons of a [reorderable group](#reordering-items) and announce a move. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
@@ -1017,7 +1088,8 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | step, section | `title`, `description` |
 | field | `label`, `placeholder`, `helperText` |
 | group | `label`, `helperText`, `itemLabel`, `addLabel`, `removeLabel` |
-| option, action | `label` |
+| option | `label`, `description` |
+| action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
 The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-key-without-text` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
@@ -1047,6 +1119,7 @@ submit.label | cancel.label
 messages.<key> | labels.<key>
 fields.<key>.label | placeholder | helperText
 fields.<key>.options.<value>
+fields.<key>.optionDescriptions.<value>
 fields.<key>.validation.<rule>
 steps.<id>.title | description
 steps.<id>.next.label | back.label | skip.label
@@ -1134,8 +1207,9 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, or repeats overlapping parts next to each other, such as `\d*\d*`, which can take very long to match. A repeated group without alternation that starts or ends with a separator that nothing else in the group matches, such as `([a-z]+\.)+`, `(,\s*[a-z]+)*` or `([ '-][A-Za-z]+)*`, is not reported. A separator is a character, an escape or a character class, with no quantifier, or with `+` when the group has another part that is not optional. A group with no unbounded quantifier inside, repeated a fixed number of times or at most 10 times, such as `(?:[0-9a-f]{3}){1,2}`, is not reported. A repeated group next to another repeated part counts as overlapping when the part can match the group's separator, or the group's first characters when it has none. A pattern longer than 1000 characters is reported without a scan |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
-| `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, `randomize` or `pinned` without 1.6, or `multiple` without 1.7 |
+| `default-disabled-option` | warning | A `defaultValue` that is a disabled option, from format 1.8 |
+| `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore, or on an option of a field other than `radio`, `select` and `multiselect` |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, `randomize` or `pinned` without 1.6, `multiple` without 1.7, or an option `description` or `disabled`, a `readOnly` or a `reorderable` without 1.8 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |

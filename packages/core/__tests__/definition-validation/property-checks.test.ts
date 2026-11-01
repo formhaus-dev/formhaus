@@ -62,7 +62,7 @@ describe('property checks', () => {
           routes: [{ to: null, when: [] }],
           fields: [
             { ...field, Placeholder: 'x', validation: { requird: true } },
-            { key: 'c', type: 'select', label: 'C', options: [{ value: 'a', label: 'A', hint: 'x' }] },
+            { key: 'c', type: 'select', label: 'C', options: [{ value: 'a', label: 'A', tooltip: 'x' }] },
           ],
         },
       ],
@@ -77,7 +77,7 @@ describe('property checks', () => {
       'warning unknown-property /steps/0/next/lable: unknown property "lable". Did you mean "label"?',
       'warning unknown-property /steps/0/fields/0/Placeholder: unknown property "Placeholder". Did you mean "placeholder"?',
       'warning unknown-property /steps/0/fields/0/validation/requird: unknown property "requird". Did you mean "required"?',
-      'warning unknown-property /steps/0/fields/1/options/0/hint: unknown property "hint".',
+      'warning unknown-property /steps/0/fields/1/options/0/tooltip: unknown property "tooltip".',
     ]);
   });
 

@@ -18,13 +18,19 @@ export {
   fieldAria,
   fieldId,
   fieldState,
+  optionAttrs,
   optionChecked,
+  optionDescriptionId,
+  optionLocked,
+  readOnlyAttrs,
   type FieldAria,
   type FieldControl,
   type FieldOptionAttrs,
   type FieldState,
   type FieldStateInput,
   type FieldView,
+  type OptionAttrs,
+  type ReadOnlyAttrs,
 } from './state';
 export { freeText, type FreeText } from './text';
 export { fieldValue, inputType, numberValue, toggleOption } from './values';

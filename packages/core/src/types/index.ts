@@ -23,6 +23,7 @@ export type {
   LabelCatalog,
   LabelFn,
   LabelI18n,
+  OptionI18n,
   LabelKey,
   LabelSource,
   LocaleCatalog,
@@ -52,5 +53,6 @@ export type {
   RevealView,
   RootProps,
   SectionView,
+  OptionView,
   TestIdTarget,
 } from './views';

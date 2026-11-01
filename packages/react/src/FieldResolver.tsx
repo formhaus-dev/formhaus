@@ -13,6 +13,7 @@ export interface FieldResolverProps {
   error?: string;
   loading?: boolean;
   disabled?: boolean;
+  readOnly?: boolean;
   components?: FieldComponentMap;
   onChange: (value: unknown) => void;
   onCommit?: (value: unknown) => void;
@@ -38,7 +39,13 @@ export function FieldResolver({ components, onBlur, busy = false, ...props }: Fi
   const builtIn = builtInFields.has(Component);
   return (
     <OptionsBusy.Provider value={builtIn && busy}>
-      <Component {...props} loading={props.loading || (!builtIn && busy)} onBlur={onBlur ?? noop} />
+      <Component
+        {...props}
+        loading={props.loading || (!builtIn && busy)}
+        onChange={props.readOnly ? noop : props.onChange}
+        onCommit={props.readOnly ? noop : props.onCommit}
+        onBlur={onBlur ?? noop}
+      />
     </OptionsBusy.Provider>
   );
 }

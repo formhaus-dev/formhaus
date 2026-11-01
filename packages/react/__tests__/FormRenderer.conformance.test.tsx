@@ -18,6 +18,9 @@ import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { exclusiveScenarios } from '../../core/__tests__/renderers/exclusive.scenarios';
 import { randomizeScenarios } from '../../core/__tests__/renderers/randomize.scenarios';
 import { fileListScenarios } from '../../core/__tests__/renderers/file-list.scenarios';
+import { optionRuleScenarios } from '../../core/__tests__/renderers/option-rules.scenarios';
+import { readOnlyScenarios } from '../../core/__tests__/renderers/read-only.scenarios';
+import { reorderScenarios } from '../../core/__tests__/renderers/reorder.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
@@ -30,6 +33,7 @@ import { mapObjectScenarios } from '../../core/__tests__/renderers/map-object.sc
 import { mapContextScenarios } from '../../core/__tests__/renderers/map-context.scenarios';
 import { mapPropsScenarios } from '../../core/__tests__/renderers/map-props.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
+import { ReorderGroupItem } from '../src/reorder';
 import { design } from './fixtures/design';
 import { mapped } from './fixtures/controls';
 import { context, views } from './fixtures/views';
@@ -155,6 +159,7 @@ const harness: RendererHarness = {
     fireEvent.submit(form);
   },
   containers,
+  reorder: ReorderGroupItem,
   controls,
   mapped: { ...mapped, context },
   views,
@@ -175,6 +180,9 @@ describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: exclusive options', () => exclusiveScenarios(harness, kit));
 describe('renderer conformance: randomized options', () => randomizeScenarios(harness, kit));
 describe('renderer conformance: file lists', () => fileListScenarios(harness, kit));
+describe('renderer conformance: option rules', () => optionRuleScenarios(harness, kit));
+describe('renderer conformance: read-only fields', () => readOnlyScenarios(harness, kit));
+describe('renderer conformance: reorder', () => reorderScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: custom controls', () => controlScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));

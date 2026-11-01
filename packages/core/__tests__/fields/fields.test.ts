@@ -36,6 +36,7 @@ describe('fieldState', () => {
       invalid: true,
       required: true,
       disabled: true,
+      readOnly: false,
       optionId: expect.any(Function),
       aria: { 'aria-invalid': true, 'aria-required': true, 'aria-describedby': 'f-name-helper f-name-error' },
     });

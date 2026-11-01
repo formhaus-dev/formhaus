@@ -1,5 +1,16 @@
-import { fieldState, fieldValue, freeText, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
+import {
+  fieldState,
+  fieldValue,
+  freeText,
+  optionAttrs,
+  optionChecked,
+  readOnlyAttrs,
+  type FieldAria,
+  type FieldControl,
+  type FieldView,
+} from '@formhaus/core/fields';
 import { computed, ref } from 'vue';
+import type { OptionView } from '@formhaus/core';
 import type { FieldComponentProps } from '../types';
 
 export type FieldEmit = ((event: 'update:modelValue', value: unknown) => void) &
@@ -37,13 +48,14 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
       id: state.id,
       name: state.name,
       disabled: state.disabled,
+      readOnly: readOnlyAttrs(props).readOnly,
       placeholder: state.placeholder,
       inputMode: state.inputMode,
       autocomplete: props.field.autocomplete,
       onBlur: blur,
       onFocus: focus,
     };
-    const options = props.matrix?.columns ?? props.field.options ?? [];
+    const options = (props.matrix?.columns ?? props.field.options ?? []) as OptionView[];
     return {
       ...state,
       value: props.modelValue,
@@ -62,6 +74,7 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
         ...control,
         'aria-invalid': state.aria['aria-invalid'],
         'aria-required': state.aria['aria-required'],
+        'aria-readonly': state.aria['aria-readonly'],
         modelValue: props.modelValue,
         'onUpdate:modelValue': change,
       },
@@ -70,7 +83,8 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
         name: state.name,
         value: option.value,
         checked: optionChecked(props.modelValue, option),
-        disabled: state.disabled,
+        ...optionAttrs(option, state.optionId(index), state.disabled),
+        ...readOnlyAttrs(props),
         'data-testid': props.optionTestId?.(option.value),
         onBlur: blur,
         onFocus: focus,

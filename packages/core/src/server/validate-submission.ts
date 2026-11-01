@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
-import type { MessageSource, ValidatorFn } from '../validation';
+import type { MessageSource, ValidateOptions, ValidatorFn } from '../validation';
+import { itemHolds } from '../validation/validate-step';
 import { validateFieldValue, withPatternBudget } from '../validation/validate-field';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { validDefinition } from '../definition-validation/check-definition';
@@ -9,6 +10,7 @@ import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
+import { formatView } from '../engine/format-view';
 import { normalizeValue, typeError } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, itemPath, itemScope, keepId } from '../visibility/nodes';
 
@@ -17,6 +19,7 @@ export interface SubmissionOptions {
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
   hiddenValues?: 'clear' | 'keep';
+  previousValues?: Record<string, unknown>;
 }
 
 const BODY_MESSAGE = 'Pass the values object as the second argument, not the request body with "values" and "skippedSteps".';
@@ -93,12 +96,13 @@ function blankItems({ values, active }: ActiveValues, fields: FormField[], resol
   return errors;
 }
 
-function loadSubmitted(engine: FormEngine, values: Record<string, unknown>): void {
+function loadSubmitted(engine: FormEngine, values: Record<string, unknown>, previous: unknown): void {
   const { state, visibility } = internals(engine);
   state.values = { ...values };
   visibility.reconcileHidden(state.values, state.errors, true);
   visibility.markChanged(true, true);
   visibility.loadPayload();
+  visibility.storeValues(isEntry(previous) ? previous : {});
 }
 
 function setError(visibility: EngineInternals['visibility'], errors: Record<string, string>, key: string, error: string): void {
@@ -142,7 +146,7 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
   const validators = ignoredValidators(fields, options.validators);
   const engineOptions = { validators, messages, onWarning: () => {} };
   const engine = new FormEngine(trustDefinition({ ...definition }), resolved.values, engineOptions);
-  loadSubmitted(engine, resolved.values);
+  loadSubmitted(engine, resolved.values, options.previousValues);
   applySkips(engine, options.skippedSteps);
   const skipped = [...internals(engine).skipped.values()].flat();
   const check = (): SubmissionResult => {
@@ -157,7 +161,8 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
     }
     for (const [key, error] of items)
       if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, state.values)) errors[key] = error;
-    if (options.hiddenValues === 'keep') keepHidden(fields, resolved, submitted, skipped, validators);
+    if (options.hiddenValues === 'keep')
+      keepHidden(fields, resolved, submitted, skipped, { validators, previousValues: options.previousValues });
     return { values: submitted, errors };
   };
   return { engine, skipped, check };
@@ -168,19 +173,20 @@ function keepHidden(
   { values: source, active }: ActiveValues,
   submitted: Record<string, unknown>,
   skipped: string[],
-  validators: Record<string, ValidatorFn>,
+  checks: ValidateOptions,
 ): void {
   const scope = { ...source, ...submitted };
-  const valid = (field: FormField, value: unknown, values: Record<string, unknown>) =>
-    !validateFieldValue({ ...field, validation: { ...field.validation, required: undefined } }, value, values, { validators });
-  const items = (group: FormGroup, value: unknown[], kept: unknown[]) =>
+  const valid = (field: FormField, value: unknown, values: Record<string, unknown>, options = checks) =>
+    !validateFieldValue({ ...field, validation: { ...field.validation, required: undefined } }, value, values, options);
+  const items = (group: FormGroup, value: unknown[], kept: unknown[], hold = itemHolds(checks, group, value)) =>
     kept.map((item, index) => {
       const from = value[index];
       if (!isEntry(item) || !isEntry(from)) return item;
       const entry = { ...item };
       const own = itemScope(group, from, scope);
       for (const field of group.fields)
-        if (hasOwn(from, field.key) && !hasOwn(item, field.key) && valid(field, from[field.key], own)) entry[field.key] = from[field.key];
+        if (hasOwn(from, field.key) && !hasOwn(item, field.key) && valid(field, from[field.key], own, hold(index)))
+          entry[field.key] = from[field.key];
       return entry;
     });
   for (const key of new Set(fields.map((field) => field.key))) {
@@ -209,8 +215,9 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   return withPatternBudget(() => validated(definition, values, options));
 }
 
-function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
-  validDefinition(definition);
+function validated(input: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
+  validDefinition(input);
+  const definition = formatView(input);
   const fields = getAllFields(definition);
   const source = isEntry(values) ? values : {};
   let prepared = prepare(definition, fields, source, options);

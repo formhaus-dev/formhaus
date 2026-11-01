@@ -60,7 +60,7 @@ These are the exact TypeScript types. Your output MUST conform to them.
 ```typescript
 interface FormDefinition {
   id: string;           // kebab-case identifier
-  formatVersion?: string; // "1.7" with a multiple file field, "1.6" with randomize or a pinned option, "1.5" with {{key}} recall, an exclusive option or autocomplete, "1.4" with contains or notContains, "1.3" with scale, rating, option images or a matrix
+  formatVersion?: string; // "1.8" with an option description or disabled, readOnly or a reorderable group, "1.7" with a multiple file field, "1.6" with randomize or a pinned option, "1.5" with {{key}} recall, an exclusive option or autocomplete, "1.4" with contains or notContains, "1.3" with scale, rating, option images or a matrix
   title: string;        // human-readable form title
   description?: string; // short intro under the title, up to 1000 characters
   submit: FormAction;   // submit button config (required)
@@ -110,6 +110,7 @@ interface FormField {
   mask?: string;              // input mask
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   autocomplete?: string;      // HTML autofill token: given-name, family-name, email, tel, street-address, postal-code, off (format 1.5)
+  readOnly?: boolean | ShowCondition[]; // shown and submitted, the user cannot change it, validated as usual (format 1.8)
 }
 
 type FieldType =
@@ -166,6 +167,8 @@ interface FieldOption {
   image?: string;  // image URL for radio and multiselect (picture choice)
   exclusive?: boolean; // multiselect only: picking it clears the other answers (format 1.5)
   pinned?: boolean;    // keeps its written position when the field has randomize (format 1.6)
+  description?: string; // short text under the option label (format 1.8)
+  disabled?: boolean | ShowCondition[]; // radio, select, multiselect: cannot be picked, always or while all conditions match (format 1.8)
 }
 interface FormAction {
   label: string;
@@ -268,7 +271,7 @@ Output the complete form definition JSON. Follow these rules:
 4. Use `fields` for single-step, `steps` for multi-step
 5. Only include optional properties when they add value (no empty strings, no `required: false`)
 6. Options for select/radio must have both `value` and `label`
-7. Set `"formatVersion": "1.7"` when a file field has `multiple`, else `"1.6"` when a field has `randomize` or an option is `pinned`, else `"1.5"` when a text uses `{{key}}`, an option has `"exclusive": true` or a field has `autocomplete`, else `"1.4"` when a condition uses `contains` or `notContains`, else `"1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
+7. Set `"formatVersion": "1.8"` when an option has `description` or `disabled`, a field has `readOnly` or a group has `reorderable`, else `"1.7"` when a file field has `multiple`, else `"1.6"` when a field has `randomize` or an option is `pinned`, else `"1.5"` when a text uses `{{key}}`, an option has `"exclusive": true` or a field has `autocomplete`, else `"1.4"` when a condition uses `contains` or `notContains`, else `"1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
 8. Conditions on `scale` and `rating` compare numbers: `{ "field": "nps", "lte": 6 }`. A range is two conditions: `gte` and `lte`
 9. A `multiselect` answer is a list. Test one option with `{ "field": "interests", "contains": "other" }`, never with `eq` or `in`
 10. Show an earlier answer in a later step title or description, a label, `helperText` or `placeholder` with `{{key}}`, such as a review step: `"description": "Check your answers: {{name}}, {{email}}, plan {{plan}}"`. Recall only fields from earlier steps. It also works in a group `itemLabel`; password fields never recall

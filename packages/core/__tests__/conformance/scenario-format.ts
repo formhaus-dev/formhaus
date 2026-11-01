@@ -18,6 +18,7 @@ export type Action =
   | { do: 'setItemValue'; key: string; index: number; field: string; value: unknown }
   | { do: 'addItem'; key: string }
   | { do: 'removeItem'; key: string; index: number }
+  | { do: 'moveItem'; key: string; from: number; to: number }
   | { do: 'setErrors'; errors: Record<string, string> }
   | { do: 'setFieldLoading'; key: string; loading: boolean }
   | { do: 'cancelPendingActions' }

@@ -47,6 +47,7 @@ export interface FieldComponentProps {
   error?: string;
   loading?: boolean;
   disabled?: boolean;
+  readOnly?: boolean;
   onChange: (value: unknown) => void;
   onCommit?: (value: unknown) => void;
   onBlur: () => void;
@@ -138,6 +139,7 @@ export interface FormRendererProps<TValues extends object = Record<string, unkno
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   keepValues?: boolean;
+  readOnly?: boolean;
   onSubmit: (values: TValues, skippedSteps: string[]) => ReturnType<SubmitHandler>;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;

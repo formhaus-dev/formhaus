@@ -119,6 +119,8 @@ The helpers above follow these rules. A component without them follows the rules
 - When `field.autoAdvance` is set, a discrete pick emits `commit` instead of a change. See [autoAdvance](#autoadvance).
 - Call `onBlur` and `onFocus` (React) or emit `blur` and `focus` (Vue). They report `field_focused` and `field_blurred` [form events](/guide/custom-components#form-events).
 - Disable the control while `disabled` or `loading` is set.
+- While `readOnly` is set, show the value and ignore changes, but keep the control focusable: `readonly` on inputs, `aria-readonly="true"` elsewhere.
+- Disable an option whose `disabled` is `true`, and point its `aria-describedby` at its `description`.
 
 | Prop | React | Vue |
 |---|---|---|
@@ -128,6 +130,7 @@ The helpers above follow these rules. A component without them follows the rules
 | Error message | `error` | `error` |
 | Loading state from `FormEngine.setFieldLoading()` or a running `optionsFrom` provider | `loading` | `loading` |
 | Form is busy or disabled | `disabled` | `disabled` |
+| Field is [read-only](/guide/fields#read-only-fields) | `readOnly` | `readOnly` |
 | [Test ids](/guide/testing) | `testId`, `optionTestId` | `testId`, `optionTestId` |
 | Change | `onChange(value)` | `update:modelValue` |
 | Discrete pick with `autoAdvance` | `onCommit(value)`, optional | `commit` |

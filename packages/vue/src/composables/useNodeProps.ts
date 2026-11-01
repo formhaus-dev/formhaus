@@ -1,7 +1,10 @@
 import { isGroup, type FieldOption, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
 import {
+  conditionalRules,
   copyField,
   fieldDomId,
+  fieldRules,
+  matrixView,
   fieldTestIds,
   matrixColumns,
   type OptionSource,
@@ -116,7 +119,7 @@ export function useNodeProps(
         title,
         description,
         descriptionId: description ? `${id}-description` : undefined,
-        columns: props.layout?.section || !props.components?.section ? matrixColumns(section) : undefined,
+        columns: props.layout?.section || !props.components?.section ? matrixColumns(section, form.engine) : undefined,
       };
     },
     nodeProps(field: FormField, columns?: FieldOption[], row?: number) {
@@ -128,10 +131,13 @@ export function useNodeProps(
           group: field,
           items: state.items,
           value: values.value[field.key],
-          recall: [field, ...field.fields].some((node) => recalls(form.engine, node)) ? values.value : undefined,
+          recall: [field, ...field.fields].some((node) => recalls(form.engine, node) || conditionalRules(node as FormField))
+            ? values.value
+            : undefined,
           errors: state.errors,
           fieldLoading: state.loading,
           disabled: disabled.value,
+          readOnly: props.readOnly,
           components: props.components,
           layout: props.layout,
           labels: props.labels,
@@ -145,17 +151,19 @@ export function useNodeProps(
           onFocus: on.focus,
         };
       }
-      const resolved = shownOptions(form.engine, field.key, field, options.value[field.key], mounted.value);
+      const shown = shownOptions(form.engine, field.key, field, options.value[field.key], mounted.value);
+      const rules = fieldRules(form.engine, field, shown);
       return {
         id: fieldDomId(formId, field.key, form.engine.definition),
-        field: recalled(form.engine, resolved ? copyField(field, { options: resolved }) : field),
+        field: recalled(form.engine, rules.options === field.options ? field : copyField(field, { options: rules.options })),
         modelValue: values.value[field.key],
         error: errors.value[field.key],
         loading: fieldLoading.value[field.key],
         busy: busy.value[field.key],
         disabled: disabled.value,
+        readOnly: props.readOnly || rules.readOnly,
         components: props.components,
-        matrix: columns && { columns, row: row! },
+        matrix: matrixView(form.engine, field, columns, row),
         ...idsOf(field.key),
         'onUpdate:modelValue': (value: unknown) => on.update(field.key, value),
         onCommit: (value: unknown) => on.commit(field.key, value),

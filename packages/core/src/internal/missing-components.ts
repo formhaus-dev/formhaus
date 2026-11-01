@@ -1,3 +1,4 @@
+import { formatAtLeast } from '../definition-validation/format';
 import type { DefinitionIssue, DefinitionIssueCode } from '../definition-validation/issues';
 import { getAllFields } from '../engine/engine-utils';
 import type { FormDefinition } from '../types';
@@ -7,13 +8,14 @@ const NODE_COMPONENTS = ['section', 'group', 'groupItem', 'confirmDialog'];
 
 interface RendererComponents {
   components?: Record<string, unknown>;
+  layout?: { groupItem?: unknown };
   actionsComponent?: unknown;
   progressComponent?: unknown;
 }
 
 export function warnMissingComponents(
   definition: FormDefinition,
-  { components = {}, actionsComponent, progressComponent }: RendererComponents,
+  { components = {}, layout, actionsComponent, progressComponent }: RendererComponents,
   warned: Set<string>,
   onWarning?: (issue: DefinitionIssue) => void,
 ): void {
@@ -34,6 +36,14 @@ export function warnMissingComponents(
       `Add a component for "${type}" to components.`,
     );
   }
+  const reorderable = getAllFields(definition).some((field) => isGroup(field) && field.reorderable === true);
+  if (reorderable && formatAtLeast(definition, 8) && !(layout?.groupItem ?? components.groupItem))
+    warn(
+      'reorder',
+      'missing-component',
+      'A group is reorderable, but its items render without move buttons.',
+      'Pass ReorderGroupItem from the /reorder entry of your renderer as layout.groupItem.',
+    );
   const legacy: [string, string, unknown][] = [
     ...NODE_COMPONENTS.map((key): [string, string, unknown] => [`components.${key}`, key, components[key]]),
     ['actionsComponent', 'actions', actionsComponent],

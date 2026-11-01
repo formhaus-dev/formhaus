@@ -14,7 +14,14 @@ export function ScaleField(props: FieldComponentProps) {
   });
 
   return (
-    <FieldShell id={id} field={field} error={error} variant={field.type === 'rating' ? 'rating' : 'scale'} testId={props.testId}>
+    <FieldShell
+      id={id}
+      field={field}
+      error={error}
+      variant={field.type === 'rating' ? 'rating' : 'scale'}
+      testId={props.testId}
+      readOnly={props.readOnly}
+    >
       {points.map((point) => {
         const anchor = anchors.findIndex((item) => item?.point === point);
         return (

@@ -36,6 +36,7 @@ export const fieldComponentProps = {
   error: String,
   loading: Boolean,
   disabled: Boolean,
+  readOnly: Boolean,
   testId: String,
   optionTestId: Function as PropType<(value: string) => string | undefined>,
   matrix: Object as PropType<FieldComponentProps['matrix']>,
@@ -70,6 +71,8 @@ export const groupItemComponentProps = {
   removeLabel: /* @__PURE__ */ required(String),
   removeName: /* @__PURE__ */ required(String),
   disabled: Boolean,
+  move: Function as PropType<(to: number) => void>,
+  count: Number,
   fields: /* @__PURE__ */ required(/* @__PURE__ */ any<Component>()),
 };
 
@@ -184,6 +187,7 @@ export const formRendererProps = {
   definition: /* @__PURE__ */ required(Object as PropType<FormDefinition>),
   initialValues: Object as PropType<Renderer['initialValues']>,
   keepValues: Boolean,
+  readOnly: Boolean,
   validators: Object as PropType<Renderer['validators']>,
   onStepValidate: Function as PropType<Renderer['onStepValidate']>,
   onValidate: Function as PropType<Renderer['onValidate']>,

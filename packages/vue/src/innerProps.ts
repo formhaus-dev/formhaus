@@ -18,6 +18,7 @@ export const formGroupProps = {
   errors: /* @__PURE__ */ required(Object as PropType<Readonly<Record<string, string>>>),
   fieldLoading: /* @__PURE__ */ required(Object as PropType<Readonly<Record<string, boolean>>>),
   disabled: Boolean,
+  readOnly: Boolean,
   components: Object as PropType<FieldComponentMap>,
   layout: Object as PropType<LayoutComponentMap>,
   labels: labelSource,
@@ -36,11 +37,14 @@ export const fieldShellProps = {
   variant: String as PropType<'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating'>,
   testId: String,
   errorFirst: Boolean,
+  readOnly: Boolean,
 };
 
 export const optionImageProps = {
   option: /* @__PURE__ */ required(Object as PropType<FieldOption>),
 };
+
+export const optionDescriptionProps = /* @__PURE__ */ extend(optionImageProps, { id: /* @__PURE__ */ required(String) });
 
 export const revealSlotProps = {
   reveal: Object as PropType<RevealView<VNode>>,
