@@ -62,6 +62,19 @@ changes.subscribe(() => toggleSaveButton(changes.dirty));
 
 Pass `ref` to the renderer, also from a child such as a dialog body that mounts later. With `useFormEngine`, pass the engine instead: `useFormDirty(engine)`. In Vue it also takes the result of `useFormEngine` or a template ref.
 
+To keep your own handle too, call both in one React ref:
+
+```tsx
+<FormRenderer
+  ref={(handle) => {
+    form.current = handle;
+    dirty.ref(handle);
+  }}
+  definition={definition}
+  onSubmit={submit}
+/>
+```
+
 ## What counts as a change
 
 The tracker compares the [submit values](/spec#submit-payload) with a baseline: the initial values when it starts.
