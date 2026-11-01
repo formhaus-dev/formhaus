@@ -83,7 +83,7 @@ The tracker compares the [submit values](/spec#submit-payload) with a baseline: 
 | `markClean()` | the current values. Call it after a successful save |
 | `reset(values?)` | `values`, or the defaults without them. It resets the form too |
 
-Reset through the tracker. `handle.reset()` and `engine.reset()` keep the old baseline.
+`handle.reset()` and `engine.reset()` move the baseline the same way.
 
 ## API
 
@@ -92,7 +92,7 @@ Reset through the tracker. `handle.reset()` and `engine.reset()` keep the old ba
 | `dirty` | `true` when `dirtyKeys` is not empty |
 | `dirtyKeys` | Changed field paths. The same array until the keys change |
 | `markClean()` | Takes the current values as the baseline |
-| `reset(values?)` | Calls `engine.reset(values)` and takes the result as the baseline |
+| `reset(values?)` | Calls `engine.reset(values)`. Any engine reset takes the result as the baseline |
 | `subscribe(listener)` | Runs the listener when `dirtyKeys` changes. Returns an unsubscribe function |
 | `stop()` | Stops following the engine |
 

@@ -107,6 +107,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
 | `seed` | `string` | The `seed` option, the seed the research module generated, or `''` without either. Added in 1.1.0 |
+| `resets` | `number` | How many times `reset()` ran. It changes before the reset notifies subscribers. Added in 1.9.0 |
 
 ## Values and validation
 
@@ -284,7 +285,7 @@ changes.subscribe(() => console.log(changes.dirty, changes.dirtyKeys));
 | `dirty` | `true` when `dirtyKeys` is not empty |
 | `dirtyKeys` | Changed field and group item paths, sorted |
 | `markClean()` | Takes the current values as the baseline |
-| `reset(values?)` | Resets the engine and takes the result as the baseline |
+| `reset(values?)` | Calls `engine.reset(values)`. Any engine reset takes the result as the baseline |
 | `subscribe(listener)` | Runs the listener when `dirtyKeys` changes |
 | `stop()` | Stops following the engine |
 
