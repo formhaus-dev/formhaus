@@ -68,7 +68,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
 }: FormFieldControllerProps) {
   const key = path ?? field.key;
   useFieldSnapshot(engine, key);
-  useRecallSnapshot(engine, recalls(engine, field) || conditionalRules(field));
+  useRecallSnapshot(engine, recalls(engine, field) || conditionalRules(field) || conditionalRules(field, columns));
 
   const handleChange = useCallback((value: unknown) => onChange(key, value), [key, onChange]);
   const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);

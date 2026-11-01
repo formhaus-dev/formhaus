@@ -17,8 +17,8 @@ function ruleScope(engine: FormEngine, path?: string): Record<string, unknown> {
   return group && parts ? itemView(group, itemsOf(state.values[group.key])[parts[1]], values) : values;
 }
 
-export const conditionalRules = (field: FormField): boolean =>
-  Array.isArray(field.readOnly) || !!field.options?.some((option) => Array.isArray(option.disabled));
+export const conditionalRules = (field: FormField, options = field.options): boolean =>
+  Array.isArray(field.readOnly) || !!options?.some((option) => Array.isArray(option.disabled));
 
 export function fieldRules(engine: FormEngine, field: FormField, options = field.options, path?: string): FieldRules {
   if (field.readOnly === undefined && !options?.some((option) => option.disabled !== undefined)) return { readOnly: false, options };

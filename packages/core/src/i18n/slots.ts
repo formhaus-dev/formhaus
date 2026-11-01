@@ -45,6 +45,7 @@ function usedMessages(definition: FormDefinition): Set<string> {
 function nodeSlots(definition: FormDefinition, { kind, node, address, field }: TextNode): Slot[] {
   const keys = (node.i18n ?? {}) as Record<string, string>;
   return SLOTS[kind].flatMap((slot): Slot[] => {
+    if (kind === 'option' && slot === 'description' && !formatAtLeast(definition, 8)) return [];
     if (kind !== 'validation') {
       const source = node[slot];
       if (typeof source !== 'string') return [];
