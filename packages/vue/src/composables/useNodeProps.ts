@@ -119,7 +119,7 @@ export function useNodeProps(
         title,
         description,
         descriptionId: description ? `${id}-description` : undefined,
-        columns: props.layout?.section || !props.components?.section ? matrixColumns(section) : undefined,
+        columns: props.layout?.section || !props.components?.section ? matrixColumns(section, form.engine) : undefined,
       };
     },
     nodeProps(field: FormField, columns?: FieldOption[], row?: number) {

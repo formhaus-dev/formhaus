@@ -93,7 +93,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
         );
       const Section = layout?.section ?? props.components?.section ?? DefaultSection;
       const { title, description } = recalled(engine, node);
-      const matrix = matrixColumns(node);
+      const matrix = matrixColumns(node, engine);
       return (
         <Section
           key={node.key}

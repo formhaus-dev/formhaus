@@ -19,7 +19,9 @@ export function DefaultSection({ id, title, description, descriptionId, columns,
         {columns && (
           <div className="fh-section__matrix-header" aria-hidden="true">
             {columns.map((option) => (
-              <span key={option.value}>{option.label}</span>
+              <span key={option.value} className={option.disabled === true ? 'fh-section__matrix-disabled' : undefined}>
+                {option.label}
+              </span>
             ))}
           </div>
         )}
