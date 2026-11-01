@@ -15,8 +15,8 @@ const ENTRIES = {
     'schema',
     ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
   ],
-  react: ['index', 'cloud', 'controls'],
-  vue: ['index', 'cloud', 'controls'],
+  react: ['index', 'cloud', 'controls', 'reorder'],
+  vue: ['index', 'cloud', 'controls', 'reorder'],
 };
 const IMPORT = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
 const failures = [];

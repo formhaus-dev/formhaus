@@ -18,7 +18,9 @@
   "core/locales/ru",
   "react/cloud",
   "react/controls",
+  "react/reorder",
   "vue/cloud",
   "vue/controls",
+  "vue/reorder",
   "core/style.css"
 ]
