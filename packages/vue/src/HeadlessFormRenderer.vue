@@ -150,6 +150,16 @@ provide('fhFileText', { label, limit: (field: FormField, max: number) => fileLim
 const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>
   h('div', { class: 'fh-form__fields', ...fields.rootProps }, slots.default?.());
 DefaultFields.props = ['rootProps'];
+const FormErrors = () =>
+  formErrors.value.length === 0
+    ? null
+    : props.layout?.formErrors
+      ? h(props.layout.formErrors, { rootProps: ROOT_PROPS.formErrors, errors: formErrors.value })
+      : h(
+          'div',
+          { class: 'fh-form__top-errors', ...ROOT_PROPS.formErrors },
+          formErrors.value.map((error, i) => h('p', { key: i, class: 'fh-form__top-error' }, error)),
+        );
 const progressComponent = computed(() => props.layout?.progress ?? props.progressComponent);
 const actionsComponent = computed(() => props.layout?.actions ?? props.actionsComponent);
 const progressSlot = computed(() =>
@@ -193,7 +203,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" :lang="form.engine.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
+  <form ref="formRef" novalidate :lang="form.engine.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
     <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'top'" v-bind="summary" />
 
     <component
@@ -209,16 +219,13 @@ async function onPrimary() {
       :counter-label="label('stepOf', progress)"
     />
 
+    <FormErrors v-if="props.formErrorsPlacement === 'top'" />
+
     <component :is="props.layout?.fields ?? DefaultFields" :root-props="ROOT_PROPS.fields">
       <FormNodeView v-for="node in shown.nodes" :key="node.key" :node="node" :slots="shown.slots" />
     </component>
 
-    <template v-if="formErrors.length > 0">
-      <component :is="props.layout.formErrors" v-if="props.layout?.formErrors" :root-props="ROOT_PROPS.formErrors" :errors="formErrors" />
-      <div v-else class="fh-form__top-errors" v-bind="ROOT_PROPS.formErrors">
-        <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
-      </div>
-    </template>
+    <FormErrors v-if="props.formErrorsPlacement !== 'top'" />
 
     <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'bottom'" v-bind="summary" />
 

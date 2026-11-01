@@ -125,6 +125,7 @@ export interface FormRendererProps {
   progressComponent?: Component;
   optionsProviders?: Record<string, OptionsProvider>;
   testIds?: boolean | ((target: TestIdTarget) => string | undefined);
+  formErrorsPlacement?: 'top' | 'bottom';
 }
 
 export interface FormRendererEmits {

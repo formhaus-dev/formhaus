@@ -212,4 +212,5 @@ export const formRendererProps = {
   progressComponent: /* @__PURE__ */ any<Component>(),
   optionsProviders: Object as PropType<Renderer['optionsProviders']>,
   testIds: [Boolean, Function] as PropType<Renderer['testIds']>,
+  formErrorsPlacement: String as PropType<Renderer['formErrorsPlacement']>,
 };

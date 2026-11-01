@@ -27,6 +27,9 @@ let nextKey = 0;
 const engineKeys = new WeakMap<object, number>();
 const sourced = new WeakMap<object, object>();
 
+const formAttrs = (props: object) =>
+  Object.fromEntries(Object.entries(props).filter(([key]) => key === 'style' || /^(aria|data)-/.test(key)));
+
 function engineKey(engine: object): number {
   let key = engineKeys.get(engine);
   if (key === undefined) engineKeys.set(engine, (key = nextKey++));
@@ -176,11 +179,15 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const shared = { engine, formId, labels: props.labels, layout };
     const summary = props.errorSummary !== false && <FormErrorSummary {...shared} onSelect={showField} testId={testId?.('summary')} />;
     const top = props.errorSummary === 'top';
+    const errorsTop = props.formErrorsPlacement === 'top';
+    const formErrors = <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />;
 
     return (
       <form
+        {...formAttrs(props)}
         ref={formRef}
         id={props.id}
+        noValidate
         lang={engine.definition.lang}
         onFocusCapture={(event) => {
           focusReturn.current = event.target;
@@ -203,6 +210,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             headingLevel={headingLevel}
             marks={props.stepErrorMarks}
           />
+          {errorsTop && formErrors}
           <FormFieldsController
             {...shared}
             key={engineKey(engine)}
@@ -219,7 +227,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onFocus={handleFieldFocus}
             testId={testId}
           />
-          <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
+          {!errorsTop && formErrors}
           {!top && summary}
           <FormActionsController
             engine={engine}
