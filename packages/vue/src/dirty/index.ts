@@ -1,5 +1,6 @@
 import type { FormEngine } from '@formhaus/core';
 import { type DirtyTracker, trackDirty } from '@formhaus/core/dirty';
+import { engineOf } from '@formhaus/core/internal';
 import { type ComputedRef, computed, type MaybeRefOrGetter, onScopeDispose, shallowRef, toValue, watch } from 'vue';
 
 type EngineSource = FormEngine | { readonly engine: FormEngine } | null | undefined;
@@ -7,11 +8,9 @@ type EngineSource = FormEngine | { readonly engine: FormEngine } | null | undefi
 export interface FormDirty {
   dirty: ComputedRef<boolean>;
   dirtyKeys: ComputedRef<readonly string[]>;
-  markClean(): void;
-  ref(handle: unknown): void;
+  markClean: () => void;
+  ref: (handle: unknown) => void;
 }
-
-const engineOf = (source: EngineSource) => (source && 'engine' in source ? source.engine : source);
 
 export function useFormDirty(engine?: MaybeRefOrGetter<EngineSource>): FormDirty {
   const handle = shallowRef<{ readonly engine: FormEngine } | null>(null);
