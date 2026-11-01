@@ -5,9 +5,6 @@
 ```ts
 
 // @public (undocumented)
-export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resetCount'>;
-
-// @public (undocumented)
 export interface DirtyTracker {
     // (undocumented)
     readonly dirty: boolean;
@@ -16,15 +13,13 @@ export interface DirtyTracker {
     // (undocumented)
     markClean(): void;
     // (undocumented)
-    reset(values?: Record<string, unknown>): void;
-    // (undocumented)
     stop(): void;
     // (undocumented)
     subscribe(listener: () => void): () => void;
 }
 
 // @public (undocumented)
-export function trackDirty(engine: DirtySource): DirtyTracker;
+export function trackDirty(engine: FormEngine<object>): DirtyTracker;
 
 // (No @packageDocumentation comment for this package)
 

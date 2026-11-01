@@ -146,7 +146,16 @@ await engine.submit(onSubmit);
 ```
 :::
 
-`validate` maps issues exactly like `schemaValidate()` and takes the same options. `submit(handler)` reuses the output of the last passing `validate` for the same values, so the schema runs once per submit. When the values changed in `onBeforeSubmit`, it parses them again and rejects the submit with the issues. Added in 1.9.0.
+`validate` maps issues exactly like `schemaValidate()` and takes the same options. The schema runs once per submit, in `validate`, and `submit(handler)` gets its output. When `onBeforeSubmit` changed the values, `submit` parses them again and rejects the submit if they have issues. Added in 1.9.0.
+
+The schema parses the submit payload, and fields hidden by a condition or on a skipped step are absent from it. Mark them optional. When the schema fails only on a field the form does not submit, the submit stops with the schema message as a form error, and a development warning names the cause:
+
+```ts
+const schema = z.object({
+  business: z.boolean(),
+  vat: z.string().optional(),
+});
+```
 
 Without a schema, the React renderers take the values type as a type argument. The engine does not check it:
 

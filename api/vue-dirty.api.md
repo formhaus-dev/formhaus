@@ -9,11 +9,6 @@ import { FormEngine } from '@formhaus/core';
 import { MaybeRefOrGetter } from 'vue';
 
 // @public (undocumented)
-export type DirtyTarget = FormEngine | {
-    readonly engine: FormEngine;
-} | null | undefined;
-
-// @public (undocumented)
 export interface FormDirty {
     // (undocumented)
     dirty: ComputedRef<boolean>;
@@ -22,11 +17,11 @@ export interface FormDirty {
     // (undocumented)
     markClean(): void;
     // (undocumented)
-    reset(values?: Record<string, unknown>): void;
+    ref(handle: unknown): void;
 }
 
 // @public (undocumented)
-export function useFormDirty(target: MaybeRefOrGetter<DirtyTarget>): FormDirty;
+export function useFormDirty(engine?: MaybeRefOrGetter<EngineSource>): FormDirty;
 
 // (No @packageDocumentation comment for this package)
 

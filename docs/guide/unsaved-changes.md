@@ -9,16 +9,15 @@ description: "Track unsaved changes in a Formhaus form with the opt-in dirty mod
 
 ::: code-group
 ```tsx [React]
-import { FormRenderer, type FormRendererHandle } from '@formhaus/react';
+import { FormRenderer } from '@formhaus/react';
 import { useFormDirty } from '@formhaus/react/dirty';
 
 function Settings({ saved }: { saved: Record<string, unknown> }) {
-  const form = useRef<FormRendererHandle>(null);
-  const { dirty, dirtyKeys, markClean } = useFormDirty(form);
+  const { dirty, dirtyKeys, markClean, ref } = useFormDirty();
   return (
     <>
       <FormRenderer
-        ref={form}
+        ref={ref}
         definition={definition}
         initialValues={saved}
         onSubmit={async (values) => {
@@ -37,8 +36,7 @@ function Settings({ saved }: { saved: Record<string, unknown> }) {
 import { FormRenderer } from '@formhaus/vue';
 import { useFormDirty } from '@formhaus/vue/dirty';
 
-const form = ref<InstanceType<typeof FormRenderer>>();
-const { dirty, dirtyKeys, markClean } = useFormDirty(form);
+const { dirty, dirtyKeys, markClean, ref: formRef } = useFormDirty();
 
 async function submit(values: Record<string, unknown>) {
   await save(values);
@@ -47,7 +45,7 @@ async function submit(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer ref="form" :definition="definition" :initial-values="saved" @submit="submit" />
+  <FormRenderer :ref="formRef" :definition="definition" :initial-values="saved" @submit="submit" />
   <p v-if="dirty">Unsaved: {{ dirtyKeys.join(', ') }}</p>
 </template>
 ```
@@ -62,7 +60,7 @@ changes.subscribe(() => toggleSaveButton(changes.dirty));
 ```
 :::
 
-`useFormDirty` takes the renderer ref, a `FormEngine` or, in Vue, the result of `useFormEngine`.
+Pass `ref` to the renderer, also from a child such as a dialog body that mounts later. With `useFormEngine`, pass the engine instead: `useFormDirty(engine)`. In Vue it also takes the result of `useFormEngine` or a template ref.
 
 ## What counts as a change
 
@@ -72,7 +70,9 @@ The tracker compares the [submit values](/spec#submit-payload) with a baseline: 
 - A trim-only edit stays clean, since the submit values are trimmed.
 - A field hidden by a condition drops out of the submit values and counts as changed, unless `hiddenValues` is `'keep'`.
 - Adding or removing a group item lists the group key. An edit inside an item lists the item path, such as `people.1.email`.
-- After `replaceDefinition`, the values are compared with the same baseline. A new field with a `defaultValue` and a removed field with a value count as changed.
+- Skipping a step drops its values, so they count as changed until the step is included again.
+- `null`, `''` and a missing value all differ. `0` equals `-0`.
+- After `replaceDefinition`, the baseline is compared under the new definition, so new fields with defaults and removed fields do not count as changed. Only edits do.
 
 `dirtyKeys` is sorted in code unit order.
 
@@ -81,9 +81,7 @@ The tracker compares the [submit values](/spec#submit-payload) with a baseline: 
 | Call | Baseline after it |
 |---|---|
 | `markClean()` | the current values. Call it after a successful save |
-| `reset(values?)` | `values`, or the defaults without them. It resets the form too |
-
-`handle.reset()` and `engine.reset()` move the baseline the same way.
+| `handle.reset(values?)` or `engine.reset(values?)` | `values`, or the defaults without them |
 
 ## API
 
@@ -92,8 +90,7 @@ The tracker compares the [submit values](/spec#submit-payload) with a baseline: 
 | `dirty` | `true` when `dirtyKeys` is not empty |
 | `dirtyKeys` | Changed field paths. The same array until the keys change |
 | `markClean()` | Takes the current values as the baseline |
-| `reset(values?)` | Calls `engine.reset(values)`. Any engine reset takes the result as the baseline |
 | `subscribe(listener)` | Runs the listener when `dirtyKeys` changes. Returns an unsubscribe function |
 | `stop()` | Stops following the engine |
 
-`useFormDirty` returns `dirty`, `dirtyKeys`, `markClean` and `reset`. In Vue, `dirty` and `dirtyKeys` are computed refs. It follows a new engine when the renderer creates one, with a new baseline. Added in 1.9.0.
+`useFormDirty` returns `dirty`, `dirtyKeys`, `markClean` and `ref`. In Vue, `dirty` and `dirtyKeys` are computed refs. It follows a new engine when the renderer creates one, with a new baseline. Added in 1.9.0.

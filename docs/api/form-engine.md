@@ -284,8 +284,7 @@ changes.subscribe(() => console.log(changes.dirty, changes.dirtyKeys));
 |---|---|
 | `dirty` | `true` when `dirtyKeys` is not empty |
 | `dirtyKeys` | Changed field and group item paths, sorted |
-| `markClean()` | Takes the current values as the baseline |
-| `reset(values?)` | Calls `engine.reset(values)`. Any engine reset takes the result as the baseline |
+| `markClean()` | Takes the current values as the baseline. `reset()` does the same with the reset values |
 | `subscribe(listener)` | Runs the listener when `dirtyKeys` changes |
 | `stop()` | Stops following the engine |
 

@@ -49,13 +49,13 @@ These cost the same on any path, and only when imported:
 | Import | Adds |
 |---|---|
 | `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 8.5 KB |
-| `@formhaus/core/cloud` | 3.3 KB |
+| `@formhaus/core/cloud` | 3.4 KB |
 | `@formhaus/core/i18n` | 6.2 KB |
 | `@formhaus/core/fix` | 12.1 KB |
 | `@formhaus/core/research` | 0.3 KB |
 | `@formhaus/core/fields` | 2.6 KB |
-| `@formhaus/core/schema` | 0.4 KB |
-| `@formhaus/core/dirty` | 0.4 KB |
+| `@formhaus/core/schema` | 0.5 KB |
+| `@formhaus/core/dirty` | 0.5 KB |
 | Engine warnings in development | 0 KB in production |
 
 <!-- size:addons:end -->

@@ -5,12 +5,6 @@
 ```ts
 
 import { FormEngine } from '@formhaus/core';
-import { RefObject } from 'react';
-
-// @public (undocumented)
-export type DirtyTarget = FormEngine | RefObject<{
-    readonly engine: FormEngine;
-} | null>;
 
 // @public (undocumented)
 export interface FormDirty {
@@ -21,11 +15,13 @@ export interface FormDirty {
     // (undocumented)
     markClean(): void;
     // (undocumented)
-    reset(values?: Record<string, unknown>): void;
+    ref(handle: {
+        readonly engine: FormEngine;
+    } | null): void;
 }
 
 // @public (undocumented)
-export function useFormDirty(target: DirtyTarget): FormDirty;
+export function useFormDirty(engine?: FormEngine): FormDirty;
 
 // (No @packageDocumentation comment for this package)
 
