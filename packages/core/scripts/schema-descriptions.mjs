@@ -1,7 +1,7 @@
 const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.8". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6, multiple files in 1.7, option hints, disabled options, readOnly and reorderable groups in 1.8.',
+    'Format version of the definition, such as "1.8". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6, multiple files in 1.7, option descriptions, disabled options, readOnly and reorderable groups in 1.8.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -12,8 +12,8 @@ const DESCRIPTIONS = {
     'Translation keys for the form texts and the messages and labels catalogs, resolved by the app translate function.',
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',
   'FormField.i18n': 'Translation keys for label, placeholder and helperText. The literal texts stay the fallback.',
-  'FieldOption.i18n': 'Translation keys for the option label and hint.',
-  'FieldOption.hint': 'Short text under the option label. Added in format 1.8.',
+  'FieldOption.i18n': 'Translation keys for the option label and description.',
+  'FieldOption.description': 'Short text under the option label. Added in format 1.8.',
   'FieldOption.disabled':
     'Radio, multiselect and select only: true, or conditions that must all match, makes the option unavailable. Choosing it fails validation unless the stored answer already holds it. Added in format 1.8.',
   'FieldOption.image':

@@ -21,7 +21,7 @@
           {
             "value": "starter",
             "label": "Starter",
-            "hint": "Up to 5 seats",
+            "description": "Up to 5 seats",
             "disabled": [
               {
                 "field": "seats",
@@ -32,7 +32,7 @@
           {
             "value": "pro",
             "label": "Pro",
-            "hint": "Any number of seats"
+            "description": "Any number of seats"
           },
           {
             "value": "legacy",

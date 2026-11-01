@@ -1,10 +1,10 @@
 {
   "name": "check-option-rules-type",
-  "covers": ["rejects option hints, option rules, readOnly and reorderable of the wrong type from format 1.8"],
+  "covers": ["rejects option descriptions, option rules, readOnly and reorderable of the wrong type from format 1.8"],
   "issues": [
     {
       "code": "invalid-type",
-      "path": "/fields/0/options/0/hint"
+      "path": "/fields/0/options/0/description"
     },
     {
       "code": "invalid-type",
@@ -44,7 +44,7 @@
           {
             "value": "a",
             "label": "A",
-            "hint": 5
+            "description": 5
           },
           {
             "value": "b",

@@ -24,7 +24,7 @@
           {
             "value": "1",
             "label": "Low",
-            "hint": "Not at all",
+            "description": "Not at all",
             "disabled": true
           }
         ]
@@ -37,7 +37,7 @@
           {
             "value": "s",
             "label": "S",
-            "hint": "Small",
+            "description": "Small",
             "disabled": [
               {
                 "field": "score",
