@@ -121,7 +121,7 @@ export const i18nCapabilities = {
       'labels.<key>',
       'fields.<key>.label | placeholder | helperText',
       'fields.<key>.options.<value>',
-      'fields.<key>.optionHints.<value>',
+      'fields.<key>.optionDescriptions.<value>',
       'fields.<key>.validation.<rule>',
       'steps.<id>.title | description',
       'steps.<id>.next.label | back.label | skip.label',

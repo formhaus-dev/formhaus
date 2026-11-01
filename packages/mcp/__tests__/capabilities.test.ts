@@ -33,7 +33,7 @@ describe('capabilities', () => {
     expect(result.fieldProps.optional).toContain('multiple');
     expect(result.definition.formatVersionRule).toContain('Set "1.7" when a file field has multiple');
     expect(result.fieldProps.optional).toContain('readOnly');
-    expect(result.definition.formatVersionRule).toContain('Set "1.8" when an option has hint or disabled');
+    expect(result.definition.formatVersionRule).toContain('Set "1.8" when an option has description or disabled');
     expect(result.definition.formatVersionRule).toContain('field has autocomplete');
     expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');
