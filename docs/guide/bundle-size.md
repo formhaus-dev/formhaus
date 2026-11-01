@@ -54,7 +54,8 @@ These cost the same on any path, and only when imported:
 | `@formhaus/core/fix` | 12.1 KB |
 | `@formhaus/core/research` | 0.3 KB |
 | `@formhaus/core/fields` | 2.6 KB |
-| `@formhaus/core/schema` | 0.3 KB |
+| `@formhaus/core/schema` | 0.4 KB |
+| `@formhaus/core/dirty` | 0.3 KB |
 | Engine warnings in development | 0 KB in production |
 
 <!-- size:addons:end -->
