@@ -10,6 +10,7 @@ import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
+import { formatView } from '../engine/format-view';
 import { normalizeValue, typeError } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, itemPath, itemScope, keepId } from '../visibility/nodes';
 
@@ -214,8 +215,9 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   return withPatternBudget(() => validated(definition, values, options));
 }
 
-function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
-  validDefinition(definition);
+function validated(input: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
+  validDefinition(input);
+  const definition = formatView(input);
   const fields = getAllFields(definition);
   const source = isEntry(values) ? values : {};
   let prepared = prepare(definition, fields, source, options);

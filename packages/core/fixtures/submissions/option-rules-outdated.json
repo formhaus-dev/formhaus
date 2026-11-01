@@ -69,7 +69,8 @@
         "readOnly": true,
         "validation": {
           "required": true,
-          "minLength": 5
+          "minLength": 5,
+          "pattern": "^acct-\\d+$"
         }
       },
       {
@@ -109,6 +110,29 @@
             ]
           }
         ]
+      },
+      {
+        "key": "tier",
+        "type": "select",
+        "label": "Tier",
+        "show": [
+          {
+            "field": "seats",
+            "gt": 10
+          }
+        ],
+        "options": [
+          {
+            "value": "gold",
+            "label": "Gold",
+            "description": "Priority support",
+            "disabled": true
+          },
+          {
+            "value": "basic",
+            "label": "Basic"
+          }
+        ]
       }
     ]
   },
@@ -120,7 +144,7 @@
           "seats": 3,
           "plan": "legacy",
           "note": "Hi",
-          "account": "acct-1"
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -129,7 +153,7 @@
           "seats": 3,
           "plan": "legacy",
           "note": "Hi",
-          "account": "acct-1"
+          "account": "acct-12"
         },
         "errors": {}
       }
@@ -153,6 +177,30 @@
         "errors": {
           "account": "This field is required"
         }
+      }
+    },
+    {
+      "name": "keeps a hidden value with a disabled option below 1.8",
+      "input": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": "acct-12",
+          "tier": "gold"
+        },
+        "skippedSteps": [],
+        "hiddenValues": "keep"
+      },
+      "expected": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": "acct-12",
+          "tier": "gold"
+        },
+        "errors": {}
       }
     }
   ]
