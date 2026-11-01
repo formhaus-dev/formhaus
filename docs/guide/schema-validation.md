@@ -1,6 +1,6 @@
 ---
 title: "Schema validation"
-description: "Validate Formhaus forms with Zod, Valibot or ArkType through onValidate, schemaValidate and schemaParse: step scope, group items, schema output and async server checks."
+description: "Validate Formhaus forms with Zod, Valibot or ArkType through schemaValidate and schemaParse: step scope, group items, typed schema output and async checks."
 ---
 
 # Schema Validation
