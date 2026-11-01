@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { optionAttrs } from '@formhaus/core/fields';
 import { withReveals } from '@formhaus/core/internal';
 import { fieldComponentEmits, fieldComponentProps } from '../props';
 import FieldShell from './FieldShell.vue';
+import OptionDescription from './OptionDescription.vue';
 import OptionImage from './OptionImage.vue';
 import RevealSlot from './RevealSlot.vue';
 import { useChoice, useField } from './useField';
@@ -17,7 +19,7 @@ const choice = useChoice(props, emit);
     <template v-for="(option, index) in withReveals(props.field.options ?? [], props.reveals)" :key="String(option.value)">
       <div class="fh-field__radio-option">
         <input
-          v-bind="{ ...control, ...choice(option.value) }"
+          v-bind="{ ...control, ...optionAttrs(option, `${inputId}-${index}`, control.disabled), ...choice(option.value) }"
           :autocomplete="props.field.autocomplete"
           :id="`${inputId}-${index}`"
           class="fh-field__radio"
@@ -31,6 +33,7 @@ const choice = useChoice(props, emit);
         <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
           {{ option.label }}
         </label>
+        <OptionDescription :option="option" :id="`${inputId}-${index}`" />
         <OptionImage :option="option" />
       </div>
       <RevealSlot :reveal="option.reveal" />

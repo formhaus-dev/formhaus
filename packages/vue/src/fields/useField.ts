@@ -1,5 +1,6 @@
-import { fieldAria as coreAria, fieldId } from '@formhaus/core/fields';
+import { fieldAria as coreAria, fieldId, readOnlyAttrs } from '@formhaus/core/fields';
 import type { FormField, FormGroup } from '@formhaus/core';
+import { keepReadOnly } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import type { FieldEmits, FieldComponentProps } from '../types';
 
@@ -19,6 +20,8 @@ export function useField(props: FieldComponentProps, emit: FieldEmits) {
     disabled: props.disabled || props.loading,
     onFocus: () => emit('focus'),
     onBlur: () => emit('blur'),
+    ...readOnlyAttrs(props),
+    ...(readOnlyAttrs(props)['aria-readonly'] && { onClick: keepReadOnly, onKeydown: keepReadOnly }),
   }));
   const input = computed(() => ({
     id: inputId.value,
@@ -38,6 +41,7 @@ export function useChoice(
 ) {
   let arrow = false;
   return (value: unknown) => {
+    if (props.readOnly) return {};
     const commit = (input: unknown) => (props.field.autoAdvance ? emit('commit', input) : emit('update:modelValue', input));
     return {
       onKeydown(event: KeyboardEvent) {

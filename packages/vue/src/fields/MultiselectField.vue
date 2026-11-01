@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { toggleOption } from '@formhaus/core/fields';
+import { optionAttrs, toggleOption } from '@formhaus/core/fields';
 import { dividerBefore, withReveals } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import { useLabel } from '../composables/useLabel';
 import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
+import OptionDescription from './OptionDescription.vue';
 import OptionImage from './OptionImage.vue';
 import RevealSlot from './RevealSlot.vue';
 import { useField } from './useField';
@@ -24,7 +25,7 @@ const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelV
       <div v-if="dividerBefore(props.field, options, index)" class="fh-field__option-divider">{{ text('or') }}</div>
       <div class="fh-field__multiselect-option">
         <input
-          v-bind="control"
+          v-bind="{ ...control, ...optionAttrs(option, `${inputId}-${index}`, control.disabled) }"
           :id="`${inputId}-${index}`"
           :name="props.field.key"
           class="fh-field__checkbox"
@@ -38,6 +39,7 @@ const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelV
         <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
           {{ option.label }}
         </label>
+        <OptionDescription :option="option" :id="`${inputId}-${index}`" />
         <OptionImage :option="option" />
       </div>
       <RevealSlot :reveal="option.reveal" />
