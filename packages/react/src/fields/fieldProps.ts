@@ -16,7 +16,8 @@ export function optionProps(props: FieldComponentProps, value?: unknown) {
 }
 
 const keep = (props: FieldComponentProps) =>
-  readOnlyAttrs(props)['aria-readonly'] && { onKeyDown: keepReadOnly, onClick: props.field.type === 'file' ? keepReadOnly : undefined };
+  props.readOnly &&
+  !readOnlyAttrs(props).readOnly && { onKeyDown: keepReadOnly, onClick: props.field.type === 'file' ? keepReadOnly : undefined };
 
 export function inputProps(props: FieldComponentProps) {
   const id = fieldId(props);

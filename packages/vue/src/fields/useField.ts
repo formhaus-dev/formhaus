@@ -21,7 +21,7 @@ export function useField(props: FieldComponentProps, emit: FieldEmits) {
     onFocus: () => emit('focus'),
     onBlur: () => emit('blur'),
     ...readOnlyAttrs(props),
-    ...(readOnlyAttrs(props)['aria-readonly'] && { onClick: keepReadOnly, onKeydown: keepReadOnly }),
+    ...(props.readOnly && !readOnlyAttrs(props).readOnly && { onClick: keepReadOnly, onKeydown: keepReadOnly }),
   }));
   const input = computed(() => ({
     id: inputId.value,

@@ -15,7 +15,7 @@ const choice = useChoice(props, emit);
 </script>
 
 <template>
-  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" :error-first="!!props.reveals" variant="radio">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" :error-first="!!props.reveals" :read-only="props.readOnly" variant="radio">
     <template v-for="(option, index) in withReveals(props.field.options ?? [], props.reveals)" :key="String(option.value)">
       <div class="fh-field__radio-option">
         <input

@@ -37,6 +37,7 @@ export const fieldShellProps = {
   variant: String as PropType<'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating'>,
   testId: String,
   errorFirst: Boolean,
+  readOnly: Boolean,
 };
 
 export const optionImageProps = {

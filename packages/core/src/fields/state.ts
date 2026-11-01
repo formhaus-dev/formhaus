@@ -21,6 +21,7 @@ export interface FieldAria {
 
 export interface ReadOnlyAttrs {
   readOnly?: true;
+  role?: 'radiogroup';
   'aria-readonly'?: true;
 }
 
@@ -56,9 +57,13 @@ const TYPED = [...COUNTED, 'number', 'date', 'time', 'datetime', 'autocomplete']
 
 export const fieldId = ({ id, field }: Pick<FieldStateInput, 'id' | 'field'>): string => id ?? fieldDomId(undefined, field.key);
 
-export function readOnlyAttrs({ field, readOnly }: Pick<FieldStateInput, 'field' | 'readOnly'>): ReadOnlyAttrs {
+const RADIOS = ['radio', 'scale', 'rating'];
+
+export function readOnlyAttrs({ field, readOnly }: Pick<FieldStateInput, 'field' | 'readOnly'>, group = false): ReadOnlyAttrs {
   if (!readOnly) return {};
-  return TYPED.includes(field.type) ? { readOnly: true } : { 'aria-readonly': true };
+  if (TYPED.includes(field.type)) return { readOnly: true };
+  if (RADIOS.includes(field.type) !== group) return {};
+  return group ? { role: 'radiogroup', 'aria-readonly': true } : { 'aria-readonly': true };
 }
 
 export const optionDescriptionId = (optionId: string): string => `${optionId}-description`;
@@ -75,7 +80,7 @@ export function fieldAria({ id, field, error, readOnly }: FieldStateInput): Fiel
   return {
     'aria-invalid': error ? true : undefined,
     'aria-required': field.validation?.required ? true : undefined,
-    'aria-readonly': readOnlyAttrs({ field, readOnly })['aria-readonly'],
+    'aria-readonly': readOnly && !TYPED.includes(field.type) ? true : undefined,
     'aria-describedby': [field.helperText && `${base}-helper`, error && `${base}-error`].filter(Boolean).join(' ') || undefined,
   };
 }

@@ -14,11 +14,18 @@ describe('read-only attributes', () => {
       ),
     ).toEqual(Array(7).fill({ readOnly: true }));
     expect(
-      ['radio', 'checkbox', 'select', 'multiselect', 'switch', 'scale', 'file'].map((type) =>
-        readOnlyAttrs({ field: field(type), readOnly: true }),
-      ),
-    ).toEqual(Array(7).fill({ 'aria-readonly': true }));
+      ['checkbox', 'select', 'multiselect', 'switch', 'file'].map((type) => readOnlyAttrs({ field: field(type), readOnly: true })),
+    ).toEqual(Array(5).fill({ 'aria-readonly': true }));
     expect(readOnlyAttrs({ field: field('radio') })).toEqual({});
+  });
+
+  it('puts aria-readonly of radios on the radio group', () => {
+    const radios = ['radio', 'scale', 'rating'].map((type) => field(type));
+    expect(radios.map((item) => readOnlyAttrs({ field: item, readOnly: true }))).toEqual([{}, {}, {}]);
+    expect(radios.map((item) => readOnlyAttrs({ field: item, readOnly: true }, true))).toEqual(
+      Array(3).fill({ role: 'radiogroup', 'aria-readonly': true }),
+    );
+    expect(readOnlyAttrs({ field: field('multiselect'), readOnly: true }, true)).toEqual({});
   });
 
   it('puts aria-readonly in the field aria and state', () => {

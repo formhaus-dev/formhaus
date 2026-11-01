@@ -11,7 +11,15 @@ export function RadioField(props: FieldComponentProps) {
   const choice = choiceHandlers(props, useRef(false));
 
   return (
-    <FieldShell id={fieldId(props)} field={field} error={error} variant="radio" testId={props.testId} errorFirst={!!props.reveals}>
+    <FieldShell
+      id={fieldId(props)}
+      field={field}
+      error={error}
+      variant="radio"
+      testId={props.testId}
+      errorFirst={!!props.reveals}
+      readOnly={props.readOnly}
+    >
       {withReveals(field.options ?? [], props.reveals).map((opt, index) => {
         const optionId = `${fieldId(props)}-${index}`;
         return (
