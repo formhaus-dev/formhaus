@@ -192,7 +192,13 @@ The corpus file `file-multiple.json` and the scenarios in `scenarios/file-multip
 A field MAY have `readOnly`: `true`, or a list of [conditions](#conditions) that must all match, evaluated like `show`. An empty list is never read-only.
 
 ```json
-{ "key": "accountId", "type": "text", "label": "Account ID", "readOnly": true }
+{
+  "formatVersion": "1.8",
+  "id": "account",
+  "title": "Account",
+  "submit": { "label": "Save" },
+  "fields": [{ "key": "accountId", "type": "text", "label": "Account ID", "readOnly": true }]
+}
 ```
 
 - **Value.** A read-only field keeps its value from the initial values, `defaultValue`, its `source` or `setValue()`. The engine submits it like any visible value. The user cannot change it.
