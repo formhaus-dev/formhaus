@@ -36,7 +36,7 @@ export function gzip(contents) {
 
 const SELF = Object.fromEntries(['react', 'vue'].map((pkg) => [`@formhaus/${pkg}`, `./packages/${pkg}/dist/index.js`]));
 
-export async function bundleOutput(
+async function bundleOutput(
   contents,
   { external = [], mode = 'production', resolveDir = process.cwd(), define = {}, sourcemap = false } = {},
 ) {

@@ -23,7 +23,7 @@ function decodeSegment(segment) {
 
 const sourceName = (path) => path.replace(/^(?:\.\.\/)+/, '').replace(/^.*?(?=packages\/)/, '');
 
-export function bytesBySource(js, map) {
+function bytesBySource(js, map) {
   const lines = Buffer.from(js).toString('utf8').split('\n');
   const bytes = {};
   const add = (name, text) => {

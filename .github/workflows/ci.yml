@@ -312,7 +312,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          git fetch --tags --filter=blob:none origin "$BASE_SHA"
+          git fetch --tags --unshallow --filter=tree:0 origin
           tag=$(git describe --tags --abbrev=0 --match '@formhaus/core@*' "$BASE_SHA" || true)
           if [ -z "$tag" ]; then exit 0; fi
           git worktree add "$RUNNER_TEMP/tag" "$tag"
