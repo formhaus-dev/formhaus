@@ -9,6 +9,9 @@
     "includes": [
       "**",
       "!**/pnpm-lock.yaml",
+      "!**/*.yaml",
+      "!**/*.yml",
+      "!**/*.md",
       "!docs/.vitepress/cache",
       "!docs/.vitepress/dist",
       "!templates/index.json",
@@ -16,6 +19,7 @@
       "!docs/public/schema",
       "!packages/mcp/server.json",
       "!**/*.css",
+      "!**/*.scss",
       "!**/*.html",
       "!**/*.svg"
     ]
@@ -53,7 +57,11 @@
         "useSemanticElements": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "noComponentHookFactories": "off"
+      },
+      "performance": {
+        "useDomNodeTextContent": "off"
       }
     }
   },

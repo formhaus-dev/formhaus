@@ -89,9 +89,9 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0",
-    "arktype": "^2.2.8",
+    "arktype": "^2.2.9",
     "fast-check": "^4.10.2",
-    "style-dictionary": "5.7.0",
+    "style-dictionary": "5.7.1",
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^9.0.0",
     "typescript": "^5.7.3",
