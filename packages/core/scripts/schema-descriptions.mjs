@@ -1,18 +1,21 @@
 const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.7". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6, multiple files in 1.7.',
+    'Format version of the definition, such as "1.8". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6, multiple files in 1.7, option hints, disabled options, readOnly and reorderable groups in 1.8.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
     'Validation message templates by message key. {min} and {max} are replaced. Field-level messages win over these.',
   'FormDefinition.labels':
-    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}), stepErrors ({count}), fileCount ({count}), or and select.',
+    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}), stepErrors ({count}), fileCount ({count}), moveUp, moveDown, itemMoved ({item}, {position}), or and select.',
   'FormDefinition.i18n':
     'Translation keys for the form texts and the messages and labels catalogs, resolved by the app translate function.',
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',
   'FormField.i18n': 'Translation keys for label, placeholder and helperText. The literal texts stay the fallback.',
-  'FieldOption.i18n': 'Translation key for the option label.',
+  'FieldOption.i18n': 'Translation keys for the option label and hint.',
+  'FieldOption.hint': 'Short text under the option label. Added in format 1.8.',
+  'FieldOption.disabled':
+    'Radio, multiselect and select only: true, or conditions that must all match, makes the option unavailable. Choosing it fails validation unless the stored answer already holds it. Added in format 1.8.',
   'FieldOption.image':
     'Image URL shown above the label on radio and multiselect options. The label stays visible and names the option. Select and autocomplete ignore it.',
   'FieldOption.exclusive':
@@ -57,6 +60,8 @@ const DESCRIPTIONS = {
     'Radio, multiselect and select only: shows the options in a random order per respondent. Pinned and exclusive options keep their written position. Not applied in a matrix section. Added in format 1.6.',
   'FormField.multiple':
     'File only: the field keeps a list of files and its value is an array. validation.minLength and maxLength count the files, and required needs at least one. Takes effect only with "formatVersion": "1.7" or newer. Added in format 1.7.',
+  'FormField.readOnly':
+    'true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and only its type is checked. Added in format 1.8.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':
@@ -90,6 +95,7 @@ const DESCRIPTIONS = {
   'FormGroup.fields':
     'Fields of one item. Their keys are unique in the item and do not repeat a key outside the group. Their conditions can test fields of the same item and fields outside the group.',
   'FormGroup.i18n': 'Translation keys for the group texts.',
+  'FormGroup.reorderable': 'Lets the user move items up and down. Added in format 1.8.',
   StepRoute: 'A forward destination for a step.',
   'StepRoute.to': 'Id of a later step. null makes the current step the last one on this path.',
   'StepRoute.show': 'Route matches only when all conditions match. Without show or showAny the route always matches.',
