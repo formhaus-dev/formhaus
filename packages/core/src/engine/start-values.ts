@@ -7,6 +7,7 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
   let seeds: Values = {};
   let remembering = true;
   let writes: Set<string> | undefined;
+  let stored: Values | undefined;
   const memory = new Map<string, unknown>();
   let itemSeeds = new WeakMap<object, Values>();
   let itemMemory = new WeakMap<object, Values>();
@@ -84,6 +85,14 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
           else memory.delete(key);
         }
       };
+    },
+
+    storeValues(values: Values): void {
+      stored = values;
+    },
+
+    previousValues(): Values {
+      return stored ?? seeds;
     },
 
     startValue(field: FormField): unknown {

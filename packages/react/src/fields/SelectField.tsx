@@ -1,3 +1,4 @@
+import { optionLocked } from '@formhaus/core/fields';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
 import { fieldId, inputProps } from './fieldProps';
@@ -21,7 +22,7 @@ export function SelectField(props: FieldComponentProps) {
           </option>
         )}
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <option key={opt.value} value={opt.value} disabled={optionLocked(opt, value, props.readOnly)}>
             {opt.label}
           </option>
         ))}

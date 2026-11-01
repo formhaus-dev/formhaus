@@ -12,8 +12,8 @@ mkdirSync(reportFolder, { recursive: true });
 
 const ENTRIES = {
   core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research', 'schema', 'dirty', 'fields', 'controls'],
-  react: ['index', 'cloud', 'controls', 'dirty'],
-  vue: ['index', 'cloud', 'controls', 'dirty'],
+  react: ['index', 'cloud', 'controls', 'dirty', 'reorder'],
+  vue: ['index', 'cloud', 'controls', 'dirty', 'reorder'],
 };
 
 const SILENT = { logLevel: ExtractorLogLevel.None };

@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. Set "1.7" when a file field has multiple; below 1.7 multiple is ignored and the field keeps one file. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize, pinned and multiple.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. Set "1.7" when a file field has multiple; below 1.7 multiple is ignored and the field keeps one file. Set "1.8" when an option has description or disabled, a field has readOnly or a group has reorderable; below 1.8 they are ignored. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize, pinned, multiple, option description, disabled, readOnly and reorderable.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -37,7 +37,7 @@ export const capabilities = {
   },
   groups: {
     shape:
-      '{ key, type: "group", label, helperText?, itemLabel?, addLabel?, removeLabel?, defaultItems?, show?, showAny?, validation?, fields, i18n? }',
+      '{ key, type: "group", label, helperText?, itemLabel?, addLabel?, removeLabel?, defaultItems?, reorderable?, show?, showAny?, validation?, fields, i18n? }',
     validationRules: GROUP_RULES,
     rules: [
       'A repeatable group. Its value is an array of item objects keyed by the keys of its fields, such as { "participants": [{ "name": "Ada", "email": "ada@example.com" }] }.',
@@ -47,6 +47,7 @@ export const capabilities = {
       'Item conditions and matchField may use fields of the same item and fields outside the group. Conditions outside the group cannot use item fields (group-scope); they may test the group itself with notEmpty.',
       'No sections, groups, file or hidden fields inside a group (invalid-nesting).',
       'Errors of item fields use the 0-based path "<group>.<index>.<field>", such as participants.1.email. Count errors use the group key.',
+      '"reorderable": true lets the user move items up and down; values, errors and item ids move with the item. In React and Vue the Move buttons come from the reorder entry; without it the group works without them. Needs "formatVersion": "1.8".',
     ],
   },
   fieldTypes: FIELD_TYPES,
@@ -80,6 +81,7 @@ export const capabilities = {
       'mask',
       'inputMode',
       'autocomplete',
+      'readOnly',
       'autoAdvance',
       'layout',
       'columns',
@@ -93,11 +95,17 @@ export const capabilities = {
       'Custom field types only: an object of settings the custom component reads as field.props. Core ignores it. Added in format 1.2.',
     optionFieldTypes: OPTION_FIELD_TYPES,
     options:
-      'Array of { value: string, label: string, image?, exclusive?, pinned? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
+      'Array of { value: string, label: string, image?, exclusive?, pinned?, description?, disabled? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
     exclusive:
       'multiselect with static options only: "exclusive": true makes an option such as "None of these" or "Prefer not to say" the only answer. Picking it clears the other answers, picking another option clears it, and several exclusive options also clear each other. Put exclusive options last; renderers show the "or" label before them. A list with an exclusive option and any other value fails the type check with the exclusive message. One exclusive option alone answers required and skips minLength. contains and notContains work as usual. Set "formatVersion": "1.5".',
     multiple:
       'file only: "multiple": true keeps a list of files. The value is an array; required needs at least one file, and validation.minLength and maxLength count files (at most 100 without maxLength, never more than 1000). Pickers add files and each file has a Remove button. Another type is multiple-not-applicable; a value that is not a boolean is invalid-type. Needs "formatVersion": "1.7".',
+    description:
+      'Option description: a short text under the option label, such as "Up to 5 seats". Translatable under optionDescriptions.<value>. select shows no description. Needs "formatVersion": "1.8".',
+    disabled:
+      'radio, select and multiselect options: "disabled": true, or conditions that must all match like show, such as [{ "field": "seats", "gt": 5 }], makes the option unavailable. Choosing it fails with the option message unless it is the defaultValue or the stored answer already holds it: in the browser the initial values, on the server validateSubmission previousValues read from the stored record. A defaultValue that is a disabled option is default-disabled-option. Another type is disabled-not-applicable. Needs "formatVersion": "1.8".',
+    readOnly:
+      'true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and validated like any other field. Not a server guarantee: write fixed values on the server. Needs "formatVersion": "1.8".',
     randomize:
       'radio, multiselect and select only: "randomize": true shows the options in a random order that stays the same for one respondent, as research surveys do against position bias. "pinned": true on an option keeps it at its written position, such as "Other"; exclusive options are always pinned. Values, conditions and validation do not change. Not applied in a matrix section. Another type, a matrix row or pinned without randomize is randomize-not-applicable. Needs "formatVersion": "1.6". In code, the order needs research from @formhaus/core/research, passed to FormRenderer, useFormEngine or FormEngine; without it the options show in written order. Formhaus Cloud hosted pages and embeds shuffle the options and store the order each respondent saw with the response.',
     imageFieldTypes: IMAGE_FIELD_TYPES,

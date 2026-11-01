@@ -47,6 +47,9 @@ export type LabelKey =
   | 'stepTitle'
   | 'stepErrors'
   | 'fileCount'
+  | 'moveUp'
+  | 'moveDown'
+  | 'itemMoved'
   | 'or'
   | 'select';
 
@@ -106,6 +109,10 @@ export interface GroupI18n {
 
 export interface LabelI18n {
   label?: string;
+}
+
+export interface OptionI18n extends LabelI18n {
+  description?: string;
 }
 
 export interface ValidationI18n {

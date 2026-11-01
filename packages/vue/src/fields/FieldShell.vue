@@ -2,6 +2,7 @@
 import { computed, h } from 'vue';
 import { useLabel } from '../composables/useLabel';
 import { fieldShellProps } from '../innerProps';
+import { readOnlyAttrs } from '@formhaus/core/fields';
 import { fieldAria, fieldIds } from './useField';
 
 const props = defineProps(fieldShellProps);
@@ -37,7 +38,7 @@ const Helper = () =>
   <component
     :is="group ? 'fieldset' : 'div'"
     :class="['fh-field', props.variant && `fh-field--${props.variant}`]"
-    v-bind="group ? fieldAria(props.field, props.id, props.error) : {}"
+    v-bind="group ? { ...fieldAria(props.field, props.id, props.error), ...readOnlyAttrs(props, true) } : {}"
     :data-testid="props.testId"
   >
     <Legend v-if="group" />

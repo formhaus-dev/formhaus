@@ -265,6 +265,25 @@ Pick one from a list. Options stack vertically, one full-width row per option.
 
 For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words. `layout` was added in 0.10.0.
 
+### Option descriptions and disabled options
+
+`description` adds a short line under an option label. `disabled` turns an option off, always with `true` or while its conditions match. Works on `radio`, `select` and `multiselect`; `select` shows no description.
+
+```json
+{
+  "key": "plan",
+  "type": "radio",
+  "label": "Plan",
+  "options": [
+    { "value": "starter", "label": "Starter", "description": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
+    { "value": "pro", "label": "Pro", "description": "Any number of seats" },
+    { "value": "legacy", "label": "Legacy", "disabled": true }
+  ]
+}
+```
+
+A disabled option cannot be picked, and validation rejects it with the `option` message. A `defaultValue` and a stored answer that already holds it stay valid: in the browser that is the initial value, on the server pass [`previousValues`](/guide/server-validation#stored-answers). Requires `"formatVersion": "1.8"` and `@formhaus/core` 1.9. See the [specification](/spec#option-descriptions-and-disabled-options).
+
 ## Scale
 
 Pick one number on a range, such as 1 to 5. Renders as a row of numbered boxes. The value is the number. Requires `@formhaus/core` 0.19 and `"formatVersion": "1.3"`.
@@ -849,6 +868,20 @@ const emit = defineEmits(fieldComponentEmits)
 `fieldComponentProps` and `fieldComponentEmits` are runtime declarations with full types, so the SFC compiler does not need to resolve a type from the package. `defineProps<FieldComponentProps>()` fails in some setups because the compiler cannot follow the types of `@formhaus/vue` and `@formhaus/core`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 
 `field` has everything from the definition: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Definition Reference](/api/definition).
+
+## Read-only fields
+
+`readOnly` shows a value the user cannot change. Set `true`, or conditions that must all match.
+
+```json
+{ "key": "accountId", "type": "text", "label": "Account ID", "readOnly": true }
+```
+
+The value is submitted and validated like any other field. The control stays focusable and copyable, with `readonly` or `aria-readonly`. Pass `readOnly` to `FormRenderer` to show the whole form read-only. Requires `"formatVersion": "1.8"`. A client can still send any value, so write fixed values on the server. See the [specification](/spec#read-only-fields).
+
+```tsx
+<FormRenderer definition={definition} initialValues={settings} readOnly onSubmit={save} />
+```
 
 ## Default values
 

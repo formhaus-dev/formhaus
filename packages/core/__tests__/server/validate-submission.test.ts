@@ -9,7 +9,7 @@ import { freshBuild } from '../fresh-build';
 
 interface SubmissionCase {
   name: string;
-  input: { values: unknown; skippedSteps: string[] };
+  input: { values: unknown; skippedSteps: string[]; previousValues?: Record<string, unknown>; hiddenValues?: 'keep' };
   expected: { values: Record<string, unknown>; errors: Record<string, string> };
 }
 
@@ -31,7 +31,13 @@ const skipFixture = fixtures.find(({ name }) => name === 'skip')!;
 
 describe('validateSubmission fixtures', () => {
   it.each(cases)('%s', (_, definition, { input, expected }) => {
-    expect(validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps })).toEqual(expected);
+    expect(
+      validateSubmission(definition, input.values, {
+        skippedSteps: input.skippedSteps,
+        previousValues: input.previousValues,
+        hiddenValues: input.hiddenValues,
+      }),
+    ).toEqual(expected);
   });
 });
 
@@ -133,7 +139,11 @@ describe.skipIf(!freshBuild(iifePath))('server IIFE build', () => {
     const context: { Formhaus?: { validateSubmission: typeof validateSubmission } } = {};
     runInNewContext(readFileSync(iifePath, 'utf8'), context);
     for (const [name, definition, { input, expected }] of cases) {
-      const result = context.Formhaus!.validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });
+      const result = context.Formhaus!.validateSubmission(definition, input.values, {
+        skippedSteps: input.skippedSteps,
+        previousValues: input.previousValues,
+        hiddenValues: input.hiddenValues,
+      });
       expect(JSON.parse(JSON.stringify(result)), name).toEqual(expected);
     }
   });

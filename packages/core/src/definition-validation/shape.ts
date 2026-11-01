@@ -68,6 +68,10 @@ const condition: Check = (value, path) =>
     path,
   );
 
+export function ruleShape(value: unknown, path: string): DefinitionIssue[] {
+  return typeof value === 'boolean' ? [] : list(value, path, 'condition', condition);
+}
+
 function conditions(value: Entry, path: string): DefinitionIssue[] {
   return [...list(value.show, `${path}/show`, 'condition', condition), ...list(value.showAny, `${path}/showAny`, 'condition', condition)];
 }

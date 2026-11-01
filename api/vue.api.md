@@ -194,6 +194,8 @@ export interface FieldComponentProps {
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
     // (undocumented)
+    readOnly?: boolean;
+    // (undocumented)
     reveals?: RevealView<VNode>[];
     // (undocumented)
     testId?: string;
@@ -213,6 +215,7 @@ export const fieldComponentProps: {
     error: StringConstructor;
     loading: BooleanConstructor;
     disabled: BooleanConstructor;
+    readOnly: BooleanConstructor;
     testId: StringConstructor;
     optionTestId: PropType<(value: string) => string | undefined>;
     matrix: PropType<FieldComponentProps["matrix"]>;
@@ -419,6 +422,8 @@ export interface FormRendererProps {
     // (undocumented)
     progressComponent?: Component;
     // (undocumented)
+    readOnly?: boolean;
+    // (undocumented)
     research?: FormResearch | undefined;
     // (undocumented)
     seed?: string | undefined;
@@ -454,6 +459,7 @@ export const formRendererProps: {
     };
     initialValues: PropType<Renderer["initialValues"]>;
     keepValues: BooleanConstructor;
+    readOnly: BooleanConstructor;
     validators: PropType<Renderer["validators"]>;
     onStepValidate: PropType<Renderer["onStepValidate"]>;
     onValidate: PropType<Renderer["onValidate"]>;
@@ -635,6 +641,8 @@ export const groupItemComponentProps: {
         required: true;
     };
     disabled: BooleanConstructor;
+    move: PropType<(to: number) => void>;
+    count: NumberConstructor;
     fields: {
         type: PropType<Component>;
         required: true;

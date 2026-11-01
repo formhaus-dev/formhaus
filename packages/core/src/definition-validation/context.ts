@@ -1,6 +1,7 @@
 import type { FormAction, FormDefinition, FormField, FormGroup, FormNode, ShowCondition } from '../types';
 import { isGroup, isSection } from '../visibility/nodes';
-import { nestable } from './shape';
+import { isEntry, nestable } from './shape';
+import { formatAtLeast } from './format';
 import { markFileLists } from '../validation/type-checks';
 
 export interface FieldEntry {
@@ -58,6 +59,27 @@ function collect(
   }
 }
 
+function collectRules(target: ConditionEntry[], { field, path, step, group }: FieldEntry): void {
+  const add = (rule: unknown, at: string) => {
+    if (Array.isArray(rule))
+      rule.forEach((condition, index) => {
+        if (isEntry(condition))
+          target.push({
+            condition: condition as unknown as ShowCondition,
+            path: `${at}/${index}`,
+            owner: 'field',
+            step,
+            key: field.key,
+            group: group?.key,
+          });
+      });
+  };
+  add(field.readOnly, `${path}/readOnly`);
+  (Array.isArray(field.options) ? field.options : []).forEach((option, index) => {
+    add(isEntry(option) && option.disabled, `${path}/options/${index}/disabled`);
+  });
+}
+
 export function createContext(definition: FormDefinition, validators?: Record<string, unknown>): CheckContext {
   const steps = definition.steps ?? [];
   const nodes: NodeEntry[] = [];
@@ -95,6 +117,7 @@ export function createContext(definition: FormDefinition, validators?: Record<st
     });
     for (const name of ['next', 'back', 'skip'] as const) collect(conditions, step[name], `/steps/${index}/${name}`, 'action', index);
   });
+  if (formatAtLeast(definition, 8)) for (const entry of entries) collectRules(conditions, entry);
   collect(conditions, definition.submit, '/submit', 'action', -1);
   collect(conditions, definition.cancel, '/cancel', 'action', -1);
   return {

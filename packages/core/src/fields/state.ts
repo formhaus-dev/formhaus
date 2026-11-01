@@ -1,5 +1,5 @@
 import { fieldDomId } from '../internal/ids';
-import type { FieldOption, FormField, FormGroup } from '../types';
+import type { FieldOption, FormField, FormGroup, OptionView } from '../types';
 import type { FreeText } from './text';
 import { inputType } from './values';
 
@@ -9,11 +9,24 @@ export interface FieldStateInput {
   error?: string;
   disabled?: boolean;
   loading?: boolean;
+  readOnly?: boolean;
 }
 
 export interface FieldAria {
   'aria-invalid'?: true;
   'aria-required'?: true;
+  'aria-readonly'?: true;
+  'aria-describedby'?: string;
+}
+
+export interface ReadOnlyAttrs {
+  readOnly?: true;
+  role?: 'radiogroup';
+  'aria-readonly'?: true;
+}
+
+export interface OptionAttrs {
+  disabled: boolean;
   'aria-describedby'?: string;
 }
 
@@ -32,6 +45,7 @@ export interface FieldState {
   invalid: boolean;
   required: boolean;
   disabled: boolean;
+  readOnly?: boolean;
   minLength?: number;
   maxLength?: number;
   aria: FieldAria;
@@ -39,14 +53,34 @@ export interface FieldState {
 }
 
 const COUNTED = ['text', 'email', 'phone', 'password', 'textarea'];
+const TYPED = [...COUNTED, 'number', 'date', 'time', 'datetime', 'autocomplete'];
 
 export const fieldId = ({ id, field }: Pick<FieldStateInput, 'id' | 'field'>): string => id ?? fieldDomId(undefined, field.key);
 
-export function fieldAria({ id, field, error }: FieldStateInput): FieldAria {
+const RADIOS = ['radio', 'scale', 'rating'];
+
+export function readOnlyAttrs({ field, readOnly }: Pick<FieldStateInput, 'field' | 'readOnly'>, group = false): ReadOnlyAttrs {
+  if (!readOnly) return {};
+  if (TYPED.includes(field.type)) return { readOnly: true };
+  if (field.type === 'file' || RADIOS.includes(field.type) !== group) return {};
+  return group ? { role: 'radiogroup', 'aria-readonly': true } : { 'aria-readonly': true };
+}
+
+export const optionDescriptionId = (optionId: string): string => `${optionId}-description`;
+
+export function optionAttrs(option: FieldOption, optionId: string, disabled?: boolean): OptionAttrs {
+  return {
+    disabled: !!disabled || option.disabled === true,
+    'aria-describedby': option.description ? optionDescriptionId(optionId) : undefined,
+  };
+}
+
+export function fieldAria({ id, field, error, readOnly }: FieldStateInput): FieldAria {
   const base = fieldId({ id, field });
   return {
     'aria-invalid': error ? true : undefined,
     'aria-required': field.validation?.required ? true : undefined,
+    'aria-readonly': readOnly && ![...TYPED, 'file'].includes(field.type) ? true : undefined,
     'aria-describedby': [field.helperText && `${base}-helper`, error && `${base}-error`].filter(Boolean).join(' ') || undefined,
   };
 }
@@ -72,6 +106,7 @@ export function fieldState(input: FieldStateInput): FieldState {
     invalid: !!error,
     required: !!aria['aria-required'],
     disabled: !!(input.disabled || input.loading),
+    readOnly: !!input.readOnly,
     minLength: counted?.minLength,
     maxLength: counted?.maxLength,
     aria,
@@ -83,18 +118,19 @@ export interface FieldControl {
   id: string;
   name: string;
   disabled: boolean;
+  readOnly?: true;
   placeholder?: string;
   inputMode?: FormField['inputMode'];
   onBlur: () => void;
   onFocus: () => void;
 }
 
-export interface FieldOptionAttrs {
+export interface FieldOptionAttrs extends OptionAttrs {
   id: string;
   name: string;
   value: string;
   checked: boolean;
-  disabled: boolean;
+  'aria-readonly'?: true;
   'data-testid'?: string;
   onBlur: () => void;
   onFocus: () => void;
@@ -106,15 +142,18 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
   loading?: boolean;
   freeText?: FreeText;
   testId?: string;
-  options: FieldOption[];
+  options: OptionView[];
   change: (value: unknown) => void;
   commit: (value: unknown) => void;
   blur: () => void;
   focus: () => void;
   attrs: Attrs & FieldAria & { 'data-testid'?: string };
-  option: (option: FieldOption, index: number) => FieldOptionAttrs;
+  option: (option: OptionView, index: number) => FieldOptionAttrs;
 }
 
 export function optionChecked(value: unknown, option: FieldOption): boolean {
   return Array.isArray(value) ? value.includes(option.value) : value != null && String(value) === option.value;
 }
+
+export const optionLocked = (option: FieldOption, value: unknown, readOnly?: boolean): boolean =>
+  option.disabled === true || (!!readOnly && !optionChecked(value, option));

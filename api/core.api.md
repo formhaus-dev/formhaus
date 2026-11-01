@@ -63,7 +63,7 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'untranslated-locale' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'multiple-not-applicable' | 'matrix-options-mismatch';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'untranslated-locale' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'multiple-not-applicable' | 'default-disabled-option' | 'matrix-options-mismatch';
 
 // @public (undocumented)
 export interface ErrorSummary {
@@ -131,9 +131,13 @@ export interface FieldI18n {
 // @public (undocumented)
 export interface FieldOption {
     // (undocumented)
+    description?: string;
+    // (undocumented)
+    disabled?: boolean | ShowCondition[];
+    // (undocumented)
     exclusive?: boolean;
     // (undocumented)
-    i18n?: LabelI18n;
+    i18n?: OptionI18n;
     // (undocumented)
     image?: string;
     // (undocumented)
@@ -242,7 +246,7 @@ export interface FormActionsView {
 }
 
 // @public (undocumented)
-export const FORMAT_VERSION = "1.7";
+export const FORMAT_VERSION = "1.8";
 
 // @public (undocumented)
 export interface FormDefinition {
@@ -326,6 +330,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     isStepSkipped(stepId: string): boolean;
     // (undocumented)
     items(key: string): GroupItem[];
+    // (undocumented)
+    moveItem(key: string, from: number, to: number): boolean;
     // (undocumented)
     next(): Promise<boolean>;
     // (undocumented)
@@ -524,6 +530,8 @@ export interface FormField {
     // (undocumented)
     randomize?: boolean;
     // (undocumented)
+    readOnly?: boolean | ShowCondition[];
+    // (undocumented)
     rows?: number;
     // (undocumented)
     show?: ShowCondition[];
@@ -557,6 +565,8 @@ export interface FormGroup {
     label: string;
     // (undocumented)
     removeLabel?: string;
+    // (undocumented)
+    reorderable?: boolean;
     // (undocumented)
     show?: ShowCondition[];
     // (undocumented)
@@ -749,6 +759,8 @@ export interface GroupItemView {
     // (undocumented)
     canRemove: boolean;
     // (undocumented)
+    count?: number;
+    // (undocumented)
     disabled?: boolean;
     // (undocumented)
     hasContent: boolean;
@@ -756,6 +768,8 @@ export interface GroupItemView {
     id: string;
     // (undocumented)
     index: number;
+    // (undocumented)
+    move?: (to: number) => void;
     // (undocumented)
     remove: () => void;
     // (undocumented)
@@ -857,7 +871,7 @@ export interface LabelI18n {
 }
 
 // @public (undocumented)
-export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'fileCount' | 'or' | 'select';
+export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'fileCount' | 'moveUp' | 'moveDown' | 'itemMoved' | 'or' | 'select';
 
 // @public (undocumented)
 export type LabelSource = LabelCatalog | LabelFn;
@@ -894,7 +908,18 @@ export type MessageParams = Record<string, unknown>;
 export type MessageSource = MessageCatalog | MessageFn;
 
 // @public (undocumented)
+export interface OptionI18n extends LabelI18n {
+    // (undocumented)
+    description?: string;
+}
+
+// @public (undocumented)
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
+
+// @public (undocumented)
+export type OptionView = Omit<FieldOption, 'disabled'> & {
+    disabled?: boolean;
+};
 
 // @public (undocumented)
 export function parseDefinition(input: unknown): FormDefinition;
@@ -1123,6 +1148,8 @@ export type ValidateFn = (values: Record<string, unknown>, context: ValidateCont
 export interface ValidateOptions {
     // (undocumented)
     messages?: MessageSource;
+    // (undocumented)
+    previousValues?: Record<string, unknown>;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }

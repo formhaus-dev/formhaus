@@ -35,6 +35,12 @@ export default defineConfig([
   },
   {
     ...shared,
+    entry: { reorder: 'src/reorder/index.ts' },
+    onSuccess: () => useClient('dist/reorder.js'),
+    external: ['react', '@formhaus/core', '@formhaus/core/internal', '@formhaus/react'],
+  },
+  {
+    ...shared,
     entry: { dirty: 'src/dirty/index.ts' },
     onSuccess: () => useClient('dist/dirty.js'),
     external: ['react', '@formhaus/core/dirty'],

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { optionLocked } from '@formhaus/core/fields';
 import { computed } from 'vue';
 import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
@@ -22,7 +23,7 @@ const current = computed(() => String(props.modelValue ?? ''));
       <option v-if="props.field.placeholder" value="" disabled :selected="current === ''">
         {{ props.field.placeholder }}
       </option>
-      <option v-for="(option, index) in (props.field.options ?? [])" :key="String(option.value)" :value="option.value" :selected="String(option.value) === current">
+      <option v-for="option in (props.field.options ?? [])" :key="String(option.value)" :value="option.value" :selected="String(option.value) === current" :disabled="optionLocked(option, props.modelValue, props.readOnly)">
         {{ option.label }}
       </option>
     </select>

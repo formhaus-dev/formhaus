@@ -4,6 +4,7 @@ import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
 import { isFileList, LIST_TYPES, markFileLists, typeMessageKeys } from '../validation/type-checks';
 import { CATALOGS, hasRule, SLOTS, type Entry } from './nodes';
+import { formatAtLeast } from '../definition-validation/format';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
 type SlotKind = 'text' | 'rule' | 'message' | 'label';
@@ -44,6 +45,7 @@ function usedMessages(definition: FormDefinition): Set<string> {
 function nodeSlots(definition: FormDefinition, { kind, node, address, field }: TextNode): Slot[] {
   const keys = (node.i18n ?? {}) as Record<string, string>;
   return SLOTS[kind].flatMap((slot): Slot[] => {
+    if (kind === 'option' && slot === 'description' && !formatAtLeast(definition, 8)) return [];
     if (kind !== 'validation') {
       const source = node[slot];
       if (typeof source !== 'string') return [];
@@ -164,6 +166,7 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     ['chooseFile'],
   );
   add(fields.some(isFileList), ['removeItem', 'removeItemNamed', 'itemAdded', 'itemRemoved', 'fileCount']);
+  add(formatAtLeast(definition, 8) && nodes.some((node) => isGroup(node) && node.reorderable), ['moveUp', 'moveDown', 'itemMoved']);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

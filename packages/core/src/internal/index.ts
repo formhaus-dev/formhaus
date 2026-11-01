@@ -36,6 +36,9 @@ export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal
 export { withReveals } from '../controls/options';
 export { announce, fileLimitMessage, fileListAria, nextRemove } from './files';
 export { copyField } from '../validation/type-checks';
+import { fieldRules } from './rules';
+export { conditionalRules, fieldRules, matrixView, type FieldRules } from './rules';
+export { keepReadOnly, moveButtonId, movedFocusId } from './reorder';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;
@@ -55,8 +58,9 @@ export function hasValue(engine: FormEngine, key: string): boolean {
   return value !== undefined && value !== '';
 }
 
-export function matrixColumns(section: FormSection): FieldOption[] | undefined {
-  return section.layout === 'matrix' ? (section.fields[0] as FormField | undefined)?.options : undefined;
+export function matrixColumns(section: FormSection, engine: FormEngine): FieldOption[] | undefined {
+  const first = section.layout === 'matrix' ? (section.fields[0] as FormField | undefined) : undefined;
+  return first && fieldRules(engine, first).options;
 }
 
 export const ROOT_PROPS = {

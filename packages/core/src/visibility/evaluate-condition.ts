@@ -41,3 +41,12 @@ export function evaluateCondition(condition: ShowCondition, values: Record<strin
   const operator = conditionOperator(condition);
   return !!operator && (TESTS[operator] as (value: unknown, operand: unknown) => boolean)(value, condition[operator]);
 }
+
+export function conditionsMet(rule: boolean | ShowCondition[] | undefined, values: Record<string, unknown>): boolean {
+  return (
+    rule === true ||
+    (Array.isArray(rule) &&
+      rule.length > 0 &&
+      rule.every((condition) => typeof condition === 'object' && condition !== null && evaluateCondition(condition, values)))
+  );
+}

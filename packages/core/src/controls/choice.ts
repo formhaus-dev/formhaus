@@ -67,8 +67,10 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     event.preventDefault();
     if (pending) finish(optionOf(element) ?? read().value);
   };
+  const blocked = (value: unknown) => read().options.some((option) => option.disabled === true && String(option.value) === String(value));
   return {
     pick(value: unknown) {
+      if (blocked(value)) return;
       if (!active() || arrow || empty(value)) change(value);
       else finish(value);
     },

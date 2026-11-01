@@ -43,15 +43,24 @@ export function addItem(engine: EngineInternals, key: string): boolean {
   return true;
 }
 
-function shift(errors: Record<string, string>, key: string, removed: number): void {
-  const moved: Record<string, string> = {};
-  for (const errorKey of Object.keys(errors)) {
-    const parts = splitPath(key, errorKey);
-    if (!parts || parts[0] < removed) continue;
-    if (parts[0] > removed) moved[itemPath(key, parts[0] - 1, parts[1])] = errors[errorKey];
-    delete errors[errorKey];
+function reindex(engine: EngineInternals, key: string, place: (index: number) => number | undefined): void {
+  const { errors, serverErrors, fieldLoading } = engine.state;
+  for (const record of [errors, serverErrors, fieldLoading] as Record<string, unknown>[]) {
+    const moved: Record<string, unknown> = {};
+    for (const errorKey of Object.keys(record)) {
+      const parts = splitPath(key, errorKey);
+      const target = parts && place(parts[0]);
+      if (!parts || target === parts[0]) continue;
+      if (target !== undefined) moved[itemPath(key, target, parts[1])] = record[errorKey];
+      delete record[errorKey];
+    }
+    Object.assign(record, moved);
   }
-  Object.assign(errors, moved);
+}
+
+function writeItems(engine: EngineInternals, key: string, items: unknown[], previous: Record<string, string>): true {
+  writeValue(engine, key, items, true, () => getChangedKeys(previous, engine.errors));
+  return true;
 }
 
 export function removeItem(engine: EngineInternals, key: string, index: number): boolean {
@@ -60,17 +69,24 @@ export function removeItem(engine: EngineInternals, key: string, index: number):
   if (!group || !within(index, items) || items.length <= itemLimits(group)[0]) return false;
   const previous = { ...engine.errors };
   engine.visibility.dropItem(items[index]);
-  shift(engine.state.errors, key, index);
-  shift(engine.state.serverErrors, key, index);
-  shift(engine.state.fieldLoading as unknown as Record<string, string>, key, index);
-  writeValue(
+  reindex(engine, key, (position) => (position === index ? undefined : position - Number(position > index)));
+  return writeItems(
     engine,
     key,
     items.filter((_, position) => position !== index),
-    true,
-    () => getChangedKeys(previous, engine.errors),
+    previous,
   );
-  return true;
+}
+
+export function moveItem(engine: EngineInternals, key: string, from: number, to: number): boolean {
+  const group = activeGroup(engine, key);
+  const items = [...itemsOf(engine.state.values[key])];
+  if (!group || !within(from, items) || !within(to, items) || from === to) return false;
+  const previous = { ...engine.errors };
+  const shifted = (position: number) => position - Number(position > from);
+  reindex(engine, key, (position) => (position === from ? to : shifted(position) + Number(shifted(position) >= to)));
+  items.splice(to, 0, ...items.splice(from, 1));
+  return writeItems(engine, key, items, previous);
 }
 
 export function setItemValue(engine: EngineInternals, key: string, index: number, fieldKey: string, input: unknown): void {

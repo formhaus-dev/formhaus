@@ -82,6 +82,7 @@ function onRemove(index: number, position: number, name: string) {
         <li v-for="(entry, position) in entries" :key="entry.index" class="fh-file-list__item">
           <span class="fh-file-list__name" dir="auto">{{ entry.name }}</span>
           <button
+            v-if="!props.readOnly"
             type="button"
             class="fh-form-actions__button fh-form-actions__button--text fh-file-list__remove"
             :aria-label="text('removeItemNamed', { label: text('removeItem'), item: entry.name })"

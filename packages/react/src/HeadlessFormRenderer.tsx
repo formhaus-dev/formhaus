@@ -207,6 +207,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             {...shared}
             key={engineKey(engine)}
             loading={busy}
+            readOnly={props.readOnly}
             components={components}
             optionsProviders={optionsProviders}
             confirmRemove={props.confirmRemove}

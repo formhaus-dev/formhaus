@@ -36,7 +36,7 @@ export const FormNodeView = /* @__PURE__ */ defineComponent({
       const { node } = props;
       if (isSection(node)) {
         const inner = nodeLayout(context, node.fields);
-        const columns = matrixColumns(node);
+        const columns = matrixColumns(node, context.engine());
         return h(context.section(), context.sectionProps(node), { default: () => list(inner.nodes, inner.slots, columns) });
       }
       const field = node as FormField;

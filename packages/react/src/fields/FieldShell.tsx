@@ -3,6 +3,7 @@ import { type ReactNode, useContext } from 'react';
 import { LabelContext } from '../labels';
 import { OptionsBusy } from '../optionsBusy';
 import { FieldLabel, RequiredMark } from './FieldLabel';
+import { readOnlyAttrs } from '@formhaus/core/fields';
 import { describedBy } from './fieldProps';
 
 interface FieldShellProps {
@@ -12,10 +13,11 @@ interface FieldShellProps {
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
   testId?: string;
   errorFirst?: boolean;
+  readOnly?: boolean;
   children: ReactNode;
 }
 
-export function FieldShell({ id, field, error, variant, testId, errorFirst, children }: FieldShellProps) {
+export function FieldShell({ id, field, error, variant, testId, errorFirst, readOnly, children }: FieldShellProps) {
   const text = useContext(LabelContext);
   const inline = variant === 'checkbox' || variant === 'switch';
   const group = variant && !inline;
@@ -38,6 +40,7 @@ export function FieldShell({ id, field, error, variant, testId, errorFirst, chil
       aria-invalid={group ? !!error || undefined : undefined}
       aria-describedby={group ? describedBy(field, id, error) : undefined}
       aria-busy={useContext(OptionsBusy) || undefined}
+      {...(group && readOnlyAttrs({ field, readOnly }, true))}
       data-testid={testId}
     >
       {group && field.label && (
