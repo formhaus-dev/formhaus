@@ -38,7 +38,7 @@ import { onValidate } from './schema-zod.js';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'utm', type: 'hidden' }], submit: { label: 'Send' } };
 export const handle = createRef<FormRendererHandle>();
-export const useDirty = () => useFormDirty(handle).dirtyKeys;
+export const useDirty = () => <FormRenderer ref={useFormDirty().ref} definition={definition} onSubmit={() => {}} />;
 export const views = [
   <FormRenderer definition={definition} onSubmit={async () => {}} />,
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,

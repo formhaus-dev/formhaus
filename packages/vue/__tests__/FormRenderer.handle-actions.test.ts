@@ -68,21 +68,30 @@ describe('renderer handle actions', () => {
 });
 
 describe('useFormDirty', () => {
-  it('follows a renderer through its template ref', async () => {
-    const handle = ref<FormRendererHandle>();
+  it('follows a renderer that a child mounts later', async () => {
     let state: ReturnType<typeof useFormDirty> | undefined;
+    const open = ref(false);
+    const Dialog = defineComponent({
+      props: { formRef: { type: Function, required: true } },
+      setup: (props) => () =>
+        open.value
+          ? h(FormRenderer, { ref: props.formRef as never, definition, initialValues: { name: 'Ada' }, onSubmit: () => {} })
+          : null,
+    });
     render(
       defineComponent({
         setup() {
-          state = useFormDirty(handle);
+          state = useFormDirty();
           return () => [
-            h(FormRenderer, { ref: handle, definition, initialValues: { name: 'Ada' }, onSubmit: () => {} }),
+            h(Dialog, { formRef: state!.ref }),
             h('p', { 'data-testid': 'dirty' }, state!.dirty.value ? state!.dirtyKeys.value.join(',') : 'clean'),
           ];
         },
       }),
     );
     const dirty = () => screen.getByTestId('dirty').textContent;
+    open.value = true;
+    await nextTick();
     expect(dirty()).toBe('clean');
     await fireEvent.update(name(), 'Grace');
     expect(dirty()).toBe('name');
@@ -92,9 +101,22 @@ describe('useFormDirty', () => {
     state!.markClean();
     await nextTick();
     expect(dirty()).toBe('clean');
-    state!.reset({ name: 'Lin' });
-    await nextTick();
-    expect(name().value).toBe('Lin');
-    expect(dirty()).toBe('clean');
+  });
+
+  it('takes the values of a handle reset as the baseline', async () => {
+    const handle = ref<FormRendererHandle>();
+    let state: ReturnType<typeof useFormDirty> | undefined;
+    render(
+      defineComponent({
+        setup() {
+          state = useFormDirty(handle);
+          return () => h(FormRenderer, { ref: handle, definition, onSubmit: () => {} });
+        },
+      }),
+    );
+    await fireEvent.update(name(), 'Grace');
+    expect(state!.dirty.value).toBe(true);
+    handle.value!.reset({ name: 'Lin' });
+    expect(state!.dirty.value).toBe(false);
   });
 });

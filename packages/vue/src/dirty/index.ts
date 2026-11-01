@@ -2,24 +2,23 @@ import type { FormEngine } from '@formhaus/core';
 import { type DirtyTracker, trackDirty } from '@formhaus/core/dirty';
 import { type ComputedRef, computed, type MaybeRefOrGetter, onScopeDispose, shallowRef, toValue, watch } from 'vue';
 
-export type DirtyTarget = FormEngine | { readonly engine: FormEngine } | null | undefined;
+type EngineSource = FormEngine | { readonly engine: FormEngine } | null | undefined;
 
 export interface FormDirty {
   dirty: ComputedRef<boolean>;
   dirtyKeys: ComputedRef<readonly string[]>;
   markClean(): void;
-  reset(values?: Record<string, unknown>): void;
+  ref(handle: unknown): void;
 }
 
-export function useFormDirty(target: MaybeRefOrGetter<DirtyTarget>): FormDirty {
+const engineOf = (source: EngineSource) => (source && 'engine' in source ? source.engine : source);
+
+export function useFormDirty(engine?: MaybeRefOrGetter<EngineSource>): FormDirty {
+  const handle = shallowRef<{ readonly engine: FormEngine } | null>(null);
   const keys = shallowRef<readonly string[]>([]);
   let tracker: DirtyTracker | undefined;
-  const engine = () => {
-    const value = toValue(target);
-    return value && 'engine' in value ? value.engine : value;
-  };
   watch(
-    engine,
+    () => engineOf(toValue(engine)) ?? handle.value?.engine,
     (next) => {
       tracker?.stop();
       const own = next ? trackDirty(next) : undefined;
@@ -36,6 +35,8 @@ export function useFormDirty(target: MaybeRefOrGetter<DirtyTarget>): FormDirty {
     dirty: computed(() => keys.value.length > 0),
     dirtyKeys: computed(() => keys.value),
     markClean: () => tracker?.markClean(),
-    reset: (values) => tracker?.reset(values),
+    ref: (next) => {
+      handle.value = (next as { readonly engine: FormEngine } | null) ?? null;
+    },
   };
 }

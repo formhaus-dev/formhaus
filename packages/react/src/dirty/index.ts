@@ -1,46 +1,31 @@
 import type { FormEngine } from '@formhaus/core';
 import { type DirtyTracker, trackDirty } from '@formhaus/core/dirty';
-import { type RefObject, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-
-export type DirtyTarget = FormEngine | RefObject<{ readonly engine: FormEngine } | null>;
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 
 export interface FormDirty {
   dirty: boolean;
   dirtyKeys: readonly string[];
   markClean(): void;
-  reset(values?: Record<string, unknown>): void;
+  ref(handle: { readonly engine: FormEngine } | null): void;
 }
 
 const clean: readonly string[] = [];
 const idle = () => () => {};
-const engineOf = (target: DirtyTarget) => ('current' in target ? target.current?.engine : target);
 
-export function useFormDirty(target: DirtyTarget): FormDirty {
+export function useFormDirty(engine?: FormEngine): FormDirty {
+  const [handled, setHandled] = useState<FormEngine | null>(null);
   const [tracker, setTracker] = useState<DirtyTracker | null>(null);
-  const tracked = useRef<{ engine: FormEngine; tracker: DirtyTracker } | null>(null);
+  const target = engine ?? handled;
   useEffect(() => {
-    const engine = engineOf(target);
-    if (tracked.current?.engine === engine) return;
-    tracked.current?.tracker.stop();
-    tracked.current = engine ? { engine, tracker: trackDirty(engine) } : null;
-    setTracker(tracked.current?.tracker ?? null);
-  });
-  useEffect(
-    () => () => {
-      tracked.current?.tracker.stop();
-      tracked.current = null;
-    },
-    [],
-  );
+    const next = target && trackDirty(target);
+    setTracker(next);
+    return () => next?.stop();
+  }, [target]);
+  const ref = useCallback((handle: { readonly engine: FormEngine } | null) => setHandled(handle?.engine ?? null), []);
   const dirtyKeys = useSyncExternalStore(
     tracker?.subscribe ?? idle,
     () => tracker?.dirtyKeys ?? clean,
     () => clean,
   );
-  return {
-    dirty: dirtyKeys.length > 0,
-    dirtyKeys,
-    markClean: () => tracker?.markClean(),
-    reset: (values) => tracker?.reset(values),
-  };
+  return { dirty: dirtyKeys.length > 0, dirtyKeys, markClean: () => tracker?.markClean(), ref };
 }

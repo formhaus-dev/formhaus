@@ -1,8 +1,8 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
-import { createRef, useRef } from 'react';
+import { createRef, useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
-import { FormRenderer, type FormRendererHandle, HeadlessFormRenderer } from '../src';
+import { FormRenderer, type FormRendererHandle, HeadlessFormRenderer, useFormEngine } from '../src';
 import { useFormDirty } from '../src/dirty';
 
 const definition: FormDefinition = {
@@ -91,23 +91,31 @@ describe('renderer handle actions', () => {
   });
 });
 
+function Dialog({ open, formRef }: { open: boolean; formRef: (handle: FormRendererHandle | null) => void }) {
+  return open ? <FormRenderer ref={formRef} definition={definition} initialValues={{ name: 'Ada' }} onSubmit={() => {}} /> : null;
+}
+
 function Editor({ onDirty }: { onDirty: (state: ReturnType<typeof useFormDirty>) => void }) {
-  const form = useRef<FormRendererHandle>(null);
-  const state = useFormDirty(form);
+  const state = useFormDirty();
+  const [open, setOpen] = useState(false);
   onDirty(state);
   return (
     <>
-      <FormRenderer ref={form} definition={definition} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />
+      <button type="button" onClick={() => setOpen(true)}>
+        Edit
+      </button>
+      <Dialog open={open} formRef={state.ref} />
       <p data-testid="dirty">{state.dirty ? state.dirtyKeys.join(',') : 'clean'}</p>
     </>
   );
 }
 
 describe('useFormDirty', () => {
-  it('follows a renderer through its ref', async () => {
+  it('follows a renderer that a child mounts later', () => {
     let state: ReturnType<typeof useFormDirty> | undefined;
     render(<Editor onDirty={(next) => (state = next)} />);
     const dirty = () => screen.getByTestId('dirty').textContent;
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
     expect(dirty()).toBe('clean');
     fireEvent.change(name(), { target: { value: 'Grace' } });
     expect(dirty()).toBe('name');
@@ -116,8 +124,48 @@ describe('useFormDirty', () => {
     fireEvent.change(name(), { target: { value: 'Grace' } });
     act(() => state!.markClean());
     expect(dirty()).toBe('clean');
-    act(() => state!.reset({ name: 'Lin' }));
-    expect(name().value).toBe('Lin');
-    expect(dirty()).toBe('clean');
+    fireEvent.change(name(), { target: { value: 'Lin' } });
+    expect(dirty()).toBe('name');
+  });
+
+  it('takes the values of a handle reset as the baseline', () => {
+    const handle = createRef<FormRendererHandle>();
+    function Form() {
+      const state = useFormDirty();
+      return (
+        <>
+          <FormRenderer
+            ref={(next) => {
+              state.ref(next);
+              handle.current = next;
+            }}
+            definition={definition}
+            onSubmit={() => {}}
+          />
+          <p data-testid="dirty">{String(state.dirty)}</p>
+        </>
+      );
+    }
+    render(<Form />);
+    fireEvent.change(name(), { target: { value: 'Grace' } });
+    expect(screen.getByTestId('dirty').textContent).toBe('true');
+    act(() => handle.current!.reset({ name: 'Lin' }));
+    expect(screen.getByTestId('dirty').textContent).toBe('false');
+  });
+
+  it('follows an engine passed directly', () => {
+    function Bare() {
+      const engine = useFormEngine(definition, { name: 'Ada' });
+      const { dirtyKeys } = useFormDirty(engine);
+      return (
+        <button type="button" onClick={() => engine.setValue('name', 'Lin')}>
+          {dirtyKeys.join(',') || 'clean'}
+        </button>
+      );
+    }
+    render(<Bare />);
+    expect(screen.getByRole('button').textContent).toBe('clean');
+    fireEvent.click(screen.getByRole('button'));
+    expect(screen.getByRole('button').textContent).toBe('name');
   });
 });

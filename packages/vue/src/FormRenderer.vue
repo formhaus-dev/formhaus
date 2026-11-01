@@ -5,7 +5,7 @@ import FormStepProgress from './FormStepProgress.vue';
 import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
 import { useListening } from './composables/useListening';
-import type { FormEvent } from '@formhaus/core';
+import type { FormEngine, FormEvent } from '@formhaus/core';
 import { formRendererProps } from './props';
 import type { FormRendererEmits, FormRendererHandle } from './types';
 
@@ -38,7 +38,7 @@ defineExpose({
     return !!inner?.submitting;
   },
   get engine() {
-    return inner!.engine;
+    return inner?.engine as FormEngine;
   },
 });
 </script>
