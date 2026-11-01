@@ -14,7 +14,7 @@ export function ReorderGroupItem(props: GroupItemComponentProps) {
       disabled={disabled || to < 0 || to >= count}
       onClick={() => move?.(to)}
     >
-      {label(key)}
+      <span className="fh-group__move-text">{label(key)}</span>
     </button>
   );
   return (

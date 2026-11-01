@@ -19,7 +19,7 @@ export const ReorderGroupItem: typeof DefaultGroupItem = /* @__PURE__ */ defineC
           disabled: props.disabled || to < 0 || to >= (props.count ?? 0),
           onClick: () => props.move?.(to),
         },
-        label(key),
+        h('span', { class: 'fh-group__move-text' }, label(key)),
       );
     return () =>
       h(DefaultGroupItem, props, {
