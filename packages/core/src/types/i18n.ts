@@ -112,7 +112,7 @@ export interface LabelI18n {
 }
 
 export interface OptionI18n extends LabelI18n {
-  hint?: string;
+  description?: string;
 }
 
 export interface ValidationI18n {

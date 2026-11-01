@@ -14,7 +14,7 @@ export const PROPERTIES = {
     'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options randomize layout columns optionsFrom optionsDependsOn accept multiple rows mask inputMode autocomplete readOnly props i18n',
   section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems reorderable show showAny validation fields i18n',
-  option: 'value label image exclusive pinned hint disabled i18n',
+  option: 'value label image exclusive pinned description disabled i18n',
   action: 'label variant disabled i18n',
   route: 'to show showAny',
   validation:
@@ -25,7 +25,7 @@ const SINCE: [number, string][] = [
   [7, 'multiple'],
   [8, 'readOnly'],
   [8, 'reorderable'],
-  [8, 'hint'],
+  [8, 'description'],
   [8, 'disabled'],
 ];
 

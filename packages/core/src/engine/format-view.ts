@@ -4,7 +4,7 @@ import { hasOwn, isEntry } from '../visibility/nodes';
 
 type Entry = Record<string, unknown>;
 
-const NEWER = { option: ['hint', 'disabled'], field: ['readOnly', 'reorderable'] };
+const NEWER = { option: ['description', 'disabled'], field: ['readOnly', 'reorderable'] };
 
 export function formatView(definition: FormDefinition): FormDefinition {
   if (formatAtLeast(definition, 8)) return definition;

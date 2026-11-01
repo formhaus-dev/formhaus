@@ -50,5 +50,5 @@ export function textNodes(definition: FormDefinition): TextNode[] {
 
 export function slotAddress(kind: NodeKind, address: string[], slot: string): string[] {
   if (kind !== 'option') return [...address, slot];
-  return slot === 'hint' ? [...address.slice(0, -2), 'optionHints', ...address.slice(-1)] : address;
+  return slot === 'description' ? [...address.slice(0, -2), 'optionDescriptions', ...address.slice(-1)] : address;
 }

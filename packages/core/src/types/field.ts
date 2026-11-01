@@ -33,7 +33,7 @@ export interface FieldOption {
   image?: string;
   exclusive?: boolean;
   pinned?: boolean;
-  hint?: string;
+  description?: string;
   disabled?: boolean | ShowCondition[];
   i18n?: OptionI18n;
 }

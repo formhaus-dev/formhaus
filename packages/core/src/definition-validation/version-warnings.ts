@@ -16,7 +16,7 @@ function newerProperty(node: FormField, path: string): string[] {
   return [
     ...own.map((key) => `${path}/${key}`),
     ...options.flatMap((option, index) =>
-      (['hint', 'disabled'] as const).filter((key) => option?.[key] !== undefined).map((key) => `${path}/options/${index}/${key}`),
+      (['description', 'disabled'] as const).filter((key) => option?.[key] !== undefined).map((key) => `${path}/options/${index}/${key}`),
     ),
   ];
 }

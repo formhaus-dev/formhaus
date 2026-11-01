@@ -33,9 +33,9 @@ function newerIssues({ field, path }: FieldEntry): DefinitionIssue[] {
       : [error('invalid-type', `${path}/reorderable`, 'boolean', 'reorderable')]),
     ...(Array.isArray(field.options) ? field.options : []).flatMap((option, index) => [
       ...(isEntry(option) ? ruleShape(option.disabled, `${path}/options/${index}/disabled`) : []),
-      ...(option?.hint === undefined || typeof option.hint === 'string'
+      ...(option?.description === undefined || typeof option.description === 'string'
         ? []
-        : [error('invalid-type', `${path}/options/${index}/hint`, 'string', 'hint')]),
+        : [error('invalid-type', `${path}/options/${index}/description`, 'string', 'description')]),
     ]),
   ];
 }

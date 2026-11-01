@@ -9,7 +9,7 @@ export const SLOTS: Record<NodeKind, readonly string[]> = {
   section: ['title', 'description'],
   group: ['label', 'helperText', 'itemLabel', 'addLabel', 'removeLabel'],
   field: ['label', 'placeholder', 'helperText'],
-  option: ['label', 'hint'],
+  option: ['label', 'description'],
   action: ['label'],
   validation: ['required', 'minLength', 'maxLength', 'min', 'max', 'pattern', 'matchField'],
 };
