@@ -26,7 +26,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private viewedStep?: string | null;
   private readonly lifecycle: FormEngineOptions;
   readonly seed: string;
-
+  readonly resets = 0;
   private readonly validators: Record<string, ValidatorFn>;
   private messages!: ResolveMessage;
   private visibility!: VisibilityState;
