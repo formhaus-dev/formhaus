@@ -1,4 +1,4 @@
-import type { FormField, FormNode, FormStep } from '../types';
+import type { FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isGroup, isVisible } from '../visibility';
 import { itemPath, itemsOf, itemScope, itemView, shownFields, valueFields } from '../visibility/nodes';
 import { type ValidateOptions, validateFieldValue, withPatternBudget } from './validate-field';
@@ -19,7 +19,7 @@ export function visitShown(
   fields: FormNode[],
   values: Record<string, unknown>,
   scope: Record<string, unknown>,
-  visit: (path: string, field: FormField, own: Record<string, unknown>) => void,
+  visit: (path: string, field: FormField, own: Record<string, unknown>, item?: [FormGroup, number]) => void,
 ): void {
   for (const field of shownFields(fields, scope)) {
     visit(field.key, field, values);
@@ -27,9 +27,14 @@ export function visitShown(
       itemsOf(values[field.key]).forEach((item, index) => {
         const own = itemScope(field, item, values);
         const shown = itemView(field, item, scope);
-        for (const rule of field.fields) if (isVisible(rule, shown)) visit(itemPath(field.key, index, rule.key), rule, own);
+        for (const rule of field.fields) if (isVisible(rule, shown)) visit(itemPath(field.key, index, rule.key), rule, own, [field, index]);
       });
   }
+}
+
+export function previousItem(options: ValidateOptions | undefined, group: FormGroup, index: number): ValidateOptions | undefined {
+  const previous = options?.previousValues;
+  return previous && { ...options, previousValues: itemScope(group, itemsOf(previous[group.key])[index], previous) };
 }
 
 export function validateShown(
@@ -40,8 +45,8 @@ export function validateShown(
 ): Record<string, string> {
   return withPatternBudget(() => {
     const errors: Record<string, string> = {};
-    visitShown(fields, values, scope, (path, field, own) => {
-      const error = validateFieldValue(field, own[field.key], own, options);
+    visitShown(fields, values, scope, (path, field, own, item) => {
+      const error = validateFieldValue(field, own[field.key], own, item ? previousItem(options, ...item) : options);
       if (error) errors[path] = error;
     });
     return errors;
