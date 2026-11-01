@@ -11,7 +11,7 @@ interface FormActionsControllerProps {
   slot: boolean;
   labels?: FormRendererProps['labels'];
   onSubmit: () => void;
-  onNext: () => Promise<void>;
+  onNext: () => Promise<unknown>;
   onBack: () => void;
   onSkip: () => void;
   onCancel: () => void;
