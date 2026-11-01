@@ -15,12 +15,15 @@
   "core/fields",
   "core/controls",
   "core/schema",
+  "core/dirty",
   "core/locales/ru",
   "react/cloud",
   "react/controls",
   "react/reorder",
+  "react/dirty",
   "vue/cloud",
   "vue/controls",
   "vue/reorder",
+  "vue/dirty",
   "core/style.css"
 ]

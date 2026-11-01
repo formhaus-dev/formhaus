@@ -34,7 +34,7 @@ import { FormEvent } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import { FormGroup } from '@formhaus/core';
 import { FormNode } from '@formhaus/core';
-import { FormRendererHandle } from '@formhaus/core';
+import { FormRendererHandle as FormRendererHandle_2 } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
@@ -355,7 +355,11 @@ export interface FormRendererEmits {
     (e: 'formEvent', event: FormEvent): void;
 }
 
-export { FormRendererHandle }
+// @public (undocumented)
+export interface FormRendererHandle extends FormRendererHandle_2 {
+    // (undocumented)
+    readonly engine: FormEngine;
+}
 
 // @public (undocumented)
 export interface FormRendererProps {

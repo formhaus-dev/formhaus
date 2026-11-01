@@ -41,6 +41,12 @@ export default defineConfig([
   },
   {
     ...shared,
+    entry: { dirty: 'src/dirty/index.ts' },
+    onSuccess: () => useClient('dist/dirty.js'),
+    external: ['react', '@formhaus/core/dirty'],
+  },
+  {
+    ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
     onSuccess: () => useClient('dist/cloud.js'),
     external: [

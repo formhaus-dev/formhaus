@@ -12,7 +12,8 @@ import type {
   FormDefinition,
   FormErrorsView,
   FormField,
-  FormRendererHandle,
+  FormEngine,
+  FormRendererHandle as EngineHandle,
   FormStepProgressView,
   FormStepStatus,
   FormResearch,
@@ -76,7 +77,11 @@ export interface LayoutComponentMap {
   actions?: Component;
 }
 
-export type { FormRendererHandle, FormStepStatus, OptionsProvider, RootProps };
+export type { FormStepStatus, OptionsProvider, RootProps };
+
+export interface FormRendererHandle extends EngineHandle {
+  readonly engine: FormEngine;
+}
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 

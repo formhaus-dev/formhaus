@@ -32,15 +32,18 @@ import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/co
 import type { FormDefinition } from '@formhaus/core';
 import { fromDate, scaleView } from '@formhaus/core/fields';
 import { mapControls, type ControlShellProps } from '@formhaus/react/controls';
+import { useFormDirty } from '@formhaus/react/dirty';
 import { questionTimer } from './question-timing.js';
 import { onValidate } from './schema-zod.js';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'utm', type: 'hidden' }], submit: { label: 'Send' } };
 export const handle = createRef<FormRendererHandle>();
+export const useDirty = () => <FormRenderer ref={useFormDirty().ref} definition={definition} onSubmit={() => {}} />;
 export const views = [
   <FormRenderer definition={definition} onSubmit={async () => {}} />,
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
   <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
+  <FormRenderer<{ name: string }> id="contact" definition={definition} onSubmit={(values) => console.log(values.name.trim())} />,
   <FormRenderer definition={definition} onSubmit={async () => {}} errorSummary="top" className="usa-form" />,
   <FormhausForm id="abc" />,
   <FormRenderer definition={definition} onSubmit={async () => {}} onValidate={onValidate} />,
@@ -148,14 +151,16 @@ export const handles: Formhaus.FormRendererHandle[] = [
   {} as InstanceType<typeof Formhaus.HeadlessFormRenderer>,
 ];
 `,
-  'src/vue.ts': `import { createApp, h } from 'vue';
+  'src/vue.ts': `import { createApp, h, ref } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
 import type { FormDefinition } from '@formhaus/core';
 import { onValidate } from './on-validate.js';
 import ru from '@formhaus/core/locales/ru';
 import { translation } from '@formhaus/core/i18n';
+import { useFormDirty } from '@formhaus/vue/dirty';
 
+export const dirty = () => useFormDirty(ref<InstanceType<typeof Formhaus.FormRenderer>>()).dirty.value;
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
 export const components: Formhaus.FieldComponentMap = {
   text: (props: { modelValue?: unknown }) => h('input', { value: String(props.modelValue ?? '') }),

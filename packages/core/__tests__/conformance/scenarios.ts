@@ -13,11 +13,13 @@ import {
 } from './scenario-format';
 import { flush, Script } from './scenario-script';
 import { research } from '../../src/research';
+import { type DirtyTracker, trackDirty } from '../../src/dirty';
 
 export { scenarioFiles } from './scenario-format';
 
 export class ScenarioRun {
   readonly engine: FormEngine;
+  private readonly dirty: DirtyTracker;
   private readonly script = new Script();
   private readonly log: unknown[] = [];
   private readonly pending: { label: string; done: Promise<void>; settled: boolean }[] = [];
@@ -28,6 +30,7 @@ export class ScenarioRun {
     private readonly scenario: Scenario,
   ) {
     this.engine = new FormEngine(runtimeDefinition(file, scenario), scenario.values ?? {}, this.options());
+    this.dirty = trackDirty(this.engine);
   }
 
   private options(): FormEngineOptions {
@@ -128,6 +131,8 @@ export class ScenarioRun {
         return engine.goToStep(action.stepId);
       case 'reset':
         return engine.reset(action.values);
+      case 'markClean':
+        return this.dirty.markClean();
       case 'replaceDefinition':
         return engine.replaceDefinition(localized(this.file, structuredClone(action.definition)));
       case 'orderOptions':
@@ -160,6 +165,8 @@ export class ScenarioRun {
     const read: Record<keyof Expectation, () => unknown> = {
       values: () => plain(engine.values),
       submitValues: () => plain(engine.getSubmitValues()),
+      dirty: () => this.dirty.dirty,
+      dirtyKeys: () => [...this.dirty.dirtyKeys],
       errors: () => plain(engine.errors),
       topLevelErrors: () => plain(engine.topLevelErrors),
       stepErrors: () => plain(engine.stepErrors),

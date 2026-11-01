@@ -13,10 +13,11 @@ const ENTRIES = {
     'fields',
     'controls',
     'schema',
+    'dirty',
     ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
   ],
-  react: ['index', 'cloud', 'controls', 'reorder'],
-  vue: ['index', 'cloud', 'controls', 'reorder'],
+  react: ['index', 'cloud', 'controls', 'dirty', 'reorder'],
+  vue: ['index', 'cloud', 'controls', 'dirty', 'reorder'],
 };
 const IMPORT = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
 const failures = [];

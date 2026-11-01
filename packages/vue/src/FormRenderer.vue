@@ -5,7 +5,7 @@ import FormStepProgress from './FormStepProgress.vue';
 import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
 import { useListening } from './composables/useListening';
-import type { FormEvent } from '@formhaus/core';
+import type { FormEngine, FormEvent } from '@formhaus/core';
 import { formRendererProps } from './props';
 import type { FormRendererEmits, FormRendererHandle } from './types';
 
@@ -31,7 +31,15 @@ defineExpose({
   goToStep: (stepId: string) => inner!.goToStep(stepId),
   showField: (key: string) => inner?.showField(key),
   getErrors: () => inner?.getErrors() ?? { groups: [], topLevelErrors: [], count: 0 },
+  submit: () => inner?.submit() ?? Promise.resolve(false),
+  reset: (initial?: Record<string, unknown>) => inner?.reset(initial),
   values,
+  get submitting() {
+    return !!inner?.submitting;
+  },
+  get engine() {
+    return inner?.engine as FormEngine;
+  },
 });
 </script>
 

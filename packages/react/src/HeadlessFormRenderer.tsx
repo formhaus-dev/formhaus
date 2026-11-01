@@ -9,18 +9,19 @@ import {
   shouldApplyExternalErrors,
   testIds,
 } from '@formhaus/core/internal';
-import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
-import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
+import { FormTopLevelErrors } from './FormTopLevelErrors';
 import { TextContexts } from './labels';
 import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
-import type { FormRendererHandle, FormRendererProps } from './types';
+import { useRendererHandle } from './hooks/useRendererHandle';
+import type { FormRendererComponent, FormRendererHandle, FormRendererProps } from './types';
 
 let nextKey = 0;
 const engineKeys = new WeakMap<object, number>();
@@ -164,23 +165,13 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       },
       [engine],
     );
-    useImperativeHandle(
-      ref,
-      () => ({
-        setValue: (key, value) => engine.setValue(key, value),
-        getValues: () => ({ ...engine.values }),
-        goToStep: (stepId) => engine.goToStep(stepId),
-        showField,
-        getErrors: () => ({
-          ...errorSummary(engine, { idPrefix: formId, labels: handlers.current.labels }),
-          topLevelErrors: shownFormErrors(engine, actions.actionError),
-        }),
-        get values() {
-          return engine.values;
-        },
-      }),
-      [engine, showField, formId, actions.actionError],
-    );
+    useRendererHandle(ref, engine, {
+      formId,
+      labels: handlers,
+      showField,
+      submit: actions.submit,
+      actionError: actions.actionError,
+    });
 
     const shared = { engine, formId, labels: props.labels, layout };
     const summary = props.errorSummary !== false && <FormErrorSummary {...shared} onSelect={showField} testId={testId?.('summary')} />;
@@ -189,6 +180,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     return (
       <form
         ref={formRef}
+        id={props.id}
         lang={engine.definition.lang}
         onFocusCapture={(event) => {
           focusReturn.current = event.target;
@@ -246,4 +238,4 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       </form>
     );
   },
-);
+) as FormRendererComponent;

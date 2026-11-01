@@ -234,6 +234,9 @@
           "$ref": "#/$defs/do-reset"
         },
         {
+          "$ref": "#/$defs/do-markClean"
+        },
+        {
           "$ref": "#/$defs/do-replaceDefinition"
         },
         {
@@ -269,6 +272,15 @@
         },
         "submitValues": {
           "$ref": "#/$defs/values"
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "dirtyKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "errors": {
           "type": "object",
@@ -772,6 +784,15 @@
         },
         "values": {
           "$ref": "#/$defs/values"
+        }
+      }
+    },
+    "do-markClean": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "do": {
+          "const": "markClean"
         }
       }
     },
