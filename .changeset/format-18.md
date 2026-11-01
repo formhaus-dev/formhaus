@@ -17,6 +17,7 @@
 - Read-only fields stay focusable: `readonly` on inputs, `aria-readonly` on other controls. New `readOnly` prop on `FormRenderer` and `HeadlessFormRenderer` makes every field read-only and hides the group Add, Remove and Move buttons.
 - `FieldComponentProps` gets `readOnly`. Group item views get `move(to)` and `count` for a reorderable group.
 - New `@formhaus/react/reorder` and `@formhaus/vue/reorder` entries export `ReorderGroupItem`, a group item with Move up and Move down buttons. Without it, a reorderable group shows no Move buttons and logs a `missing-component` warning in development.
+- New `OptionView` type: an option as renderers receive it, with `disabled` resolved to a boolean. `ControlOption` and the `options` of field views use it.
 - New `optionAttrs`, `optionDescriptionId`, `readOnlyAttrs` and `optionLocked` in `@formhaus/core/fields`.
 - `checkDefinition()` reports `invalid-type` for these properties from format 1.8, `disabled-not-applicable` for `disabled` on an option of another field type, and `outdated-format-version` below format 1.8.
 - `capabilities` in `@formhaus/mcp` describes option `description`, `disabled`, `readOnly` and `reorderable`.
