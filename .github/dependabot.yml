@@ -38,6 +38,11 @@ updates:
       examples-major:
         patterns: ["*"]
         update-types: [major]
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: "@mui/material"
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
