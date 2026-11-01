@@ -5,7 +5,7 @@
 ```ts
 
 // @public (undocumented)
-export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resets'>;
+export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resetCount'>;
 
 // @public (undocumented)
 export interface DirtyTracker {

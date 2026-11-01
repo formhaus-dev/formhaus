@@ -39,7 +39,7 @@ export interface EngineInternals {
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly seed: string;
-  resets: number;
+  resetCount: number;
   readonly validators: Record<string, ValidatorFn>;
   messages: ResolveMessage;
   visibility: VisibilityState;

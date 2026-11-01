@@ -831,7 +831,7 @@ Dirty tracking is an opt-in module: `@formhaus/core/dirty` in TypeScript. It fol
 3. For a group whose items are objects on both sides and whose item count is the same, the dirty keys are the item paths `<group>.<index>.<field>` whose values differ. When the item count differs, the dirty key is the group key.
 4. Trimming, hidden fields, `hiddenValues` and skipped steps apply as in the payload. A trim-only edit is not dirty. A value that a condition hides is dirty unless `hiddenValues` is `"keep"`.
 5. The dirty keys are sorted by UTF-16 code units. The form is dirty when the list is not empty.
-6. `markClean()` sets the baseline to the current payload. Every `reset(values)` of the engine sets the baseline to the resulting payload. The engine counts resets in `resets`, which changes before the reset notifies subscribers, and the tracker takes a new baseline when the count changed.
+6. `markClean()` sets the baseline to the current payload. Every `reset(values)` of the engine sets the baseline to the resulting payload. The engine counts resets in `resetCount`, which changes before the reset notifies subscribers, and the tracker takes a new baseline when the count changed.
 7. `replaceDefinition()` keeps the baseline. The kept values are compared with it, so a new field with a `defaultValue` and a removed field that had a value are dirty.
 8. Listeners run when the list of dirty keys changes, not in the middle of `reset`.
 

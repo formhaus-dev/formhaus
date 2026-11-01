@@ -107,7 +107,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
 | `seed` | `string` | The `seed` option, the seed the research module generated, or `''` without either. Added in 1.1.0 |
-| `resets` | `number` | How many times `reset()` ran. It changes before the reset notifies subscribers. Added in 1.9.0 |
+| `resetCount` | `number` | How many times `reset()` ran. It changes before the reset notifies subscribers. Added in 1.9.0 |
 
 ## Values and validation
 

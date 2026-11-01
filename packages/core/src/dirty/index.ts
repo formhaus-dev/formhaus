@@ -4,7 +4,7 @@ import { itemPath } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
-export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resets'>;
+export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resetCount'>;
 
 export interface DirtyTracker {
   readonly dirty: boolean;
@@ -45,15 +45,15 @@ function changedKeys(baseline: Values, values: Values): string[] {
 export function trackDirty(engine: DirtySource): DirtyTracker {
   const listeners = new Set<() => void>();
   let baseline: Values;
-  let resets: number;
+  let resetCount: number;
   let keys: readonly string[] = [];
   const markClean = () => {
     baseline = engine.getSubmitValues() as Values;
-    resets = engine.resets;
+    resetCount = engine.resetCount;
     update();
   };
   const update = () => {
-    if (resets !== engine.resets) return markClean();
+    if (resetCount !== engine.resetCount) return markClean();
     const next = changedKeys(baseline, engine.getSubmitValues() as Values);
     if (next.length === keys.length && next.every((key, index) => key === keys[index])) return;
     keys = next;

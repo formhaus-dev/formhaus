@@ -342,7 +342,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     // (undocumented)
     reset(values?: Record<string, unknown>): void;
     // (undocumented)
-    readonly resets = 0;
+    readonly resetCount = 0;
     // (undocumented)
     readonly seed: string;
     // (undocumented)

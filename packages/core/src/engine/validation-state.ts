@@ -214,7 +214,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const previousErrors = engine.errors;
   const loadingFields = Object.keys(engine.fieldLoading);
   baselineFields(engine);
-  engine.resets++;
+  engine.resetCount++;
   engine.validationEpoch++;
   engine.operationEpoch++;
   Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
