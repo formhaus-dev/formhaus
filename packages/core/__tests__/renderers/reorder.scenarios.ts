@@ -37,7 +37,7 @@ export function reorderScenarios(harness: RendererHarness, { it, expect, waitFor
     const onSubmit = fn();
     harness.mount({ definition: crew(), layout, initialValues: { people: [{ name: '' }, { name: 'Bo' }] }, onSubmit });
     await harness.click(screen.getByRole('button', { name: 'Send' }));
-    await waitFor(() => expect(screen.getAllByRole('textbox', { name: 'Name' })[0].getAttribute('aria-invalid')).toBe('true'));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getAllByRole('textbox', { name: 'Name' })[0]));
     await harness.click(buttons('Move down')[0]);
     await waitFor(() => expect(names()).toEqual(['Bo', '']));
     await waitFor(() => expect(status()).toBe('People 1 moved to position 2'));
