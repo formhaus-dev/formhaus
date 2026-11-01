@@ -8,6 +8,7 @@
 - Format 1.8: options take `description` and `disabled`, fields take `readOnly`, groups take `reorderable`. `disabled` and `readOnly` are `true` or a list of conditions that must all match.
 - These properties take effect only with `"formatVersion": "1.8"` or newer. Below it they are ignored, as before.
 - A value that holds a disabled option fails with the `option` message, unless the stored answer already holds it. In the engine the stored answer is the start value of the field.
+- A `defaultValue` that is a disabled option stays valid, and `checkDefinition()` warns about it with `default-disabled-option`. In a group, a stored disabled option is held as many times as the stored items hold it.
 - New `previousValues` option of `validateSubmission()`, `validateFieldValue()` and `validateFields()` for the stored answers.
 - A read-only field cannot be edited in the built-in renderers. Validation is unchanged.
 - New `engine.moveItem(key, from, to)` moves a group item with its values, id, errors and loading state.

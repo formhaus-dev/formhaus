@@ -282,7 +282,7 @@ For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`
 }
 ```
 
-A disabled option cannot be picked, and validation rejects it with the `option` message. A stored answer that already holds it stays valid: in the browser that is the initial value, on the server pass [`previousValues`](/guide/server-validation#stored-answers). Requires `"formatVersion": "1.8"` and `@formhaus/core` 1.9. See the [specification](/spec#option-descriptions-and-disabled-options).
+A disabled option cannot be picked, and validation rejects it with the `option` message. A `defaultValue` and a stored answer that already holds it stay valid: in the browser that is the initial value, on the server pass [`previousValues`](/guide/server-validation#stored-answers). Requires `"formatVersion": "1.8"` and `@formhaus/core` 1.9. See the [specification](/spec#option-descriptions-and-disabled-options).
 
 ## Scale
 

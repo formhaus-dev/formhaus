@@ -103,7 +103,7 @@ export const capabilities = {
     description:
       'Option description: a short text under the option label, such as "Up to 5 seats". Translatable under optionDescriptions.<value>. select shows no description. Needs "formatVersion": "1.8".',
     disabled:
-      'radio, select and multiselect options: "disabled": true, or conditions that must all match like show, such as [{ "field": "seats", "gt": 5 }], makes the option unavailable. Choosing it fails with the option message unless the stored answer already holds it: in the browser the initial values, on the server validateSubmission previousValues. Another type is disabled-not-applicable. Needs "formatVersion": "1.8".',
+      'radio, select and multiselect options: "disabled": true, or conditions that must all match like show, such as [{ "field": "seats", "gt": 5 }], makes the option unavailable. Choosing it fails with the option message unless it is the defaultValue or the stored answer already holds it: in the browser the initial values, on the server validateSubmission previousValues read from the stored record. A defaultValue that is a disabled option is default-disabled-option. Another type is disabled-not-applicable. Needs "formatVersion": "1.8".',
     readOnly:
       'true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and validated like any other field. Not a server guarantee: write fixed values on the server. Needs "formatVersion": "1.8".',
     randomize:

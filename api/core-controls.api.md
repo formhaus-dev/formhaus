@@ -73,7 +73,7 @@ export type ControlKind = 'input' | 'inline' | 'group';
 export const controlKind: (type: string, kinds?: Partial<Record<string, ControlKind>>) => ControlKind;
 
 // @public (undocumented)
-export type ControlOption<Children = unknown> = Omit<FieldOption, 'value' | 'disabled'> & {
+export type ControlOption<Children = unknown> = Omit<OptionView, 'value'> & {
     value: string | number;
     reveal?: RevealView<Children>;
 };
