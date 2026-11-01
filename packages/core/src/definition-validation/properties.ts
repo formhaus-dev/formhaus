@@ -32,6 +32,11 @@ const SINCE: [number, string][] = [
 const known = (list: string, definition: FormDefinition) =>
   SINCE.reduce((text, [minor, key]) => (formatAtLeast(definition, minor) ? text : text.replace(` ${key} `, ' ')), list);
 
+const newer = (definition: FormDefinition) => (key: string) => {
+  const since = SINCE.find(([minor, name]) => name === key && !formatAtLeast(definition, minor));
+  return since && `Set "formatVersion": "1.${since[0]}" to use it`;
+};
+
 const LABEL_HINT = 'Add a label so screen readers can name the input';
 
 function unknown(value: object, path: string, list: string, hint: (key: string) => string | undefined = () => undefined) {
@@ -110,10 +115,15 @@ function fieldWarnings({ field, path, parent }: FieldEntry, definition: FormDefi
   return [
     ...(visible ? labeled(field, path, LABEL_HINT) : []),
     ...(empty ? [warning('missing-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
-    ...unknown(field, path, known(field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, definition), misplaced),
+    ...unknown(
+      field,
+      path,
+      known(field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, definition),
+      (key) => misplaced(key) ?? newer(definition)(key),
+    ),
     ...(field.options ?? []).flatMap((option, index) => [
       ...labeled(option, `${path}/options/${index}`),
-      ...unknown(option, `${path}/options/${index}`, known(PROPERTIES.option, definition)),
+      ...unknown(option, `${path}/options/${index}`, known(PROPERTIES.option, definition), newer(definition)),
       ...(option.disabled !== undefined && !RANDOMIZED_TYPES.includes(field.type) && formatAtLeast(definition, 8)
         ? [
             warning(
