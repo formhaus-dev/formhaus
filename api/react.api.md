@@ -250,8 +250,6 @@ export interface FormRendererProps<TValues extends object = Record<string, unkno
     // (undocumented)
     errorSummary?: boolean | 'top' | 'bottom';
     // (undocumented)
-    formErrorsPlacement?: 'top' | 'bottom';
-    // (undocumented)
     headingLevel?: HeadingLevel;
     // (undocumented)
     id?: string;

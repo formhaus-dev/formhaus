@@ -179,8 +179,6 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const shared = { engine, formId, labels: props.labels, layout };
     const summary = props.errorSummary !== false && <FormErrorSummary {...shared} onSelect={showField} testId={testId?.('summary')} />;
     const top = props.errorSummary === 'top';
-    const errorsTop = props.formErrorsPlacement === 'top';
-    const formErrors = <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />;
 
     return (
       <form
@@ -210,7 +208,6 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             headingLevel={headingLevel}
             marks={props.stepErrorMarks}
           />
-          {errorsTop && formErrors}
           <FormFieldsController
             {...shared}
             key={engineKey(engine)}
@@ -227,7 +224,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onFocus={handleFieldFocus}
             testId={testId}
           />
-          {!errorsTop && formErrors}
+          <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
           {!top && summary}
           <FormActionsController
             engine={engine}

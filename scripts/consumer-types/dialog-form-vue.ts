@@ -9,7 +9,7 @@ const status = useSubmitState(form);
 const { markClean } = useFormDirty(form);
 
 export const footer = () => [
-  h(FormRenderer, { ref: status.ref, id: 'invite', definition, formErrorsPlacement: 'top', 'aria-label': 'Invite' }),
+  h(FormRenderer, { ref: status.ref, id: 'invite', definition, 'aria-label': 'Invite' }),
   h('button', { type: 'submit', form: 'invite', disabled: !status.canSubmit.value || status.submitting.value }, 'Send'),
   h('button', { type: 'button', onClick: markClean }, 'Keep'),
 ];

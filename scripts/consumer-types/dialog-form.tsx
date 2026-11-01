@@ -8,7 +8,7 @@ declare const schema: StandardSchemaV1<{ name: string }>;
 const parsed = schemaParse(schema);
 const { validate, submit } = parsed;
 
-type DialogFormProps = Omit<FormRendererProps<{ name: string }>, 'className' | 'formErrorsPlacement'>;
+type DialogFormProps = Omit<FormRendererProps<{ name: string }>, 'className'>;
 
 export function DialogForm(props: DialogFormProps) {
   const status = useSubmitState();
@@ -24,7 +24,6 @@ export function DialogForm(props: DialogFormProps) {
         aria-labelledby="dialog-title"
         data-dialog="invite"
         style={{ gap: 8 }}
-        formErrorsPlacement="top"
       />
       <button type="submit" form={props.id} disabled={!status.canSubmit || status.validating}>
         {status.submitting ? 'Saving' : 'Save'}
@@ -37,15 +36,8 @@ export function DialogForm(props: DialogFormProps) {
 }
 
 export function SchemaForm() {
-  const engine = useFormEngine(definition);
-  const { canSubmit } = useSubmitState(engine);
+  useSubmitState(useFormEngine(definition));
   return (
-    <FormRenderer
-      definition={definition}
-      aria-label="Profile"
-      onValidate={validate}
-      onSubmit={submit((values) => void values.name)}
-      formErrorsPlacement={canSubmit ? 'bottom' : 'top'}
-    />
+    <FormRenderer definition={definition} aria-label="Profile" onValidate={validate} onSubmit={submit((values) => void values.name)} />
   );
 }

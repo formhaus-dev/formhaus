@@ -381,8 +381,6 @@ export interface FormRendererProps {
     // (undocumented)
     formatRecall?: Callback<RecallFormatFn>;
     // (undocumented)
-    formErrorsPlacement?: 'top' | 'bottom';
-    // (undocumented)
     headingLevel?: HeadingLevel;
     // (undocumented)
     hiddenValues?: 'clear' | 'keep' | undefined;
@@ -496,7 +494,6 @@ export const formRendererProps: {
     progressComponent: PropType<Component>;
     optionsProviders: PropType<Renderer["optionsProviders"]>;
     testIds: PropType<Renderer["testIds"]>;
-    formErrorsPlacement: PropType<Renderer["formErrorsPlacement"]>;
 };
 
 // @public (undocumented)

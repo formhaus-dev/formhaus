@@ -86,23 +86,6 @@ describe('renderer in a dialog', () => {
     expect(status.canSubmit.value).toBe(true);
   });
 
-  it('renders form errors above the fields', async () => {
-    const { container } = render(FormRenderer, {
-      props: {
-        definition: { ...definition, submit: { label: 'Send' } },
-        initialValues: { email: 'ada@example.com' },
-        formErrorsPlacement: 'top',
-        onSubmit: () => ({ ok: false, formErrors: ['Invites are paused'] }),
-      },
-    });
-    await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
-    await screen.findByText('Invites are paused');
-    const parts = [...container.querySelectorAll('[data-fh="form-errors"], [data-fh="fields"]')].map((node) =>
-      node.getAttribute('data-fh'),
-    );
-    expect(parts).toEqual(['form-errors', 'fields']);
-  });
-
   it('exposes unbound functions on the dirty result', () => {
     const { markClean, ref } = useFormDirty();
     ref(null);

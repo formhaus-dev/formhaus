@@ -163,7 +163,6 @@ export interface FormRendererProps<TValues extends object = Record<string, unkno
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
   testIds?: boolean | ((target: TestIdTarget) => string | undefined);
-  formErrorsPlacement?: 'top' | 'bottom';
   className?: string;
   style?: CSSProperties;
   id?: string;
