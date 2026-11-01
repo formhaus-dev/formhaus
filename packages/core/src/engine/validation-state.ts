@@ -1,6 +1,6 @@
 import { validateFieldValue } from '../validation';
 import { baselineFields, emit } from './form-events';
-import { customRules, previousItem, validateShown } from '../validation/validate-step';
+import { customRules, itemHolds, validateShown } from '../validation/validate-step';
 import type { ValidateOptions } from '../validation/validate-field';
 import { withPatternBudget } from '../validation/validate-field';
 import { isPlainEntry, trimValue } from '../validation/type-checks';
@@ -37,7 +37,7 @@ export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values 
 const checks = ({ validators, messages, visibility, state }: EngineInternals): ValidateOptions => ({
   validators,
   messages,
-  previousValues: visibility.previousValues(state.values),
+  previousValues: visibility.previousValues(),
 });
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine), options = checks(engine)) {
@@ -47,7 +47,7 @@ function fieldError(engine: EngineInternals, field: FormField, value: unknown, v
 function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
   const values = getSubmitValues(engine);
   const scope = itemScope(group, itemsOf(values[group.key])[index], values);
-  return fieldError(engine, field, scope[field.key], scope, previousItem(checks(engine), group, index));
+  return fieldError(engine, field, scope[field.key], scope, itemHolds(checks(engine), group, itemsOf(values[group.key]))(index));
 }
 
 export function applyValidationErrors(

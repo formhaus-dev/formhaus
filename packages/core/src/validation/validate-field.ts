@@ -80,7 +80,7 @@ function sizeError(value: unknown, rules: FieldValidation, field: FormField, res
 }
 
 function disabledError(field: FormField, value: unknown, values: Record<string, unknown>, previous: unknown): boolean {
-  const held = ([] as unknown[]).concat(previous);
+  const held = ([] as unknown[]).concat(previous, field.defaultValue);
   const chosen = ([] as unknown[]).concat(value);
   return !!field.options?.some(
     (option) => chosen.includes(option.value) && !held.includes(option.value) && conditionsMet(option.disabled, values),

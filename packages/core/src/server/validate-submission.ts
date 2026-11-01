@@ -1,6 +1,6 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import type { MessageSource, ValidateOptions, ValidatorFn } from '../validation';
-import { previousItem } from '../validation/validate-step';
+import { itemHolds } from '../validation/validate-step';
 import { validateFieldValue, withPatternBudget } from '../validation/validate-field';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { validDefinition } from '../definition-validation/check-definition';
@@ -178,14 +178,14 @@ function keepHidden(
   const scope = { ...source, ...submitted };
   const valid = (field: FormField, value: unknown, values: Record<string, unknown>, options = checks) =>
     !validateFieldValue({ ...field, validation: { ...field.validation, required: undefined } }, value, values, options);
-  const items = (group: FormGroup, value: unknown[], kept: unknown[]) =>
+  const items = (group: FormGroup, value: unknown[], kept: unknown[], hold = itemHolds(checks, group, value)) =>
     kept.map((item, index) => {
       const from = value[index];
       if (!isEntry(item) || !isEntry(from)) return item;
       const entry = { ...item };
       const own = itemScope(group, from, scope);
       for (const field of group.fields)
-        if (hasOwn(from, field.key) && !hasOwn(item, field.key) && valid(field, from[field.key], own, previousItem(checks, group, index)))
+        if (hasOwn(from, field.key) && !hasOwn(item, field.key) && valid(field, from[field.key], own, hold(index)))
           entry[field.key] = from[field.key];
       return entry;
     });

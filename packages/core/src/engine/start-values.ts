@@ -91,11 +91,8 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       stored = values;
     },
 
-    previousValues(values: Values): Values {
-      if (stored || !groups.length) return stored ?? seeds;
-      const previous = { ...seeds };
-      for (const { key } of groups) previous[key] = itemsOf(values[key]).map((item) => isEntry(item) && itemSeeds.get(itemKey(item)));
-      return previous;
+    previousValues(): Values {
+      return stored ?? seeds;
     },
 
     startValue(field: FormField): unknown {

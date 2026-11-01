@@ -1,6 +1,6 @@
 import type { FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isGroup, isVisible } from '../visibility';
-import { itemPath, itemsOf, itemScope, itemView, shownFields, valueFields } from '../visibility/nodes';
+import { isEntry, itemPath, itemsOf, itemScope, itemView, shownFields, valueFields } from '../visibility/nodes';
 import { type ValidateOptions, validateFieldValue, withPatternBudget } from './validate-field';
 import { typeError } from './type-checks';
 
@@ -32,9 +32,20 @@ export function visitShown(
   }
 }
 
-export function previousItem(options: ValidateOptions | undefined, group: FormGroup, index: number): ValidateOptions | undefined {
+const occurrences = (items: unknown[], key: string) => items.flatMap((item) => (isEntry(item) ? ([] as unknown[]).concat(item[key]) : []));
+
+export function itemHolds(options: ValidateOptions | undefined, group: FormGroup, items: unknown[]) {
   const previous = options?.previousValues;
-  return previous && { ...options, previousValues: itemScope(group, itemsOf(previous[group.key])[index], previous) };
+  const fields = group.fields.filter((field) => field.options?.some((option) => option.disabled !== undefined));
+  if (!previous || !fields.length) return () => options;
+  const pools = fields.map(({ key }) => [key, occurrences(itemsOf(previous[group.key]), key)] as const);
+  const held = items.map((item) => {
+    const entry = Object.fromEntries(pools.map(([key, pool]) => [key, [...pool]]));
+    for (const [key, pool] of pools)
+      for (const value of occurrences([item], key)) if (pool.includes(value)) pool.splice(pool.indexOf(value), 1);
+    return { ...options, previousValues: { ...previous, ...entry } };
+  });
+  return (index: number): ValidateOptions | undefined => held[index] ?? options;
 }
 
 export function validateShown(
@@ -45,8 +56,13 @@ export function validateShown(
 ): Record<string, string> {
   return withPatternBudget(() => {
     const errors: Record<string, string> = {};
+    const holds = new Map<FormGroup, (index: number) => ValidateOptions | undefined>();
+    const hold = ([group, index]: [FormGroup, number]) => {
+      if (!holds.has(group)) holds.set(group, itemHolds(options, group, itemsOf(values[group.key])));
+      return holds.get(group)!(index);
+    };
     visitShown(fields, values, scope, (path, field, own, item) => {
-      const error = validateFieldValue(field, own[field.key], own, item ? previousItem(options, ...item) : options);
+      const error = validateFieldValue(field, own[field.key], own, item ? hold(item) : options);
       if (error) errors[path] = error;
     });
     return errors;
