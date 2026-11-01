@@ -30,3 +30,7 @@ export function fieldRules(engine: FormEngine, field: FormField, options = field
     ),
   };
 }
+
+export function matrixView(engine: FormEngine, field: FormField, columns: FieldOption[] | undefined, row = 0, path?: string) {
+  return columns && { columns: fieldRules(engine, field, columns, path).options ?? columns, row };
+}

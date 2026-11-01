@@ -5,6 +5,7 @@ import {
   errorDomId,
   fieldDomId,
   fieldRules,
+  matrixView,
   fieldTestIds,
   recalled,
   recalls,
@@ -92,7 +93,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       disabled={disabled}
       readOnly={readOnly || rules.readOnly}
       components={components}
-      matrix={columns && { columns, row: row! }}
+      matrix={matrixView(engine, field, columns, row, path)}
       reveals={reveals}
       onChange={handleChange}
       onCommit={handleCommit}

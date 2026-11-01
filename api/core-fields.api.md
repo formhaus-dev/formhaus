@@ -262,10 +262,12 @@ export interface ReadOnlyAttrs {
     'aria-readonly'?: true;
     // (undocumented)
     readOnly?: true;
+    // (undocumented)
+    role?: 'radiogroup';
 }
 
 // @public (undocumented)
-export function readOnlyAttrs(input: Pick<FieldStateInput, 'field' | 'readOnly'>): ReadOnlyAttrs;
+export function readOnlyAttrs(input: Pick<FieldStateInput, 'field' | 'readOnly'>, group?: boolean): ReadOnlyAttrs;
 
 // @public (undocumented)
 export const removeFile: (value: unknown, index: number) => unknown[];
