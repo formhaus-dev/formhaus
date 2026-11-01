@@ -1,5 +1,5 @@
 import { fieldDomId } from '../internal/ids';
-import type { FieldOption, FormField, FormGroup, OptionView } from '../types';
+import type { FieldOption, FormField, FormGroup } from '../types';
 import type { FreeText } from './text';
 import { inputType } from './values';
 
@@ -63,7 +63,7 @@ export function readOnlyAttrs({ field, readOnly }: Pick<FieldStateInput, 'field'
 
 export const optionDescriptionId = (optionId: string): string => `${optionId}-description`;
 
-export function optionAttrs(option: FieldOption | OptionView, optionId: string, disabled?: boolean): OptionAttrs {
+export function optionAttrs(option: FieldOption, optionId: string, disabled?: boolean): OptionAttrs {
   return {
     disabled: !!disabled || option.disabled === true,
     'aria-describedby': option.description ? optionDescriptionId(optionId) : undefined,
@@ -137,18 +137,18 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
   loading?: boolean;
   freeText?: FreeText;
   testId?: string;
-  options: OptionView[];
+  options: FieldOption[];
   change: (value: unknown) => void;
   commit: (value: unknown) => void;
   blur: () => void;
   focus: () => void;
   attrs: Attrs & FieldAria & { 'data-testid'?: string };
-  option: (option: OptionView, index: number) => FieldOptionAttrs;
+  option: (option: FieldOption, index: number) => FieldOptionAttrs;
 }
 
-export function optionChecked(value: unknown, option: FieldOption | OptionView): boolean {
+export function optionChecked(value: unknown, option: FieldOption): boolean {
   return Array.isArray(value) ? value.includes(option.value) : value != null && String(value) === option.value;
 }
 
-export const optionLocked = (option: FieldOption | OptionView, value: unknown, readOnly?: boolean): boolean =>
+export const optionLocked = (option: FieldOption, value: unknown, readOnly?: boolean): boolean =>
   option.disabled === true || (!!readOnly && !optionChecked(value, option));

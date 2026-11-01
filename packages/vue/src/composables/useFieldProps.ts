@@ -10,7 +10,6 @@ import {
   type FieldView,
 } from '@formhaus/core/fields';
 import { computed, ref } from 'vue';
-import type { OptionView } from '@formhaus/core';
 import type { FieldComponentProps } from '../types';
 
 export type FieldEmit = ((event: 'update:modelValue', value: unknown) => void) &
@@ -55,7 +54,7 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
       onBlur: blur,
       onFocus: focus,
     };
-    const options = (props.matrix?.columns ?? props.field.options ?? []) as OptionView[];
+    const options = props.matrix?.columns ?? props.field.options ?? [];
     return {
       ...state,
       value: props.modelValue,

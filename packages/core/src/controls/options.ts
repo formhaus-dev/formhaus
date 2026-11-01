@@ -23,5 +23,5 @@ export function controlOptions<Children = unknown>(
 ): ControlOption<Children>[] {
   return POINT_TYPES.includes(field.type)
     ? scaleView(field).points.map((point) => ({ value: point, label: String(point) }))
-    : (withReveals(options, reveals) as ControlOption<Children>[]);
+    : withReveals(options, reveals);
 }

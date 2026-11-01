@@ -183,6 +183,7 @@ export const localized = h(Formhaus.FormRenderer, { definition, locale: [transla
 
 files['src/map-controls.tsx'] = readFileSync(join(root, 'scripts/consumer-types/map-controls.tsx'), 'utf8');
 files['src/map-controls-vue.ts'] = readFileSync(join(root, 'scripts/consumer-types/map-controls-vue.ts'), 'utf8');
+files['src/option-types.tsx'] = readFileSync(join(root, 'scripts/consumer-types/option-types.tsx'), 'utf8');
 const snippets = join(root, 'docs/recipes/snippets');
 for (const name of readdirSync(snippets).filter((file) => /\.tsx?$/.test(file)))
   files[`src/${name}`] = readFileSync(join(snippets, name), 'utf8');

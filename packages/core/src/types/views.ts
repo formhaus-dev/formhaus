@@ -1,8 +1,6 @@
 import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
 import type { FieldOption, FormGroup, FormSection } from './field';
-
-export type OptionView = Omit<FieldOption, 'disabled'> & { disabled?: boolean };
 import type { LabelSource } from './i18n';
 
 export interface SectionView {

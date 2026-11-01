@@ -18,7 +18,6 @@ export type {
   FormRendererHandle,
   FormSection,
   SectionView,
-  OptionView,
   GroupI18n,
   ConfirmDialogView,
   ErrorSummary,
