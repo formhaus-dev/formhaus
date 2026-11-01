@@ -1,6 +1,6 @@
 ---
 title: "Form definition 1.8 specification"
-description: "Formhaus form definition format 1.8: fields, sections, groups, conditions, validation, steps, routes, recall, option order, file lists, option rules, read-only fields and translations."
+description: "Formhaus form definition format 1.8: fields, groups, conditions, validation, steps, routes, recall, file lists, option rules, read-only fields and translations."
 ---
 
 # Formhaus form definition 1.8
