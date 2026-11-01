@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@carbon/icons-react": "^11.80.0",
-    "@carbon/react": "^1.110.0",
+    "@carbon/icons-react": "^11.91.0",
+    "@carbon/react": "^1.119.0",
     "@formhaus/core": "^1.7.0",
     "@formhaus/react": "^1.7.0",
     "@ibm/plex-mono": "2.5.0",
@@ -22,8 +22,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "sass": "^1.105.0",
+    "sass": "^1.106.1",
     "typescript": "~7.0.2",
-    "vite": "^8.3.4"
+    "vite": "^8.3.5"
   }
 }
