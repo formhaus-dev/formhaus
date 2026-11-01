@@ -95,6 +95,7 @@ export interface FormRendererProps {
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   keepValues?: boolean;
+  readOnly?: boolean;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: Callback<StepValidateFn>;
   onValidate?: Callback<ValidateFn>;
@@ -142,6 +143,7 @@ export interface FieldComponentProps {
   error?: string;
   loading?: boolean;
   disabled?: boolean;
+  readOnly?: boolean;
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
   matrix?: { columns: FieldOption[]; row: number };
