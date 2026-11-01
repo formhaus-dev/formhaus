@@ -20,6 +20,8 @@ export interface FieldAria {
     // (undocumented)
     'aria-invalid'?: true;
     // (undocumented)
+    'aria-readonly'?: true;
+    // (undocumented)
     'aria-required'?: true;
 }
 
@@ -42,19 +44,21 @@ export interface FieldControl {
     onFocus: () => void;
     // (undocumented)
     placeholder?: string;
+    // (undocumented)
+    readOnly?: true;
 }
 
 // @public (undocumented)
 export const fieldId: (input: Pick<FieldStateInput, "id" | "field">) => string;
 
 // @public (undocumented)
-export interface FieldOptionAttrs {
+export interface FieldOptionAttrs extends OptionAttrs {
+    // (undocumented)
+    'aria-readonly'?: true;
     // (undocumented)
     'data-testid'?: string;
     // (undocumented)
     checked: boolean;
-    // (undocumented)
-    disabled: boolean;
     // (undocumented)
     id: string;
     // (undocumented)
@@ -104,6 +108,8 @@ export interface FieldState {
     // (undocumented)
     placeholder?: string;
     // (undocumented)
+    readOnly?: boolean;
+    // (undocumented)
     required: boolean;
 }
 
@@ -122,6 +128,8 @@ export interface FieldStateInput {
     id?: string;
     // (undocumented)
     loading?: boolean;
+    // (undocumented)
+    readOnly?: boolean;
 }
 
 // @public (undocumented)
@@ -220,7 +228,24 @@ export const isFileList: (field: object) => boolean;
 export function numberValue(text: string | null | undefined): number | string | null;
 
 // @public (undocumented)
+export interface OptionAttrs {
+    // (undocumented)
+    'aria-describedby'?: string;
+    // (undocumented)
+    disabled: boolean;
+}
+
+// @public (undocumented)
+export function optionAttrs(option: FieldOption, optionId: string, disabled?: boolean): OptionAttrs;
+
+// @public (undocumented)
 export function optionChecked(value: unknown, option: FieldOption): boolean;
+
+// @public (undocumented)
+export const optionDescriptionId: (optionId: string) => string;
+
+// @public (undocumented)
+export const optionLocked: (option: FieldOption, value: unknown, readOnly?: boolean) => boolean;
 
 // @public (undocumented)
 export const optionText: (options: FieldOption[], value: unknown) => string;
@@ -230,6 +255,17 @@ export const optionValue: (options: FieldOption[], text: string) => string;
 
 // @public (undocumented)
 export function pickFiles(field: FormField, value: unknown, picked: unknown, text?: FileText): FilePick;
+
+// @public (undocumented)
+export interface ReadOnlyAttrs {
+    // (undocumented)
+    'aria-readonly'?: true;
+    // (undocumented)
+    readOnly?: true;
+}
+
+// @public (undocumented)
+export function readOnlyAttrs(input: Pick<FieldStateInput, 'field' | 'readOnly'>): ReadOnlyAttrs;
 
 // @public (undocumented)
 export const removeFile: (value: unknown, index: number) => unknown[];

@@ -47,6 +47,8 @@ export interface SubmissionOptions {
     // (undocumented)
     messages?: MessageSource;
     // (undocumented)
+    previousValues?: Record<string, unknown>;
+    // (undocumented)
     skippedSteps?: string[];
     // (undocumented)
     validators?: Record<string, ValidatorFn>;

@@ -66,7 +66,9 @@ export const defaultFieldComponents: Record<_formhaus_core.DefaultFieldType, Com
 export function DefaultGroup(input: GroupComponentProps): react.JSX.Element;
 
 // @public (undocumented)
-export function DefaultGroupItem(input: GroupItemComponentProps): react.JSX.Element;
+export function DefaultGroupItem(input: GroupItemComponentProps & {
+    actions?: ReactNode;
+}): react.JSX.Element;
 
 // @public (undocumented)
 export function DefaultSection(input: SectionComponentProps): react.JSX.Element;
@@ -112,6 +114,8 @@ export interface FieldComponentProps {
     onFocus?: () => void;
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
+    // (undocumented)
+    readOnly?: boolean;
     // (undocumented)
     reveals?: RevealView<ReactNode>[];
     // (undocumented)
@@ -199,6 +203,8 @@ export interface FormhausFieldProps {
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
     // (undocumented)
+    readOnly?: boolean;
+    // (undocumented)
     reveals?: FieldComponentProps['reveals'];
     // (undocumented)
     testId?: string;
@@ -257,6 +263,8 @@ export interface FormRendererProps extends FormEngineOptions {
     optionsProviders?: Record<string, OptionsProvider>;
     // (undocumented)
     progressComponent?: ComponentType<FormStepProgressProps>;
+    // (undocumented)
+    readOnly?: boolean;
     // (undocumented)
     stepErrorMarks?: boolean;
     // (undocumented)
