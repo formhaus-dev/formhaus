@@ -1,8 +1,10 @@
 import {
   autofilled,
+  conditionalRules,
   copyField,
   errorDomId,
   fieldDomId,
+  fieldRules,
   fieldTestIds,
   recalled,
   recalls,
@@ -27,6 +29,7 @@ export interface ControllerProps {
   onCommit: (key: string, value: unknown) => void;
   onBlur: (key: string) => void;
   onFocus: (key: string) => void;
+  readOnly?: boolean;
   testId?: TestId;
 }
 
@@ -59,18 +62,23 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   onCommit,
   onBlur,
   onFocus,
+  readOnly,
   testId,
 }: FormFieldControllerProps) {
   const key = path ?? field.key;
   useFieldSnapshot(engine, key);
-  useRecallSnapshot(engine, recalls(engine, field));
+  useRecallSnapshot(engine, recalls(engine, field) || conditionalRules(field));
 
   const handleChange = useCallback((value: unknown) => onChange(key, value), [key, onChange]);
   const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);
   const handleBlur = useCallback(() => onBlur(key), [key, onBlur]);
   const handleFocus = useCallback(() => onFocus(key), [key, onFocus]);
   const shown = shownOptions(engine, key, field, options, useSyncExternalStore(subscribeNothing, onClient, onServer));
-  const fieldWithOptions = copyField(field, { ...(shown && { options: shown }), ...(path && { key: path, autoAdvance: undefined }) });
+  const rules = fieldRules(engine, field, shown, path);
+  const fieldWithOptions = copyField(field, {
+    ...(rules.options !== field.options && { options: rules.options }),
+    ...(path && { key: path, autoAdvance: undefined }),
+  });
 
   return (
     <FieldResolver
@@ -82,6 +90,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       loading={engine.fieldLoading[key]}
       busy={busy}
       disabled={disabled}
+      readOnly={readOnly || rules.readOnly}
       components={components}
       matrix={columns && { columns, row: row! }}
       reveals={reveals}
