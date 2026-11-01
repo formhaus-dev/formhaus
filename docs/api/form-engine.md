@@ -268,6 +268,28 @@ const values = useSyncExternalStore(
 
 `subscribeValues` runs for `setValue`, group item changes, values cleared or restored by conditions, `reset`, and step skip and its rollback. It may run when the values end up unchanged: a write to a hidden field, a reset to equal content, a skip. It does not run for errors, loading, navigation or a value equal to the current one. Listeners run synchronously, after the general `subscribe` listeners.
 
+## Dirty tracking
+
+`trackDirty(engine)` from `@formhaus/core/dirty` follows the engine and compares its submit values with a baseline. See [Unsaved changes](/guide/unsaved-changes) and the [rules](/spec#unsaved-changes).
+
+```ts
+import { trackDirty } from '@formhaus/core/dirty';
+
+const changes = trackDirty(engine);
+changes.subscribe(() => console.log(changes.dirty, changes.dirtyKeys));
+```
+
+| Member | Description |
+|---|---|
+| `dirty` | `true` when `dirtyKeys` is not empty |
+| `dirtyKeys` | Changed field and group item paths, sorted |
+| `markClean()` | Takes the current values as the baseline |
+| `reset(values?)` | Resets the engine and takes the result as the baseline |
+| `subscribe(listener)` | Runs the listener when `dirtyKeys` changes |
+| `stop()` | Stops following the engine |
+
+Added in 1.9.0.
+
 ## Form events
 
 `onFormEvent` receives every lifecycle event as a `FormEvent`:

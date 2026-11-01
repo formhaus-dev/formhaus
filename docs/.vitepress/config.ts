@@ -80,6 +80,7 @@ export default defineConfig({
           { text: 'Schema Validation', link: '/guide/schema-validation' },
           { text: 'Server-side Validation', link: '/guide/server-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
+          { text: 'Unsaved Changes', link: '/guide/unsaved-changes' },
           { text: 'Testing', link: '/guide/testing' },
           { text: 'Translations', link: '/guide/translations' },
           { text: 'Server Rendering', link: '/guide/ssr' },
