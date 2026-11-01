@@ -34,7 +34,7 @@ export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values 
   return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, checks(engine)));
 }
 
-const checks = ({ validators, messages, visibility, state }: EngineInternals): ValidateOptions => ({
+const checks = ({ validators, messages, visibility }: EngineInternals): ValidateOptions => ({
   validators,
   messages,
   previousValues: visibility.previousValues(),

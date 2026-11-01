@@ -148,7 +148,7 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
   blur: () => void;
   focus: () => void;
   attrs: Attrs & FieldAria & { 'data-testid'?: string };
-  option: (option: OptionView, index: number) => FieldOptionAttrs;
+  option: (option: FieldOption, index: number) => FieldOptionAttrs;
 }
 
 export function optionChecked(value: unknown, option: FieldOption): boolean {

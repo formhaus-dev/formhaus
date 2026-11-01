@@ -154,7 +154,7 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
-    option: (option: OptionView, index: number) => FieldOptionAttrs;
+    option: (option: FieldOption, index: number) => FieldOptionAttrs;
     // (undocumented)
     options: OptionView[];
     // (undocumented)
