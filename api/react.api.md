@@ -23,16 +23,19 @@ import { FormEngineOptions } from '@formhaus/core';
 import { FormErrorsView } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import * as _formhaus_core from '@formhaus/core';
-import { FormRendererHandle } from '@formhaus/core';
+import { FormRendererHandle as FormRendererHandle_2 } from '@formhaus/core';
 import { FormStepProgressView } from '@formhaus/core';
 import { FormStepStatus } from '@formhaus/core';
+import { ForwardRefExoticComponent } from 'react';
 import { FunctionComponent } from 'react';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
 import * as react from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { RefAttributes } from 'react';
 import { RevealView } from '@formhaus/core';
 import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
@@ -207,12 +210,19 @@ export interface FormhausFieldProps {
 }
 
 // @public (undocumented)
-export const FormRenderer: react.ForwardRefExoticComponent<FormRendererProps & react.RefAttributes<FormRendererHandle>>;
-
-export { FormRendererHandle }
+export const FormRenderer: FormRendererComponent;
 
 // @public (undocumented)
-export interface FormRendererProps extends FormEngineOptions {
+export type FormRendererComponent = (<TValues extends object = Record<string, unknown>>(props: FormRendererProps<TValues> & RefAttributes<FormRendererHandle>) => ReactElement | null) & ForwardRefExoticComponent<FormRendererProps & RefAttributes<FormRendererHandle>>;
+
+// @public (undocumented)
+export interface FormRendererHandle extends FormRendererHandle_2 {
+    // (undocumented)
+    readonly engine: FormEngine;
+}
+
+// @public (undocumented)
+export interface FormRendererProps<TValues extends object = Record<string, unknown>> extends FormEngineOptions {
     // (undocumented)
     actionsComponent?: ComponentType<FormActionsProps>;
     // (undocumented)
@@ -232,6 +242,8 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     headingLevel?: HeadingLevel;
     // (undocumented)
+    id?: string;
+    // (undocumented)
     initialValues?: Record<string, unknown>;
     // (undocumented)
     keepValues?: boolean;
@@ -250,7 +262,7 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     onStepValidate?: StepValidateFn;
     // (undocumented)
-    onSubmit: SubmitHandler;
+    onSubmit: (values: TValues, skippedSteps: string[]) => ReturnType<SubmitHandler>;
     // (undocumented)
     onValuesChange?: (values: Readonly<Record<string, unknown>>) => void;
     // (undocumented)
@@ -291,7 +303,7 @@ export interface GroupItemComponentProps extends GroupItemView {
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 // @public (undocumented)
-export const HeadlessFormRenderer: react.ForwardRefExoticComponent<FormRendererProps & react.RefAttributes<FormRendererHandle>>;
+export const HeadlessFormRenderer: FormRendererComponent;
 
 // @public (undocumented)
 export function HiddenField(props: FieldComponentProps): react.JSX.Element;
