@@ -4,8 +4,8 @@ import { Fragment, useContext } from 'react';
 import { LabelContext } from '../labels';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { fieldId, optionProps } from './fieldProps';
-import { OptionImage } from './OptionImage';
+import { choiceProps, fieldId } from './fieldProps';
+import { OptionText } from './OptionText';
 import { Reveal } from './Reveal';
 
 export function MultiselectField(props: FieldComponentProps) {
@@ -23,8 +23,7 @@ export function MultiselectField(props: FieldComponentProps) {
             {dividerBefore(field, options, index) && <div className="fh-field__option-divider">{text('or')}</div>}
             <div className="fh-field__multiselect-option">
               <input
-                {...optionProps(props, opt.value)}
-                id={optionId}
+                {...choiceProps(props, opt, optionId)}
                 name={field.key}
                 type="checkbox"
                 className="fh-field__checkbox"
@@ -33,10 +32,7 @@ export function MultiselectField(props: FieldComponentProps) {
                 aria-controls={opt.reveal?.id}
                 aria-expanded={opt.reveal?.open}
               />
-              <label className="fh-field__multiselect-label" htmlFor={optionId}>
-                {opt.label}
-              </label>
-              <OptionImage option={opt} />
+              <OptionText option={opt} id={optionId} variant="multiselect" />
             </div>
             <Reveal reveal={opt.reveal} />
           </Fragment>

@@ -1,4 +1,14 @@
-import { fieldState, fieldValue, freeText, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
+import {
+  fieldState,
+  fieldValue,
+  freeText,
+  optionAttrs,
+  optionChecked,
+  readOnlyAttrs,
+  type FieldAria,
+  type FieldControl,
+  type FieldView,
+} from '@formhaus/core/fields';
 import { type ChangeEvent, useState } from 'react';
 import { optionProps } from './fields/fieldProps';
 import type { FieldComponentProps } from './types';
@@ -31,6 +41,7 @@ function fieldView(props: FieldComponentProps, [typed, setTyped]: [string, (text
     id: state.id,
     name: state.name,
     disabled: state.disabled,
+    readOnly: readOnlyAttrs(props).readOnly,
     placeholder: state.placeholder,
     inputMode: state.inputMode,
     autoComplete: field.autocomplete,
@@ -58,6 +69,7 @@ function fieldView(props: FieldComponentProps, [typed, setTyped]: [string, (text
       ...control,
       'aria-invalid': state.aria['aria-invalid'],
       'aria-required': state.aria['aria-required'],
+      'aria-readonly': state.aria['aria-readonly'],
       value: text,
       onChange: onInput,
     },
@@ -68,7 +80,7 @@ function fieldView(props: FieldComponentProps, [typed, setTyped]: [string, (text
       name: state.name,
       value: option.value,
       checked: optionChecked(value, option),
-      disabled: state.disabled,
+      ...optionAttrs(option, state.optionId(index), state.disabled),
     }),
   };
 }
