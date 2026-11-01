@@ -1,28 +1,25 @@
 import type { FormEngine } from '../engine';
+import type { EngineInternals } from '../engine/runtime-internals';
+import { keysOf, sameValue } from '../validation/same-value';
 import { isPlainEntry } from '../validation/type-checks';
 import { itemPath } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
-export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resetCount'>;
-
 export interface DirtyTracker {
   readonly dirty: boolean;
   readonly dirtyKeys: readonly string[];
   markClean(): void;
-  reset(values?: Record<string, unknown>): void;
   subscribe(listener: () => void): () => void;
   stop(): void;
 }
 
-const keysOf = (...objects: Values[]) => new Set(objects.flatMap((object) => Object.keys(object)));
-
-function same(a: unknown, b: unknown): boolean {
-  if (Object.is(a, b)) return true;
-  if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((item, index) => same(item, b[index]));
-  return (
-    isPlainEntry(a) && isPlainEntry(b) && [...keysOf(a as Values, b as Values)].every((key) => same((a as Values)[key], (b as Values)[key]))
-  );
+interface Baseline {
+  source: EngineInternals['source'];
+  compared: EngineInternals['source'];
+  values: Values;
+  skipped: [string, string[]][];
+  payload: Values;
 }
 
 const itemList = (value: unknown): value is Values[] => Array.isArray(value) && value.every(isPlainEntry);
@@ -32,29 +29,47 @@ function changedKeys(baseline: Values, values: Values): string[] {
   for (const key of keysOf(baseline, values)) {
     const before = baseline[key];
     const after = values[key];
-    if (same(before, after)) continue;
+    if (sameValue(before, after)) continue;
     if (!itemList(before) || !itemList(after) || before.length !== after.length) keys.push(key);
     else
       before.forEach((item, index) => {
-        for (const field of keysOf(item, after[index])) if (!same(item[field], after[index][field])) keys.push(itemPath(key, index, field));
+        for (const field of keysOf(item, after[index]))
+          if (!sameValue(item[field], after[index][field])) keys.push(itemPath(key, index, field));
       });
   }
   return keys.sort();
 }
 
-export function trackDirty(engine: DirtySource): DirtyTracker {
+function replayed(engine: FormEngine<object>, { source, values, skipped }: Baseline): Values {
+  const internals = engine as unknown as EngineInternals;
+  const { validators, hiddenValues } = internals.lifecycle;
+  const shadow = new (engine.constructor as typeof FormEngine)(source, values, { validators, hiddenValues, onWarning: () => {} });
+  for (const [id, keys] of skipped) (shadow as unknown as EngineInternals).skipped.set(id, keys);
+  shadow.replaceDefinition(internals.source);
+  return shadow.getSubmitValues();
+}
+
+export function trackDirty(engine: FormEngine<object>): DirtyTracker {
+  const internals = engine as unknown as EngineInternals;
   const listeners = new Set<() => void>();
-  let baseline: Values;
+  let baseline: Baseline;
   let resetCount: number;
   let keys: readonly string[] = [];
   const markClean = () => {
-    baseline = engine.getSubmitValues() as Values;
+    baseline = {
+      source: internals.source,
+      compared: internals.source,
+      values: { ...engine.getValuesSnapshot() },
+      skipped: [...internals.skipped],
+      payload: engine.getSubmitValues() as Values,
+    };
     resetCount = engine.resetCount;
     update();
   };
   const update = () => {
     if (resetCount !== engine.resetCount) return markClean();
-    const next = changedKeys(baseline, engine.getSubmitValues() as Values);
+    if (baseline.compared !== internals.source) baseline = { ...baseline, compared: internals.source, payload: replayed(engine, baseline) };
+    const next = changedKeys(baseline.payload, engine.getSubmitValues() as Values);
     if (next.length === keys.length && next.every((key, index) => key === keys[index])) return;
     keys = next;
     for (const listener of listeners) listener();
@@ -69,7 +84,6 @@ export function trackDirty(engine: DirtySource): DirtyTracker {
       return keys;
     },
     markClean,
-    reset: (values) => engine.reset(values),
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);
