@@ -153,8 +153,8 @@ The main entry also exports the functions the engine uses for conditions and val
 | `evaluateCondition(condition, values)` | `boolean` | Tests one [condition](/spec#conditions) against `values` |
 | `isVisible(node, values)` | `boolean` | Applies the `show` and `showAny` conditions of a field, section, group or step |
 | `isActionDisabled(action, values)` | `boolean` | Applies the `disabled` conditions of an action |
-| `validateFieldValue(field, value, values, { validators?, messages? }?)` | `string \| null` | The first error of one field, or `null` |
-| `validateFields(nodes, values, { validators?, messages? }?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
+| `validateFieldValue(field, value, values, { validators?, messages?, previousValues? }?)` | `string \| null` | The first error of one field, or `null`. `previousValues` holds stored answers in the shape of `values`; a disabled option they hold stays valid |
+| `validateFields(nodes, values, { validators?, messages?, previousValues? }?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
 | `validateStep(step, values, { validators?, messages? }?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
 | `recallText(definition, text, values, { item?, lang?, format?, engine? }?)` | `string` | Resolves the [recall tokens](/spec#answer-recall) of a text with the values from `getSubmitValues()`. Pass `engine` to follow its active path |
 | `recallStatic(definition, text, group?)` | `string` | Replaces each recall token with the label of its field, for texts that stand for many submissions |
@@ -171,6 +171,7 @@ Added in 0.14.0. See [Repeatable groups](/guide/groups).
 | `items(key)` | `GroupItem[]` | `{ id, fields }` for each item of a visible group: a stable id and the visible item fields |
 | `addItem(key)` | `boolean` | Adds an item with the item field defaults. `false` at the maximum or for a hidden group |
 | `removeItem(key, index)` | `boolean` | Removes an item and moves later item errors to their new index. `false` at the minimum or out of range |
+| `moveItem(key, from, to)` | `boolean` | Moves an item with its values, id, errors and loading state. `false` for a hidden group, an index out of range or `from === to`. Added in 1.9.0 |
 | `setItemValue(key, index, field, value)` | `void` | Writes one item field. Same as `setValue('<key>.<index>.<field>', value)` |
 
 Item errors use the path `<group>.<index>.<field>` with a 0-based index. `setErrors()`, `validateField()` and `goToStepWithField()` accept these paths.
