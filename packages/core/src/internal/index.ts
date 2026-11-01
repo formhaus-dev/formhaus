@@ -10,6 +10,7 @@ export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { engineLabel, labelFor } from '../i18n/labels';
 export { definitionSource, refreshLocale } from './locale';
 export { actionsView, actionValues } from './actions';
+export { engineOf, submitState } from './submit-state';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { builtInFields, fieldComponentsByName, mergeFieldComponents } from './field-components';
