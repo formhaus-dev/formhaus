@@ -26,6 +26,22 @@ export interface ParseOptions {
 export function renderToStaticMarkup(definition: FormDefinition, options?: StaticMarkupOptions): string;
 
 // @public (undocumented)
+export interface StaticAction {
+    // (undocumented)
+    autofocus?: string;
+    // (undocumented)
+    label: string;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    novalidate?: boolean;
+    // (undocumented)
+    secondaryActions?: readonly StaticAction[];
+    // (undocumented)
+    value: string;
+}
+
+// @public (undocumented)
 export interface StaticMarkupOptions extends Pick<FormEngineOptions, 'locale' | 'messages' | 'lang' | 'seed' | 'research' | 'hiddenValues'> {
     // (undocumented)
     action?: string;
