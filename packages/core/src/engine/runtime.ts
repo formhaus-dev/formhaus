@@ -8,7 +8,8 @@ import { addItem, groupItems, moveItem, removeItem, setItemValue, type GroupItem
 import { changeStep, goToStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
-import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
+import { applyValidationErrors, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
+import { errorKeys, hiddenErrors } from './error-keys';
 import { submitForm } from './submission';
 import { loadDefinition, replaceDefinition } from './replace-definition';
 import { writeValue } from './write-value';
@@ -52,19 +53,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return this.state.errors;
   }
   get topLevelErrors(): readonly string[] {
-    const { errors, topLevelErrors, values } = this.state;
-    if (Object.keys(errors).length === 0) return [...topLevelErrors];
-    return [
-      ...topLevelErrors,
-      ...this.visibility.allFields.flatMap(
-        (field) =>
-          (field.type === 'hidden' &&
-            errors[field.key] &&
-            (this.visibility.activeField(field.key, values) ?? field) === field &&
-            errors[field.key]) ||
-          [],
-      ),
-    ];
+    return [...this.state.topLevelErrors, ...hiddenErrors(this as never)];
   }
   get currentStepIndex(): number {
     return this.state.currentStepIndex;
