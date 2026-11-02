@@ -69,10 +69,17 @@ describe('fieldDomId', () => {
     ];
     const definition: FormDefinition = { id: 'f', title: '', formatVersion: '1.7', submit: { label: 'Send' }, fields };
     const ids = fields.map(({ key }) => fieldDomId('f', key, definition));
-    expect(ids.filter((id, index) => id === `f-${fields[index].key}`)).toEqual(['f-plan', 'f-nps', 'f-city', 'f-docs', 'f-crew']);
+    expect(ids.filter((id, index) => id === `f-${fields[index].key}`)).toEqual([
+      'f-plan',
+      'f-nps',
+      'f-city',
+      'f-docs',
+      'f-crew-confirm',
+      'f-crew-error',
+    ]);
     for (const [index, id] of ids.entries()) expect(id).toMatch(new RegExp(`^f-${fields[index].key}(-[0-9a-z]+)?$`));
-    expect(itemDomId('f', 'crew', 0, 'name', definition)).toBe('f-crew--0--name');
-    expect(itemDomId('f', 'crew', 0, 'name-error', definition)).toMatch(/^f-crew--0--name-error-[0-9a-z]+$/);
+    expect(itemDomId('f', 'crew', 0, 'name', definition)).toMatch(/^f-crew-[0-9a-z]+--0--name$/);
+    expect(itemDomId('f', 'crew', 0, 'name-error', definition)).toMatch(/^f-crew-[0-9a-z]+--0--name-error-[0-9a-z]+$/);
     expect(fieldDomId('f', 'plan-helper', definition)).toBe(fieldDomId('f', 'plan-helper', { ...definition, fields: [...fields] }));
   });
 
