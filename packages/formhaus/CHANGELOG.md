@@ -1,5 +1,11 @@
 # formhaus
 
+## 0.21.7
+
+### Patch Changes
+
+- The `formhaus-create-form` skill sets format 1.9 for hidden fields in groups.
+
 ## 0.21.6
 
 ### Patch Changes
