@@ -6,7 +6,7 @@ export const REACT_EXTERNAL = ['react', 'react/*', 'react-dom', 'react-dom/*'];
 export const VUE_EXTERNAL = ['vue'];
 const EXTERNAL = { core: [], react: REACT_EXTERNAL, vue: VUE_EXTERNAL };
 
-const SUBPATHS = ['cloud', 'i18n', 'fix', 'research', 'schema', 'dirty', 'fields'];
+const SUBPATHS = ['cloud', 'i18n', 'fix', 'research', 'schema', 'dirty', 'fields', 'html'];
 
 const ENTRIES = {
   core: { pkg: 'core' },

@@ -33,6 +33,7 @@ export default defineConfig([
       controls: 'src/controls/index.ts',
       schema: 'src/schema/index.ts',
       dirty: 'src/dirty/index.ts',
+      html: 'src/html/index.ts',
     },
     format: ['esm'],
     external: ['@formhaus/core/fields'],
@@ -41,14 +42,15 @@ export default defineConfig([
     splitting: true,
     target: 'es2020',
   },
-  {
+  ...[
+    { entry: { server: 'src/server/index.ts' }, globalName: 'Formhaus', target: 'es2017' },
+    { entry: { html: 'src/html/index.ts' }, globalName: 'FormhausHtml', target: 'es2020' },
+  ].map((bundle) => ({
     ...shared,
-    entry: { server: 'src/server/index.ts' },
-    format: ['iife'],
+    ...bundle,
+    format: ['iife' as const],
     minify: true,
-    globalName: 'Formhaus',
-    target: 'es2017',
     outExtension: () => ({ js: '.iife.js' }),
     banner: { js: 'typeof console==="undefined"&&(globalThis.console={log:function(){},warn:function(){},error:function(){}});' },
-  },
+  })),
 ]);

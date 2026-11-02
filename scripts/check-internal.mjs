@@ -14,6 +14,7 @@ const ENTRIES = {
     'controls',
     'schema',
     'dirty',
+    'html',
     ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
   ],
   react: ['index', 'cloud', 'controls', 'dirty', 'reorder'],

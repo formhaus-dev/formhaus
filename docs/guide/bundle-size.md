@@ -13,17 +13,17 @@ Gzipped size of the code an app pays for each Formhaus entry and for other form 
 
 | App imports | Measured |
 |---|---|
-| Every export of `@formhaus/core` | 32.5 KB |
-| Every export of `@formhaus/core` and `@formhaus/react` | 38.6 KB |
-| Every export of `@formhaus/core` and `@formhaus/vue` | 42.5 KB |
-| `FormEngine` from `@formhaus/core` | 19.7 KB |
-| `useFormEngine` from `@formhaus/react`, with core | 20.8 KB |
-| `useFormEngine` from `@formhaus/vue`, with core | 20.7 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 37.6 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 41.2 KB |
-| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 15.8 KB |
-| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 33.8 KB |
-| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 37.4 KB |
+| Every export of `@formhaus/core` | 33.0 KB |
+| Every export of `@formhaus/core` and `@formhaus/react` | 39.2 KB |
+| Every export of `@formhaus/core` and `@formhaus/vue` | 43.2 KB |
+| `FormEngine` from `@formhaus/core` | 20.0 KB |
+| `useFormEngine` from `@formhaus/react`, with core | 21.0 KB |
+| `useFormEngine` from `@formhaus/vue`, with core | 20.9 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 38.3 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 41.9 KB |
+| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 15.9 KB |
+| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 34.4 KB |
+| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 38.0 KB |
 
 <!-- size:apps:end -->
 
@@ -35,10 +35,10 @@ The entry you import sets the size. React and Vue are not counted.
 
 | Entry | You write | React | Vue |
 |---|---|---|---|
-| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 19.7 KB | 19.7 KB |
-| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 20.8 KB | 20.7 KB |
-| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 32.6 KB | 34.5 KB |
-| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 37.6 KB | 41.2 KB |
+| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 20.0 KB | 20.0 KB |
+| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 21.0 KB | 20.9 KB |
+| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 33.0 KB | 35.0 KB |
+| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 38.3 KB | 41.9 KB |
 
 <!-- size:paths:end -->
 
@@ -48,14 +48,15 @@ These cost the same on any path, and only when imported:
 
 | Import | Adds |
 |---|---|
-| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 9.2 KB |
-| `@formhaus/core/cloud` | 3.4 KB |
-| `@formhaus/core/i18n` | 6.3 KB |
-| `@formhaus/core/fix` | 12.8 KB |
+| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 9.3 KB |
+| `@formhaus/core/cloud` | 3.3 KB |
+| `@formhaus/core/i18n` | 6.4 KB |
+| `@formhaus/core/fix` | 12.9 KB |
 | `@formhaus/core/research` | 0.3 KB |
-| `@formhaus/core/fields` | 3.4 KB |
+| `@formhaus/core/fields` | 3.6 KB |
 | `@formhaus/core/schema` | 0.5 KB |
 | `@formhaus/core/dirty` | 0.5 KB |
+| `@formhaus/core/html` | 9.9 KB |
 | Engine warnings in development | 0 KB in production |
 
 <!-- size:addons:end -->
@@ -109,9 +110,9 @@ Define `process.env.FORMHAUS_TRUSTED` as `"1"` in the bundler to drop the struct
 
 | App imports | Checked | Trusted |
 |---|---|---|
-| `FormEngine` from `@formhaus/core` | 19.7 KB | 15.8 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 37.6 KB | 33.8 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 41.2 KB | 37.4 KB |
+| `FormEngine` from `@formhaus/core` | 20.0 KB | 15.9 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 38.3 KB | 34.4 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 41.9 KB | 38.0 KB |
 
 <!-- size:trusted:end -->
 
@@ -168,9 +169,9 @@ The same entries next to other form libraries. The second table changes only whe
 
 | Formhaus | gzip | State and validation | Rendering | Multi-step | Same validation on the server | JSON definitions |
 |---|---|---|---|---|---|---|
-| `@formhaus/core` `FormEngine` only | 19.7 KB | Yes | No | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/react` | 38.6 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/vue` | 42.5 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` `FormEngine` only | 20.0 KB | Yes | No | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/react` | 39.2 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/vue` | 43.2 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
 
 <!-- size:formhaus:end -->
 
@@ -186,7 +187,7 @@ The same entries next to other form libraries. The second table changes only whe
 | react-jsonschema-form 6.11.0 (`@rjsf/core` + `@rjsf/validator-ajv8`) | 125.3 KB | Yes | Yes | No | AJV runs the JSON Schema on the server | JSON Schema and UI schema |
 | SurveyJS 3.2.1 (`survey-core` + `survey-react-ui`) | 409.3 KB | Yes | Yes | Yes | `onServerValidateQuestions` calls your server check | Yes |
 
-Installed from npm on 2026-10-20: `react-hook-form@7.90.0`, `formik@2.4.9`, `yup@1.7.1`, `@formkit/vue@2.1.2`, `@rjsf/core@6.11.0`, `@rjsf/utils@6.11.0`, `@rjsf/validator-ajv8@6.11.0`, `survey-core@3.2.1`, `survey-react-ui@3.2.1`, `@jsonforms/core@3.8.0`, `@jsonforms/react@3.8.0`, `@jsonforms/vanilla-renderers@3.8.0`, `@tanstack/react-form@1.33.5`. Bundled with esbuild 0.28.2 as in [Method](#method).
+Installed from npm on 2026-11-02: `react-hook-form@7.90.0`, `formik@2.4.9`, `yup@1.7.1`, `@formkit/vue@2.1.2`, `@rjsf/core@6.11.0`, `@rjsf/utils@6.11.0`, `@rjsf/validator-ajv8@6.11.0`, `survey-core@3.2.1`, `survey-react-ui@3.2.1`, `@jsonforms/core@3.8.0`, `@jsonforms/react@3.8.0`, `@jsonforms/vanilla-renderers@3.8.0`, `@tanstack/react-form@1.33.5`. Bundled with esbuild 0.28.2 as in [Method](#method).
 
 <!-- size:libraries:end -->
 

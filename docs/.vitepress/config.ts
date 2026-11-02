@@ -84,6 +84,7 @@ export default defineConfig({
           { text: 'Testing', link: '/guide/testing' },
           { text: 'Translations', link: '/guide/translations' },
           { text: 'Server Rendering', link: '/guide/ssr' },
+          { text: 'Static HTML', link: '/guide/static-html' },
           { text: 'Research', link: '/guide/research' },
           { text: 'Custom Fields', link: '/guide/custom-fields' },
           { text: 'Design Systems', link: '/guide/design-systems' },

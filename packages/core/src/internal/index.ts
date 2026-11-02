@@ -20,7 +20,6 @@ export { errorDomId, itemHasContent, itemLimits, itemTitle } from './items';
 export { warnMissingComponents } from './missing-components';
 export {
   dividerBefore,
-  imageSource,
   loadOptions,
   optionSources,
   optionTexts,
@@ -31,6 +30,7 @@ export {
   type OptionSource,
   type OptionsProvider,
 } from './options';
+export { imageSource } from './urls';
 export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
 export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal';
