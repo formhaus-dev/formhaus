@@ -50,6 +50,7 @@ export type LabelKey =
   | 'moveUp'
   | 'moveDown'
   | 'itemMoved'
+  | 'readOnly'
   | 'or'
   | 'select';
 
