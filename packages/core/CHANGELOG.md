@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 1.12.1
+
+### Patch Changes
+
+- Fixed `renderToStaticMarkup()` and `checkDefinition()` taking quadratic time on fields with thousands of options.
+
 ## 1.12.0
 
 ### Minor Changes
