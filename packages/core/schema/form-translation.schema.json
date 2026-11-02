@@ -531,6 +531,16 @@
             }
           ]
         },
+        "readOnly": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
+        },
         "or": {
           "anyOf": [
             {

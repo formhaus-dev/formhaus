@@ -49,6 +49,7 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = /* @__PURE__ *
   moveUp: 'Move up',
   moveDown: 'Move down',
   itemMoved: '{item} moved to position {position}',
+  readOnly: 'Read only',
   or: 'or',
   select: 'Select',
 });
