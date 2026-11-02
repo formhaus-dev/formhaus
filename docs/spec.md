@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.8**. `@formhaus/core` 1.9 and later implement it. Format 1.7, implemented by `@formhaus/core` 1.7 and 1.8, is 1.8 without [option descriptions and disabled options](#option-descriptions-and-disabled-options), [read-only fields](#read-only-fields) and [reorderable groups](#reordering-items). Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.9**. `@formhaus/core` 1.10 and later implement it. Format 1.8, implemented by `@formhaus/core` 1.9, is 1.9 without [hidden fields in groups](#hidden-fields-in-groups). Format 1.7, implemented by `@formhaus/core` 1.7 and 1.8, is 1.8 without [option descriptions and disabled options](#option-descriptions-and-disabled-options), [read-only fields](#read-only-fields) and [reorderable groups](#reordering-items). Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.8"`. Without it, core reads the definition as 1.8, but shows `{{key}}` tokens as written, keeps one file in a `file` field and ignores the 1.8 properties. A minor version newer than 1.8 is also read as 1.8. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.9"`. Without it, core reads the definition as 1.9, but shows `{{key}}` tokens as written, keeps one file in a `file` field, ignores the 1.8 properties and rejects hidden fields in groups. A minor version newer than 1.9 is also read as 1.9. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -50,6 +50,8 @@ A definition with a field `randomize` or an option `pinned` MAY declare `"format
 A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients. The renderers of core 1.6 and older draw a file list as a picker for one file and submit one file, which a 1.7 server reads as a list of one. A `minLength` above 1 then fails on the server.
 
 An option `description` or `disabled`, a field `readOnly` and a group `reorderable` MUST declare `"formatVersion": "1.8"` or newer. Without it, and in core 1.8 and older, core reports them as `unknown-property`, and the engine, `validateSubmission()` and the renderers ignore them, so a definition written before 1.8 behaves as before. `checkDefinition()` warns about them without format 1.8. The `validateSubmission()` of core 1.8 and older accepts a disabled option. Upgrade the server that runs `validateSubmission()` before the clients.
+
+A group with a `hidden` field MUST declare `"formatVersion": "1.9"` or newer. Without it, and in core 1.9 and older, core reports the field as `invalid-nesting`: the constructor and `validateSubmission()` throw. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ## Document structure
 
@@ -138,7 +140,7 @@ A `\n` in a step or section `description`, a field or group `helperText` or a st
 | `time` | string `HH:mm`, 24-hour |
 | `scale`, `rating` | integer number, the selected point. See [Scale and rating](#scale-and-rating) |
 
-A `hidden` field renders no label and no focusable control. Its value comes from the initial values, then its `source`, then `defaultValue`. Its value is text of at most `maxLength` characters, or 2000 without it. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped.
+A `hidden` field renders no label and no focusable control. Its value comes from the initial values, then its `source`, then `defaultValue`. Its value is text of at most `maxLength` characters, or 2000 without it. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped. For a `hidden` field inside a group, see [Hidden fields in groups](#hidden-fields-in-groups).
 
 A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, `page`, `pageTitle`, `language`, `timezone`, `device` and `country`. Any other value is an `unknown-source` or `invalid-type` error. A `source` on another field type is a `source-not-applicable` warning and is ignored. Renderers resolve sources in the browser after mount, without marking a change, from this context:
 
@@ -486,7 +488,7 @@ A group is a node with `type: "group"`. Its value is an array of items. Each ite
 
 Rules:
 
-- A group MAY appear in `step.fields`, in single-step `fields` and in a section. A group MUST NOT contain a section, another group, or a `file` or `hidden` field. The constructor throws on them (`invalid-nesting`).
+- A group MAY appear in `step.fields`, in single-step `fields` and in a section. A group MUST NOT contain a section, another group or a `file` field, and below format 1.9 a `hidden` field. The constructor throws on them (`invalid-nesting`).
 - Item keys MUST be unique inside the group and MUST NOT repeat a field or section key outside it. No other key MAY start with the group key followed by `.`, because [error paths](#error-paths) use that form. The constructor throws on these (`duplicate-key`). Two groups MAY use the same item keys.
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
 - `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
@@ -496,6 +498,40 @@ A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. 
 An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed or moved, and removing an item forgets its own.
 
 A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility).
+
+### Hidden fields in groups
+
+From format 1.9, a group MAY contain `hidden` fields. They carry item data the user does not edit, such as a stored id.
+
+```json
+{
+  "formatVersion": "1.9",
+  "id": "team",
+  "title": "Team",
+  "submit": { "label": "Save" },
+  "fields": [
+    {
+      "key": "members",
+      "type": "group",
+      "label": "Members",
+      "fields": [
+        { "key": "id", "type": "hidden", "label": "Member id", "defaultValue": "new" },
+        { "key": "name", "type": "text", "label": "Name" }
+      ]
+    }
+  ]
+}
+```
+
+- Its value in an item comes from the item in the initial values, or from its `defaultValue` when the item does not have it or comes from `defaultItems`, Add or Skip.
+- The value is part of its item: it moves with the item on `moveItem()`, is removed with it on `removeItem()`, and is submitted in it.
+- It renders no label and no visible control, like a top-level `hidden` field. An item that holds only `hidden` values has no content for the remove confirmation.
+- Its conditions, rules and type check work like those of a top-level `hidden` field, per item. Its value is text of at most `maxLength` characters, or 2000 without it, and built-in messages are wrapped in the `hidden` message template.
+- While its item field is active, an error under its [item path](#error-paths) is a form-level error: `topLevelErrors` lists it with the errors of top-level `hidden` fields, in field order and item by item, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its path. A server error under its path is handled the same way and does not open its step.
+- When its item conditions match again, it gets back the value its item started with, never its last value.
+- A `source` on it is a `source-in-group` error.
+- [Unsaved changes](#unsaved-changes) report it by item path.
+- `validateSubmission()` returns it in its item after the type check and rules, like any item field. It drops the value when the item conditions hide the field, unless `hiddenValues` is `"keep"`. The client sets every value, so the server MUST NOT trust a `hidden` item value it did not write.
 
 `validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more items than its item limit (100 without `maxLength`, at most 1000), with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 
@@ -928,7 +964,7 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 
 `errors` keys are field keys or [item paths](#error-paths). An item path refers to the items as they were sent; errors of a group whose value changed during the request are dropped. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
 
-1. A key of a visible field on the active path, or the path of a visible item field of an existing item, becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
+1. A key of a visible field on the active path, or the path of a visible item field of an existing item, becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden`, at top level or in a group item, stays under its key or path and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
 4. The built-in renderers apply the focus rule of a failed Submit on that step after it renders: the error summary for two or more errors, otherwise the first invalid field on the step: the checked option of a group, or its first enabled control.
@@ -1187,7 +1223,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `route-target` | error | A route target that is not a later declared step id or `null` |
 | `unknown-field` | error, warning for `optionsDependsOn` | A condition, `matchField` or `optionsDependsOn` key that is not a field key, including a section key |
 | `group-scope` | error | A condition or `matchField` outside a group that uses a field inside it, or an item field that uses a field of another group |
-| `invalid-nesting` | error | A section inside a section or a group, or a group, `file` or `hidden` field inside a group |
+| `invalid-nesting` | error | A section inside a section or a group, or a group or `file` field inside a group, or a `hidden` field inside a group below format 1.9 |
 | `forward-reference` | error | A field or route condition on a later step, or a step condition on the same or a later step |
 | `condition-operator-count` | error | A condition with no operator or with several |
 | `unknown-operator` | error | A condition key that is not an operator |
@@ -1201,6 +1237,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-columns` | error | A number `columns` that is not a whole number from 1 to 4 |
 | `invalid-scale` | error | A `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points |
 | `unknown-source` | error | A `source` string that is not a source name |
+| `source-in-group` | error | A `source` on a `hidden` field inside a group |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `contains-not-list` | warning | `contains` or `notContains` on a built-in field that does not hold a list, or on a group. Only `multiselect` holds a list; custom types are not checked |
 | `contains-not-in-options` | warning | A `contains` or `notContains` value that is not one of the static `options` of the `multiselect` |
