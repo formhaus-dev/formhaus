@@ -46,7 +46,7 @@ The format each node type and property needs:
 | Field `randomize`, option `pinned` | 1.6 | yes |
 | Field `multiple` on `file` | 1.7 | yes |
 | Option `description` and `disabled`, field `readOnly`, group `reorderable` | 1.8 | yes |
-| `hidden` fields in a group | 1.9 | rejects it with `invalid-nesting` |
+| `hidden` fields in a group | 1.9 | no, `invalid-nesting` error |
 
 Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall, file lists and the 1.8 properties are the features the current core turns off below their format: the text shows `{{key}}` as written, a `file` field with `multiple` keeps one file, and option `description` and `disabled`, `readOnly` and `reorderable` are ignored. The [specification](/spec#versioning) lists what older cores do with each feature.
 
