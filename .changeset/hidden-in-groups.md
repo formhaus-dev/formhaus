@@ -10,5 +10,4 @@
 - Errors of hidden item fields are listed in `topLevelErrors` and left out of the error summary and step error counts.
 - `checkDefinition()` reports `source-in-group` for a `source` on a hidden field in a group.
 - An item that holds only hidden values no longer asks before Remove.
-- An item written with `setValue()` on its group gets the `defaultValue` of the fields it does not have, and its start values come back when its item conditions match again.
 - `capabilities` in `@formhaus/mcp` describes hidden fields in groups.

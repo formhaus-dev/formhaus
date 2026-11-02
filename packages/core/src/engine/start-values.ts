@@ -1,6 +1,5 @@
 import type { FormField, FormGroup } from '../types';
 import { hasOwn, isEntry, itemKey, itemsOf } from '../visibility/nodes';
-import { createValues } from './engine-utils';
 
 type Values = Record<string, unknown>;
 
@@ -42,14 +41,18 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       for (const key of Object.keys(seeds)) memory.set(key, undefined);
     },
 
-    remember(key: string, value: unknown, written = false): void {
+    remember(key: string, value: unknown, written = false, shown?: (group: FormGroup, item: Values) => FormField[]): void {
       if (!remembering) return;
       memory.set(key, value);
       if (!written) return;
       writes?.add(key);
-      const group = groups.find((candidate) => candidate.key === key);
-      for (const item of group ? itemsOf(value) : [])
-        if (isEntry(item) && !itemSeeds.has(itemKey(item))) itemSeeds.set(itemKey(item), { ...createValues(group!.fields), ...item });
+      const group = shown && groups.find((candidate) => candidate.key === key);
+      for (const item of group ? itemsOf(value) : []) {
+        if (!isEntry(item) || itemSeeds.has(itemKey(item))) continue;
+        const visible = shown!(group!, item);
+        const defaults = group!.fields.filter((field) => !visible.includes(field) && field.defaultValue !== undefined);
+        itemSeeds.set(itemKey(item), { ...Object.fromEntries(defaults.map((field) => [field.key, field.defaultValue])), ...item });
+      }
     },
 
     watchWrites(): () => Set<string> {

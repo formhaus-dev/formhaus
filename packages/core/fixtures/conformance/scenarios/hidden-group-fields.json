@@ -200,7 +200,7 @@
       ]
     },
     {
-      "name": "gives items written with setValue their defaults and start values",
+      "name": "stores items written with setValue as given and restores their start values",
       "steps": [
         {
           "do": "setValue",
@@ -226,11 +226,23 @@
                   "id": "a1",
                   "name": "Ann",
                   "role": "admin",
-                  "grant": "g2",
-                  "note": "hi"
+                  "grant": "g2"
                 },
                 {
-                  "id": "new",
+                  "name": "Bob",
+                  "role": "viewer"
+                }
+              ]
+            },
+            "submitValues": {
+              "members": [
+                {
+                  "id": "a1",
+                  "name": "Ann",
+                  "role": "admin",
+                  "grant": "g2"
+                },
+                {
                   "name": "Bob",
                   "role": "viewer"
                 }
@@ -262,7 +274,6 @@
                   "role": "viewer"
                 },
                 {
-                  "id": "new",
                   "name": "Bob",
                   "role": "admin",
                   "grant": "basic",
@@ -287,11 +298,9 @@
                   "id": "a1",
                   "name": "Ann",
                   "role": "admin",
-                  "grant": "g2",
-                  "note": "hi"
+                  "grant": "g2"
                 },
                 {
-                  "id": "new",
                   "name": "Bob",
                   "role": "admin",
                   "grant": "basic",
