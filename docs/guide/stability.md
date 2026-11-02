@@ -53,7 +53,7 @@ Three rules keep forms stable across minor versions:
 
 | @formhaus/core | formatVersion | formhaus-swift | formhaus-kotlin |
 |---|---|---|---|
-| 1.10.0 | 1.9 | none | 0.10.0 |
+| 1.10.0 | 1.9 | 0.8.0 | 0.10.0 |
 | 1.9.0 | 1.8 | 0.7.0 | 0.9.0 |
 | 1.8.0 | 1.7 | 0.6.0 to 0.6.4 | 0.8.0 to 0.8.1 |
 | 1.6.1 | 1.6 | 0.5.0 | 0.7.0 |
