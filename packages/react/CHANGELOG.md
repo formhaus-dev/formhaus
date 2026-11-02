@@ -1,5 +1,11 @@
 # @formhaus/react
 
+## 1.12.0
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.12.0.
+
 ## 1.11.0
 
 ### Patch Changes
