@@ -23,7 +23,7 @@ describe('capabilities', () => {
       'lte',
     ]);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);
-    expect(result.definition.formatVersion).toBe('1.8');
+    expect(result.definition.formatVersion).toBe('1.9');
     expect(result.recall.syntax).toContain('{{key}}');
     expect(result.definition.formatVersionRule).toContain('Set "1.5" when a text uses {{key}}');
     expect(result.fieldProps.optional).toContain('props');
@@ -34,6 +34,7 @@ describe('capabilities', () => {
     expect(result.definition.formatVersionRule).toContain('Set "1.7" when a file field has multiple');
     expect(result.fieldProps.optional).toContain('readOnly');
     expect(result.definition.formatVersionRule).toContain('Set "1.8" when an option has description or disabled');
+    expect(result.definition.formatVersionRule).toContain('Set "1.9" when a group has a hidden field');
     expect(result.definition.formatVersionRule).toContain('field has autocomplete');
     expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');
