@@ -38,11 +38,20 @@ export function itemHolds(options: ValidateOptions | undefined, group: FormGroup
   const previous = options?.previousValues;
   const fields = group.fields.filter((field) => field.options?.some((option) => option.disabled !== undefined));
   if (!previous || !fields.length) return () => options;
-  const pools = fields.map(({ key }) => [key, occurrences(itemsOf(previous[group.key]), key)] as const);
+  const counts = fields.map((field) => {
+    const disabled = new Set(field.options!.filter((option) => option.disabled !== undefined).map((option) => option.value));
+    const left = new Map<unknown, number>();
+    for (const value of occurrences(itemsOf(previous[group.key]), field.key))
+      if (disabled.has(value)) left.set(value, (left.get(value) ?? 0) + 1);
+    return [field.key, left] as const;
+  });
+  const take = (left: Map<unknown, number>, values: unknown[]) => {
+    const kept = values.filter((value) => (left.get(value) ?? 0) > 0);
+    for (const value of values) if (left.get(value)) left.set(value, left.get(value)! - 1);
+    return kept;
+  };
   const held = items.map((item) => {
-    const entry = Object.fromEntries(pools.map(([key, pool]) => [key, [...pool]]));
-    for (const [key, pool] of pools)
-      for (const value of occurrences([item], key)) if (pool.includes(value)) pool.splice(pool.indexOf(value), 1);
+    const entry = Object.fromEntries(counts.map(([key, left]) => [key, take(left, occurrences([item], key))]));
     return { ...options, previousValues: { ...previous, ...entry } };
   });
   return (index: number): ValidateOptions | undefined => held[index] ?? options;
