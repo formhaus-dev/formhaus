@@ -21,36 +21,53 @@ describe('fieldDomId', () => {
   });
 
   it('keeps the ids of a form whose keys only look alike', () => {
-    const definition = form(['address', 'address-2', 'name', 'name-error-free', 'plan-helpers']);
-    expect(['address', 'address-2', 'name', 'name-error-free', 'plan-helpers'].map((key) => fieldDomId('f', key, definition))).toEqual([
-      'f-address',
-      'f-address-2',
-      'f-name',
-      'f-name-error-free',
-      'f-plan-helpers',
-    ]);
+    const node = (key: string, type: string, extra = {}): FormField => ({ key, type, label: key, ...extra }) as FormField;
+    const fields = [
+      node('address', 'text'),
+      node('address-2', 'text'),
+      node('name', 'text'),
+      node('name-error-free', 'text'),
+      node('company', 'text'),
+      node('company-description', 'text'),
+      node('size', 'radio', { options: [{ value: 's', label: 'S' }] }),
+      node('size-2', 'text'),
+      node('size-0-description', 'text'),
+      node('nps', 'scale', { validation: { min: 0, max: 3 } }),
+      node('nps-9', 'text'),
+      node('nps-anchor-0', 'text'),
+      node('crew', 'group', { fields: [node('name', 'text')] }),
+      node('crew-label', 'text'),
+      node('crew-helper', 'text'),
+    ];
+    const definition: FormDefinition = { id: 'f', title: '', formatVersion: '1.1', submit: { label: 'Send' }, fields };
+    expect(fields.map(({ key }) => fieldDomId('f', key, definition))).toEqual(fields.map(({ key }) => `f-${key}`));
   });
 
   it('moves a field id off the generated ids of another node', () => {
     const node = (key: string, type: string, extra = {}): FormField => ({ key, type, label: key, ...extra }) as FormField;
-    const options = [{ value: 'a', label: 'A' }];
+    const described = [
+      { value: 'a', label: 'A', description: 'First' },
+      { value: 'b', label: 'B', description: 'Second' },
+    ];
     const fields = [
-      node('plan', 'radio', { options }),
+      node('plan', 'radio', { options: described, helperText: 'Pick' }),
       node('plan-helper', 'text'),
       node('plan-1', 'text'),
       node('plan-0-description', 'text'),
-      node('nps', 'scale', { validation: { min: 0, max: 10 } }),
-      node('nps-anchor', 'text'),
-      node('nps-7', 'text'),
-      node('city', 'autocomplete', { options }),
+      node('plan-description', 'text'),
+      node('nps', 'scale', { validation: { min: 0, max: 3 }, options: [{ value: '0', label: 'Low' }] }),
+      node('nps-anchor', 'radio', { options: [{ value: 'x', label: 'X' }] }),
+      node('nps-3', 'text'),
+      node('city', 'autocomplete', { options: described }),
       node('city-list', 'text'),
-      node('docs', 'file'),
+      node('city-label', 'text'),
+      node('docs', 'file', { multiple: true }),
       node('docs-notice', 'text'),
       { key: 'crew', type: 'group', label: 'Crew', fields: [node('name', 'text'), node('name-error', 'text')] } as FormField,
       node('crew-confirm', 'text'),
       node('crew-error', 'text'),
     ];
-    const definition: FormDefinition = { id: 'f', title: '', formatVersion: '1.1', submit: { label: 'Send' }, fields };
+    const definition: FormDefinition = { id: 'f', title: '', formatVersion: '1.7', submit: { label: 'Send' }, fields };
     const ids = fields.map(({ key }) => fieldDomId('f', key, definition));
     expect(ids.filter((id, index) => id === `f-${fields[index].key}`)).toEqual(['f-plan', 'f-nps', 'f-city', 'f-docs', 'f-crew']);
     for (const [index, id] of ids.entries()) expect(id).toMatch(new RegExp(`^f-${fields[index].key}(-[0-9a-z]+)?$`));
