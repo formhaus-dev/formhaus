@@ -118,8 +118,9 @@ export function createVisibility(definition: FormDefinition, keep = false) {
           const shown = itemFields(group, entry, values);
           const hidden = group.fields.filter((field) => !shown.includes(field) && entry[field.key] !== undefined);
           const restored: Values = {};
-          for (const { key } of shown) {
-            const value = entry[key] === undefined ? starts.itemStartValue(item, key) : undefined;
+          for (const field of shown) {
+            const { key } = field;
+            const value = entry[key] === undefined ? starts.itemStartValue(item, field) : undefined;
             if (value !== undefined) restored[key] = value;
           }
           if (!hidden.length && !Object.keys(restored).length) break;
@@ -158,7 +159,7 @@ export function createVisibility(definition: FormDefinition, keep = false) {
         result[group.key] = (result[group.key] as unknown[]).map((item) => {
           if (!isEntry(item)) return item;
           const entry = { ...item };
-          for (const { key } of group.fields) fill(entry, key, starts.itemStartValue(item, key));
+          for (const field of group.fields) fill(entry, field.key, starts.itemStartValue(item, field));
           return keepId(item, entry);
         });
     return result;

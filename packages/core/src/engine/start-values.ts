@@ -101,9 +101,9 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       return remembered ? memory.get(key) : seeds[key];
     },
 
-    itemStartValue(item: unknown, key: string): unknown {
+    itemStartValue(item: unknown, { key, type }: FormField): unknown {
       if (!isEntry(item)) return undefined;
-      const remembered = itemMemory.get(itemKey(item));
+      const remembered = type !== 'hidden' && itemMemory.get(itemKey(item));
       return remembered && hasOwn(remembered, key) ? remembered[key] : itemSeeds.get(itemKey(item))?.[key];
     },
   };

@@ -1,5 +1,5 @@
 import type { FormEngine } from '../engine';
-import { errorKeys } from '../engine/validation-state';
+import { errorKeys } from '../engine/error-keys';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { engineLabel } from '../i18n/labels';
@@ -60,7 +60,8 @@ export function itemHasContent(engine: FormEngine, key: string, index: number): 
   const group = visibility(engine).groups.find((candidate) => candidate.key === key);
   const item = itemsOf(internals(engine).state.values[key])[index];
   if (!group || !isEntry(item)) return false;
-  return group.fields.some(({ key: name, defaultValue }) => {
+  return group.fields.some(({ key: name, type, defaultValue }) => {
+    if (type === 'hidden') return false;
     const value = typeof item[name] === 'string' ? (item[name] as string).trim() : item[name];
     return !isBlank(value) && value !== false && JSON.stringify(value) !== JSON.stringify(defaultValue);
   });
