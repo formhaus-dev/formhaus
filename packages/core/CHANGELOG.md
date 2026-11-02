@@ -1,5 +1,20 @@
 # @formhaus/core
 
+## 1.10.0
+
+### Minor Changes
+
+- Format 1.9: a group may contain `hidden` fields. Below `"formatVersion": "1.9"` they stay an `invalid-nesting` error.
+- A hidden field in a group is submitted with its item, and moves and is removed with it.
+- Errors of hidden fields in a group are listed in `topLevelErrors`.
+- `checkDefinition()` reports `source-in-group` for a `source` on a hidden field in a group.
+- New `readOnly` label ("Read only") in every bundled locale.
+
+### Patch Changes
+
+- `trackDirty` counts `NaN` as equal to `NaN`.
+- Field ids no longer collide with the helper, error, label, option or group button ids of another field. A field keyed `plan-helper` next to `plan` gets a short stable suffix.
+
 ## 1.9.0
 
 ### Minor Changes

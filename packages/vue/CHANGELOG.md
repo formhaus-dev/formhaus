@@ -1,5 +1,17 @@
 # @formhaus/vue
 
+## 1.10.0
+
+### Minor Changes
+
+- Groups render items with hidden fields. Their values are submitted, and their errors are not counted in the error summary or step error counts.
+- Removing an item that holds only hidden values does not ask for confirmation.
+
+### Patch Changes
+
+- Fixed duplicate DOM ids for fields with keys such as `plan` and `plan-helper`.
+- Requires `@formhaus/core` 1.10.0.
+
 ## 1.9.0
 
 ### Minor Changes

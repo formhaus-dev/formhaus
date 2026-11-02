@@ -1,5 +1,16 @@
 # @formhaus/mcp
 
+## 0.15.0
+
+### Minor Changes
+
+- `capabilities` describes hidden fields in groups and format 1.9.
+
+### Patch Changes
+
+- `translation_template` includes the `readOnly` label.
+- Requires `@formhaus/core` 1.10.0.
+
 ## 0.14.0
 
 ### Minor Changes
