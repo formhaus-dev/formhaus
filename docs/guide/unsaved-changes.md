@@ -85,7 +85,7 @@ The tracker compares the [submit values](/spec#submit-payload) with a baseline: 
 - Adding or removing a group item lists the group key. An edit inside an item lists the item path, such as `people.1.email`.
 - Skipping a step drops its values, so they count as changed until the step is included again.
 - `null`, `''` and a missing value all differ. `0` equals `-0`.
-- After `replaceDefinition`, the baseline is compared under the new definition, so new fields with defaults and removed fields do not count as changed. Only edits do.
+- After `replaceDefinition`, the baseline is compared under the new definition, so new fields with defaults and removed fields do not count as changed. Only edits do. To rebuild the definition from app data and keep the baseline, see [Build the definition from app values](/guide/#build-the-definition-from-app-values).
 
 `dirtyKeys` is sorted in code unit order.
 
