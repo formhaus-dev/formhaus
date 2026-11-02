@@ -1,4 +1,4 @@
-import { optionChecked, optionDescriptionId, optionLocked } from '../fields/state';
+import { optionChecked, optionDescriptionId } from '../fields/state';
 import { optionText } from '../fields/options';
 import { scaleView } from '../fields/scale';
 import { dividerBefore, optionTexts } from '../internal/options';
@@ -11,8 +11,19 @@ type OptionVariant = 'radio' | 'multiselect';
 
 const optionsOf = ({ field }: FieldContext): FieldOption[] => (Array.isArray(field.options) ? field.options : []);
 
-const firstOpen = (context: FieldContext): number =>
-  optionsOf(context).findIndex((option) => !optionLocked(option, context.value, context.readOnly));
+interface OptionStates {
+  checked: (option: FieldOption) => boolean;
+  locked: (option: FieldOption) => boolean;
+  firstOpen: number;
+}
+
+function optionStates(context: FieldContext): OptionStates {
+  const { value, readOnly } = context;
+  const selected = Array.isArray(value) ? new Set<unknown>(value) : undefined;
+  const checked = (option: FieldOption): boolean => (selected ? selected.has(option.value) : optionChecked(value, option));
+  const locked = (option: FieldOption): boolean => option.disabled === true || (readOnly && !checked(option));
+  return { checked, locked, firstOpen: optionsOf(context).findIndex((option) => !locked(option)) };
+}
 
 const picture = (option: FieldOption): Html | false => {
   const source = imageSource(option.image);
@@ -37,8 +48,15 @@ function optionLabel(option: FieldOption, id: string, variant: OptionVariant): C
   ];
 }
 
-function optionInput(context: FieldContext, option: FieldOption, id: string, type: 'radio' | 'checkbox', first: boolean): Html {
-  const { field, value, readOnly } = context;
+function optionInput(
+  context: FieldContext,
+  states: OptionStates,
+  option: FieldOption,
+  id: string,
+  type: 'radio' | 'checkbox',
+  first: boolean,
+): Html {
+  const { field } = context;
   return html('input', {
     id,
     name: field.key,
@@ -46,8 +64,8 @@ function optionInput(context: FieldContext, option: FieldOption, id: string, typ
     type,
     class: `fh-field__${type}`,
     value: option.value,
-    checked: optionChecked(value, option),
-    disabled: optionLocked(option, value, readOnly),
+    checked: states.checked(option),
+    disabled: states.locked(option),
     required: type === 'radio' && !!field.validation?.required,
     autofocus: first && context.autofocus,
     'aria-describedby': option.description ? optionDescriptionId(id) : undefined,
@@ -57,6 +75,7 @@ function optionInput(context: FieldContext, option: FieldOption, id: string, typ
 
 export function radio(context: FieldContext): Html {
   const { id } = context;
+  const states = optionStates(context);
   return shell(
     context,
     'radio',
@@ -65,7 +84,7 @@ export function radio(context: FieldContext): Html {
       return html(
         'div',
         { class: 'fh-field__radio-option' },
-        optionInput(context, option, optionId, 'radio', index === firstOpen(context)),
+        optionInput(context, states, option, optionId, 'radio', index === states.firstOpen),
         optionLabel(option, optionId, 'radio'),
       );
     }),
@@ -75,6 +94,7 @@ export function radio(context: FieldContext): Html {
 export function multiselect(context: FieldContext): Html {
   const { id, text, field } = context;
   const options = optionsOf(context);
+  const states = optionStates(context);
   return shell(
     context,
     'multiselect',
@@ -85,7 +105,7 @@ export function multiselect(context: FieldContext): Html {
         html(
           'div',
           { class: 'fh-field__multiselect-option' },
-          optionInput(context, option, optionId, 'checkbox', index === firstOpen(context)),
+          optionInput(context, states, option, optionId, 'checkbox', index === states.firstOpen),
           optionLabel(option, optionId, 'multiselect'),
         ),
       ];
@@ -132,7 +152,8 @@ export function scale(context: FieldContext): Html {
 }
 
 export function select(context: FieldContext): Html {
-  const { field, value, readOnly } = context;
+  const { field, value } = context;
+  const { locked } = optionStates(context);
   const current = textOf(value);
   const placeholder = field.placeholder;
   return shell(
@@ -144,11 +165,7 @@ export function select(context: FieldContext): Html {
       (!!placeholder || current === '') &&
         html('option', { value: '', disabled: true, hidden: !placeholder, selected: current === '' }, placeholder),
       optionsOf(context).map((option) =>
-        html(
-          'option',
-          { value: option.value, disabled: optionLocked(option, value, readOnly), selected: option.value === current },
-          option.label,
-        ),
+        html('option', { value: option.value, disabled: locked(option), selected: option.value === current }, option.label),
       ),
     ),
   );

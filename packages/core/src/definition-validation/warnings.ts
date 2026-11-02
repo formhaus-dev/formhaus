@@ -60,7 +60,8 @@ function valueIssue(target: FormField, operator: string, operand: unknown, path:
     return mismatch(`${JSON.stringify(wrong)} is a ${typeof wrong}, but "${target.key}" holds a ${expected}`, `Use a ${expected} value`);
   const options =
     (expected === 'string' || list) && !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
-  const missing = options && operands.find((item) => !options.includes(item as string));
+  const known = options && new Set<unknown>(options);
+  const missing = known && operands.find((item) => !known.has(item));
   return options && missing !== undefined
     ? mismatch(
         `${JSON.stringify(missing)} is not an option of "${target.key}"`,
@@ -97,11 +98,10 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
         ];
   }
   const values = field.options.map((option) => option.value);
+  const known = new Set<unknown>(values);
   const defaults = field.type === 'multiselect' && Array.isArray(field.defaultValue) ? field.defaultValue : [field.defaultValue];
   const missing =
-    field.defaultValue === undefined || !values.length || field.optionsFrom
-      ? undefined
-      : defaults.find((value) => !values.includes(value as string));
+    field.defaultValue === undefined || !values.length || field.optionsFrom ? undefined : defaults.find((value) => !known.has(value));
   if (missing === undefined) return [];
   return [
     warning(

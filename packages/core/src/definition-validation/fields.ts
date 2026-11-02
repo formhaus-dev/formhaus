@@ -63,9 +63,9 @@ function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry, f
 }
 
 function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
-  const values = (field.options ?? []).map((option) => option.value);
-  return values.flatMap((value, index) =>
-    values.indexOf(value) < index ? [error('duplicate-option-value', `${path}/options/${index}/value`, value)] : [],
+  const seen = new Set<unknown>();
+  return (field.options ?? []).flatMap(({ value }, index) =>
+    seen.size === seen.add(value).size ? [error('duplicate-option-value', `${path}/options/${index}/value`, value)] : [],
   );
 }
 
