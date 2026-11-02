@@ -11,6 +11,8 @@ const NUMBERED = /^-\d+(-description)?$/;
 
 const holds = (parts: Set<string>, part: string) => parts.has(part) || (parts.has('#') && NUMBERED.test(part));
 
+const covers = (owner: Set<string>, rest: string, parts: string[]) => holds(owner, rest) || parts.some((part) => holds(owner, rest + part));
+
 function partsOf(node: FormNode): string[] {
   if (isSection(node)) return node.description ? ['-description'] : [];
   const { type, helperText, options = [], multiple, optionsFrom } = node as FormField;
@@ -36,8 +38,11 @@ const NUMBERED_END = /-\d+(-description)?$/;
 
 function ends(id: string, longest: number): number[] {
   const found = [];
-  for (let index = id.lastIndexOf('-'); index > 0 && index >= id.length - longest; index = id.lastIndexOf('-', index - 1))
+  let index = id.lastIndexOf('-');
+  while (index > 0 && index >= id.length - longest) {
     found.push(index);
+    index = id.lastIndexOf('-', index - 1);
+  }
   return found;
 }
 
@@ -60,24 +65,25 @@ function assign(names: Map<string, string[]>, groups = new Set<string>()): Map<s
     const claims = (id: string, index: number) => {
       const owner = taken.get(id.slice(0, index));
       const rest = id.slice(index);
-      return !!owner && (holds(owner, rest) || parts.some((part) => holds(owner, rest + part)));
+      return !!owner && covers(owner, rest, parts);
     };
-    const claimed = (id: string) =>
-      ends(id, longest).some((index) => claims(id, index)) || (numberedEnd(id) > 0 && claims(id, numberedEnd(id)));
+    const claimed = (id: string) => {
+      const end = numberedEnd(id);
+      return ends(id, longest).some((index) => claims(id, index)) || (end > 0 && claims(id, end));
+    };
     const claiming = (id: string) =>
-      (own.has('#') && numbered.has(id)) ||
-      !!tails.get(id)?.some(([rest, other]) => holds(own, rest) || other.some((part) => holds(own, rest + part)));
+      (own.has('#') && numbered.has(id)) || !!tails.get(id)?.some(([rest, other]) => covers(own, rest, other));
     const clashes = (id: string) => taken.has(id) || (groups.has(key) && nested.has(id)) || claimed(id) || claiming(id);
     let id = base(key);
     for (let seed = key; clashes(id); seed = id) id = `${base(key)}-${fnv1a(seed).toString(36)}`;
     taken.set(id, own);
-    if (numberedEnd(id)) numbered.add(id.slice(0, numberedEnd(id)));
+    const end = numberedEnd(id);
+    if (end) numbered.add(id.slice(0, end));
     for (const index of ends(id, longest)) {
       const owner = id.slice(0, index);
-      tails
-        .set(owner, tails.get(owner) ?? [])
-        .get(owner)!
-        .push([id.slice(index), parts]);
+      const list = tails.get(owner) ?? [];
+      list.push([id.slice(index), parts]);
+      tails.set(owner, list);
     }
     for (let index = id.indexOf('--'); index >= 0; index = id.indexOf('--', index + 1)) nested.add(id.slice(0, index));
     ids.set(key, id);
