@@ -1,5 +1,12 @@
 # @formhaus/core
 
+## 1.12.0
+
+### Minor Changes
+
+- `renderToStaticMarkup()` takes `autofocus`, a field key to focus on load.
+- `renderToStaticMarkup()` takes `secondaryActions`, extra submit buttons with a name and value. They show before the primary button, and Enter still submits the primary one.
+
 ## 1.11.0
 
 ### Minor Changes
