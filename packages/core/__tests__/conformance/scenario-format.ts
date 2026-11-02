@@ -14,7 +14,7 @@ interface ValidatorSpec {
 
 export type Action =
   | { do: 'start' }
-  | { do: 'setValue'; key: string; value: unknown }
+  | { do: 'setValue'; key: string; value?: unknown; number?: 'NaN' }
   | { do: 'setItemValue'; key: string; index: number; field: string; value: unknown }
   | { do: 'addItem'; key: string }
   | { do: 'removeItem'; key: string; index: number }
