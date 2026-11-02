@@ -169,6 +169,8 @@ The renderer always passes `id`. It is optional in the type only so that you can
 | Control | `aria-required="true"` when `field.validation.required` is set |
 | Root of a choice field | a `<fieldset>` with a `<legend>`, or `role="group"` with `aria-labelledby` |
 
+Give any other element of the field an id built the same way, `` `${id}-<part>` ``, such as `` `${id}-hint` ``. The renderer keeps field ids apart from the ids it generates for helper texts, errors, labels, options, scale points and group buttons: a field whose id would equal one of them, such as a field keyed `plan-helper` next to `plan`, gets a short stable suffix, such as `plan-helper-1x2y3z`. A part name of your own is not covered, so pick one that no field key in the form uses after another key and `-`.
+
 ### Field focus
 
 Focus finds the controls of a field by the `id` and by `data-fh` attributes:
