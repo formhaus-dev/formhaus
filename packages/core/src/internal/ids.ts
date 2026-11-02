@@ -9,7 +9,9 @@ const cache = new WeakMap<FormDefinition, Map<string, Map<string, string>>>();
 
 const NUMBERED = /^-\d+(-description)?$/;
 
-const holds = (parts: string[], part: string) => parts.includes(part) || (parts.includes('#') && NUMBERED.test(part));
+const holds = (parts: Set<string>, part: string) => parts.has(part) || (parts.has('#') && NUMBERED.test(part));
+
+const covers = (owner: Set<string>, rest: string, parts: string[]) => holds(owner, rest) || parts.some((part) => holds(owner, rest + part));
 
 function partsOf(node: FormNode): string[] {
   if (isSection(node)) return node.description ? ['-description'] : [];
@@ -32,28 +34,58 @@ function partsOf(node: FormNode): string[] {
   return parts;
 }
 
-const meets = (owner: string, parts: string[], id: string, own: string[]) => {
-  const rest = id.slice(owner.length);
-  return id.startsWith(owner) && rest[0] === '-' && (holds(parts, rest) || own.some((part) => holds(parts, rest + part)));
-};
+const NUMBERED_END = /-\d+(-description)?$/;
+
+function ends(id: string, longest: number): number[] {
+  const found = [];
+  let index = id.lastIndexOf('-');
+  while (index > 0 && index >= id.length - longest) {
+    found.push(index);
+    index = id.lastIndexOf('-', index - 1);
+  }
+  return found;
+}
+
+const numberedEnd = (id: string) => NUMBERED_END.exec(id)?.index ?? 0;
 
 function assign(names: Map<string, string[]>, groups = new Set<string>()): Map<string, string> {
   const ids = new Map<string, string>();
-  const taken = new Map<string, string[]>();
+  const taken = new Map<string, Set<string>>();
+  const numbered = new Set<string>();
+  const nested = new Set<string>();
+  const tails = new Map<string, [string, string[]][]>();
+  const longest = [...names.values()].flat().reduce((most, part) => Math.max(most, part.length), 0);
+  const plain = new Set([...names.keys()].filter((key) => base(key) === key));
   const keys = [...names.keys()].sort(
-    (a, b) =>
-      +groups.has(a) - +groups.has(b) || (groups.has(a) ? (a < b ? 1 : -1) : +(base(b) === b) - +(base(a) === a) || (a < b ? -1 : 1)),
+    (a, b) => +groups.has(a) - +groups.has(b) || (groups.has(a) ? (a < b ? 1 : -1) : +plain.has(b) - +plain.has(a) || (a < b ? -1 : 1)),
   );
-  const prefixes = (id: string) => [...taken.keys()].some((other) => other.startsWith(`${id}--`));
   for (const key of keys) {
-    const own = names.get(key)!;
-    const clashes = (id: string) =>
-      taken.has(id) ||
-      (groups.has(key) && prefixes(id)) ||
-      [...taken].some(([other, parts]) => meets(other, parts, id, own) || meets(id, own, other, parts));
+    const parts = names.get(key)!;
+    const own = new Set(parts);
+    const claims = (id: string, index: number) => {
+      const owner = taken.get(id.slice(0, index));
+      const rest = id.slice(index);
+      return !!owner && covers(owner, rest, parts);
+    };
+    const claimed = (id: string) => {
+      const end = numberedEnd(id);
+      return ends(id, longest).some((index) => claims(id, index)) || (end > 0 && claims(id, end));
+    };
+    const claiming = (id: string) =>
+      (own.has('#') && numbered.has(id)) || !!tails.get(id)?.some(([rest, other]) => covers(own, rest, other));
+    const clashes = (id: string) => taken.has(id) || (groups.has(key) && nested.has(id)) || claimed(id) || claiming(id);
     let id = base(key);
     for (let seed = key; clashes(id); seed = id) id = `${base(key)}-${fnv1a(seed).toString(36)}`;
     taken.set(id, own);
+    const end = numberedEnd(id);
+    if (end) numbered.add(id.slice(0, end));
+    for (const index of ends(id, longest)) {
+      const owner = id.slice(0, index);
+      const list = tails.get(owner) ?? [];
+      list.push([id.slice(index), parts]);
+      tails.set(owner, list);
+    }
+    for (let index = id.indexOf('--'); index >= 0; index = id.indexOf('--', index + 1)) nested.add(id.slice(0, index));
     ids.set(key, id);
   }
   return ids;
