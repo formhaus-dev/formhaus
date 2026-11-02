@@ -27,7 +27,7 @@ dependencies {
 | `formhaus-compose` | The Jetpack Compose renderer. See [Compose components](/guide/integrations/compose). |
 | `formhaus-research` | [Random option order](#random-option-order) for `randomize` fields. |
 
-`formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
+`formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. Your project needs Kotlin 2.3 or later, because the libraries are built with Kotlin 2.4. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
 
 Both ports are 0.x previews. The [compatibility table](/guide/stability#native-ports) lists the core version of every port release.
 
