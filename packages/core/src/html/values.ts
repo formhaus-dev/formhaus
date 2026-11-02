@@ -28,8 +28,9 @@ export function plainActions(actions: unknown): StaticAction[] {
     (action): action is StaticAction =>
       isEntry(action) &&
       typeof action.label === 'string' &&
+      action.label.trim() !== '' &&
       typeof action.name === 'string' &&
-      action.name !== '' &&
+      action.name.trim() !== '' &&
       typeof action.value === 'string',
   );
 }

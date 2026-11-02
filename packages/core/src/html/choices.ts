@@ -11,6 +11,9 @@ type OptionVariant = 'radio' | 'multiselect';
 
 const optionsOf = ({ field }: FieldContext): FieldOption[] => (Array.isArray(field.options) ? field.options : []);
 
+const firstOpen = (context: FieldContext): number =>
+  optionsOf(context).findIndex((option) => !optionLocked(option, context.value, context.readOnly));
+
 const picture = (option: FieldOption): Html | false => {
   const source = imageSource(option.image);
   return (
@@ -62,7 +65,7 @@ export function radio(context: FieldContext): Html {
       return html(
         'div',
         { class: 'fh-field__radio-option' },
-        optionInput(context, option, optionId, 'radio', index === 0),
+        optionInput(context, option, optionId, 'radio', index === firstOpen(context)),
         optionLabel(option, optionId, 'radio'),
       );
     }),
@@ -82,7 +85,7 @@ export function multiselect(context: FieldContext): Html {
         html(
           'div',
           { class: 'fh-field__multiselect-option' },
-          optionInput(context, option, optionId, 'checkbox', index === 0),
+          optionInput(context, option, optionId, 'checkbox', index === firstOpen(context)),
           optionLabel(option, optionId, 'multiselect'),
         ),
       ];

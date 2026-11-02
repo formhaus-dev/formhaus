@@ -28,15 +28,11 @@ export function renderToStaticMarkup(definition: FormDefinition, options?: Stati
 // @public (undocumented)
 export interface StaticAction {
     // (undocumented)
-    autofocus?: string;
-    // (undocumented)
     label: string;
     // (undocumented)
     name: string;
     // (undocumented)
     novalidate?: boolean;
-    // (undocumented)
-    secondaryActions?: readonly StaticAction[];
     // (undocumented)
     value: string;
 }
@@ -45,6 +41,8 @@ export interface StaticAction {
 export interface StaticMarkupOptions extends Pick<FormEngineOptions, 'locale' | 'messages' | 'lang' | 'seed' | 'research' | 'hiddenValues'> {
     // (undocumented)
     action?: string;
+    // (undocumented)
+    autofocus?: string;
     // (undocumented)
     className?: string;
     // (undocumented)
@@ -67,6 +65,8 @@ export interface StaticMarkupOptions extends Pick<FormEngineOptions, 'locale' | 
     options?: Record<string, FieldOption[]>;
     // (undocumented)
     readOnly?: boolean;
+    // (undocumented)
+    secondaryActions?: readonly StaticAction[];
     // (undocumented)
     values?: Record<string, unknown>;
 }

@@ -8,8 +8,6 @@ export interface StaticAction {
   name: string;
   value: string;
   novalidate?: boolean;
-  autofocus?: string;
-  secondaryActions?: readonly StaticAction[];
 }
 
 export interface StaticMarkupOptions
@@ -27,4 +25,6 @@ export interface StaticMarkupOptions
   readOnly?: boolean;
   errorSummary?: boolean | 'top' | 'bottom';
   novalidate?: boolean;
+  autofocus?: string;
+  secondaryActions?: readonly StaticAction[];
 }
