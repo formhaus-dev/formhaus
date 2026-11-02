@@ -16,6 +16,7 @@
   "core/controls",
   "core/schema",
   "core/dirty",
+  "core/html",
   "core/locales/ru",
   "react/cloud",
   "react/controls",

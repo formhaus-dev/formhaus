@@ -5,7 +5,8 @@
   "type": "module",
   "sideEffects": [
     "**/*.css",
-    "dist/server.iife.js"
+    "dist/server.iife.js",
+    "dist/html.iife.js"
   ],
   "engines": {
     "node": ">=22.12"
@@ -59,12 +60,17 @@
       "types": "./dist/dirty.d.ts",
       "default": "./dist/dirty.js"
     },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "default": "./dist/html.js"
+    },
     "./locales/*.json": "./locales/*.json",
     "./locales/*": {
       "types": "./dist/locales/*.d.ts",
       "default": "./dist/locales/*.js"
     },
     "./server.iife.js": "./dist/server.iife.js",
+    "./html.iife.js": "./dist/html.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",
     "./translation.schema.json": "./schema/form-translation.schema.json",

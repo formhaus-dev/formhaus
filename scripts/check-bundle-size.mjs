@@ -13,6 +13,7 @@ const PACKAGE_EXTERNALS = [
   '@formhaus/core/controls',
   '@formhaus/core/schema',
   '@formhaus/core/dirty',
+  '@formhaus/core/html',
   '@formhaus/react',
   '@formhaus/vue',
   'react',
