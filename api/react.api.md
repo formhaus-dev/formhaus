@@ -4,10 +4,12 @@
 
 ```ts
 
+import { AriaAttributes } from 'react';
 import { ChangeEvent } from 'react';
 import { ComponentClass } from 'react';
 import { ComponentType } from 'react';
 import { ConfirmDialogView } from '@formhaus/core';
+import { CSSProperties } from 'react';
 import { DefaultFieldType } from '@formhaus/core';
 import { ErrorSummaryView } from '@formhaus/core';
 import { FieldAria } from '@formhaus/core/fields';
@@ -228,7 +230,9 @@ export interface FormRendererHandle extends FormRendererHandle_2 {
 }
 
 // @public (undocumented)
-export interface FormRendererProps<TValues extends object = Record<string, unknown>> extends FormEngineOptions {
+export interface FormRendererProps<TValues extends object = Record<string, unknown>> extends FormEngineOptions, AriaAttributes {
+    // (undocumented)
+    [data: `data-${string}`]: string | number | boolean | undefined;
     // (undocumented)
     actionsComponent?: ComponentType<FormActionsProps>;
     // (undocumented)
@@ -281,6 +285,8 @@ export interface FormRendererProps<TValues extends object = Record<string, unkno
     stepErrorMarks?: boolean;
     // (undocumented)
     stepFocus?: 'field' | 'heading';
+    // (undocumented)
+    style?: CSSProperties;
     // (undocumented)
     testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)
@@ -361,6 +367,20 @@ export interface SectionComponentProps extends SectionView {
 export function SelectField(props: FieldComponentProps): react.JSX.Element;
 
 // @public (undocumented)
+export interface SubmitState {
+    // (undocumented)
+    canSubmit: boolean;
+    // (undocumented)
+    ref: (handle: {
+        readonly engine: FormEngine;
+    } | null) => void;
+    // (undocumented)
+    submitting: boolean;
+    // (undocumented)
+    validating: boolean;
+}
+
+// @public (undocumented)
 export function SwitchField(props: FieldComponentProps): react.JSX.Element;
 
 // @public (undocumented)
@@ -386,6 +406,11 @@ export interface UseFormEngineOptions extends FormEngineOptions {
     // (undocumented)
     keepValues?: boolean;
 }
+
+// @public (undocumented)
+export function useSubmitState(target?: FormEngine | {
+    readonly engine: FormEngine;
+} | null): SubmitState;
 
 // (No @packageDocumentation comment for this package)
 

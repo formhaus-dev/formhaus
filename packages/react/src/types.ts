@@ -25,7 +25,9 @@ import type {
   ValidatorFn,
 } from '@formhaus/core';
 import type {
+  AriaAttributes,
   ComponentClass,
+  CSSProperties,
   ComponentType,
   ForwardRefExoticComponent,
   FunctionComponent,
@@ -134,7 +136,7 @@ export interface LayoutComponentMap {
   actions?: ComponentType<FormActionsProps>;
 }
 
-export interface FormRendererProps<TValues extends object = Record<string, unknown>> extends FormEngineOptions {
+export interface FormRendererProps<TValues extends object = Record<string, unknown>> extends FormEngineOptions, AriaAttributes {
   onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
@@ -162,7 +164,9 @@ export interface FormRendererProps<TValues extends object = Record<string, unkno
   headingLevel?: HeadingLevel;
   testIds?: boolean | ((target: TestIdTarget) => string | undefined);
   className?: string;
+  style?: CSSProperties;
   id?: string;
+  [data: `data-${string}`]: string | number | boolean | undefined;
 }
 
 export type FormRendererComponent = (<TValues extends object = Record<string, unknown>>(

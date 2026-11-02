@@ -89,8 +89,8 @@ export function schemaValidate(
 }
 
 export interface SchemaParse<Output> {
-  validate(values: Record<string, unknown>, context?: ValidateContext): Promise<Record<string, string>>;
-  submit(handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>): SubmitHandler;
+  validate: (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>>;
+  submit: (handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>) => SubmitHandler;
 }
 
 function warnHidden(message: string): void {

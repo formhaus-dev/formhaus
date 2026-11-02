@@ -103,7 +103,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `visibleSteps` | `FormStep[]` | Visible steps on the active path; without routes, all steps whose conditions pass |
 | `currentStep` | `FormStep \| null` | Current visible step |
 | `isFirstStep` / `isLastStep` | `boolean` | Current navigation position |
-| `canGoNext` | `boolean` | Whether current-step validation passes |
+| `canGoNext` | `boolean` | Whether current-step validation passes. Always `false` in a single-step form, which has no next step |
 | `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
 | `seed` | `string` | The `seed` option, the seed the research module generated, or `''` without either. Added in 1.1.0 |

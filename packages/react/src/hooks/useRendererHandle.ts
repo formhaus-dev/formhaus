@@ -1,5 +1,5 @@
 import { errorSummary, type FormEngine, type LabelSource } from '@formhaus/core';
-import { type ForwardedRef, type RefObject, useImperativeHandle } from 'react';
+import { type ForwardedRef, type RefObject, useImperativeHandle, useMemo, useRef } from 'react';
 import { shownFormErrors } from '../FormTopLevelErrors';
 import type { FormRendererHandle } from '../types';
 
@@ -11,23 +11,23 @@ interface HandleSource {
   actionError: string | null;
 }
 
-export function useRendererHandle(
-  ref: ForwardedRef<FormRendererHandle>,
-  engine: FormEngine,
-  { formId, labels, showField, submit, actionError }: HandleSource,
-): void {
-  useImperativeHandle(
-    ref,
+export function useRendererHandle(ref: ForwardedRef<FormRendererHandle>, engine: FormEngine, source: HandleSource): void {
+  const latest = useRef(source);
+  latest.current = source;
+  const handle = useMemo<FormRendererHandle>(
     () => ({
       setValue: (key, value) => engine.setValue(key, value),
       getValues: () => ({ ...engine.values }),
       goToStep: (stepId) => engine.goToStep(stepId),
-      showField,
-      getErrors: () => ({
-        ...errorSummary(engine, { idPrefix: formId, labels: labels.current?.labels }),
-        topLevelErrors: shownFormErrors(engine, actionError),
-      }),
-      submit,
+      showField: (key) => latest.current.showField(key),
+      getErrors: () => {
+        const { formId, labels, actionError } = latest.current;
+        return {
+          ...errorSummary(engine, { idPrefix: formId, labels: labels.current?.labels }),
+          topLevelErrors: shownFormErrors(engine, actionError),
+        };
+      },
+      submit: () => latest.current.submit(),
       reset: (values) => engine.reset(values),
       get values() {
         return engine.values;
@@ -39,6 +39,7 @@ export function useRendererHandle(
         return engine;
       },
     }),
-    [engine, showField, formId, actionError, submit, labels],
+    [engine],
   );
+  useImperativeHandle(ref, () => handle, [handle]);
 }

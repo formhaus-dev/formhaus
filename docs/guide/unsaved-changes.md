@@ -60,7 +60,7 @@ changes.subscribe(() => toggleSaveButton(changes.dirty));
 ```
 :::
 
-Pass `ref` to the renderer, also from a child such as a dialog body that mounts later. With `useFormEngine`, pass the engine instead: `useFormDirty(engine)`. In Vue it also takes the result of `useFormEngine` or a template ref.
+Pass `ref` to the renderer, also from a child such as a dialog body that mounts later. With `useFormEngine`, pass the engine instead: `useFormDirty(engine)`. A renderer handle works too. In Vue it also takes the result of `useFormEngine` or a template ref.
 
 To keep your own handle too, call both in one React ref:
 

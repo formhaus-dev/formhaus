@@ -27,6 +27,9 @@ let nextKey = 0;
 const engineKeys = new WeakMap<object, number>();
 const sourced = new WeakMap<object, object>();
 
+const formAttrs = (props: object) =>
+  Object.fromEntries(Object.entries(props).filter(([key]) => key === 'style' || /^(aria|data)-/.test(key)));
+
 function engineKey(engine: object): number {
   let key = engineKeys.get(engine);
   if (key === undefined) engineKeys.set(engine, (key = nextKey++));
@@ -179,14 +182,16 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
 
     return (
       <form
+        {...formAttrs(props)}
         ref={formRef}
         id={props.id}
+        noValidate
         lang={engine.definition.lang}
         onFocusCapture={(event) => {
           focusReturn.current = event.target;
         }}
         className={props.className ? `fh-form ${props.className}` : 'fh-form'}
-        data-testid={testId?.('form')}
+        data-testid={testId?.('form') ?? props['data-testid']}
         tabIndex={-1}
         aria-busy={busy}
         onSubmit={(event) => {
