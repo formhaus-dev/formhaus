@@ -36,32 +36,7 @@
         </div>
       </div>
     </div>
-    <section class="ai-panel" id="aiPanel" aria-label="Describe with AI" hidden>
-      <div class="ai-head" id="aiHead">
-        <span class="ai-title">Describe with AI</span>
-        <div class="segmented small" id="aiTargets">
-          <button class="mode" type="button" data-target="edit">Edit this form</button>
-          <button class="mode" type="button" data-target="new">New form</button>
-        </div>
-      </div>
-      <textarea class="ai-prompt" id="aiPrompt" rows="3" aria-label="Form description" placeholder="Describe the form…"></textarea>
-      <div class="ai-key">
-        <select id="aiProvider" aria-label="Provider">
-          <option value="anthropic">Anthropic</option>
-          <option value="openai">OpenAI</option>
-        </select>
-        <input class="input" id="aiKey" type="password" placeholder="API key" aria-label="API key" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="ai-hint">
-        <span class="hint" id="aiHint"></span>
-        <button class="link" id="aiForget" type="button" hidden>Forget key</button>
-      </div>
-      <div class="output" id="aiOutput" role="status" aria-live="polite"></div>
-      <div class="ai-actions">
-        <button class="btn btn-secondary btn-small" id="aiCancel" type="button" hidden>Cancel</button>
-        <button class="btn btn-primary btn-small" id="aiGenerate" type="button">Generate</button>
-      </div>
-    </section>
+    <section class="ai-panel" id="aiPanel" aria-label="Describe with AI" hidden></section>
     <div class="editor" id="editor"></div>
     <textarea id="definition" spellcheck="false" hidden></textarea>
     <div class="row-between">

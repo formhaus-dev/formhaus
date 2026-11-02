@@ -7,6 +7,18 @@ import { build, context } from 'esbuild';
 const root = dirname(fileURLToPath(import.meta.url));
 const dist = join(root, 'dist');
 const uiRoot = join(root, 'src/ui');
+const uiOptions = {
+  bundle: true,
+  define: {
+    'process.env.NODE_ENV': '"production"',
+    __VUE_OPTIONS_API__: 'false',
+    __VUE_PROD_DEVTOOLS__: 'false',
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+  },
+  format: 'iife',
+  target: 'es2017',
+  tsconfigRaw: '{}',
+};
 const codeOptions = {
   bundle: true,
   entryPoints: [join(root, 'src/code.ts')],
@@ -20,10 +32,10 @@ async function buildUi() {
   const [template, styles, script] = await Promise.all([
     readFile(join(uiRoot, 'index.html'), 'utf8'),
     Promise.all(sheets.map((file) => readFile(join(uiRoot, file), 'utf8'))).then((parts) => parts.join('\n')),
-    build({ bundle: true, entryPoints: [join(uiRoot, 'main.ts')], format: 'iife', target: 'es2017', write: false }),
+    build({ ...uiOptions, entryPoints: [join(uiRoot, 'main.ts')], write: false }),
   ]);
   const code = script.outputFiles[0].text;
-  const html = template.replace('/* FORMHAUS_STYLES */', styles).replace('/* FORMHAUS_SCRIPT */', code);
+  const html = template.replace('/* FORMHAUS_STYLES */', () => styles).replace('/* FORMHAUS_SCRIPT */', () => code);
   await mkdir(dist, { recursive: true });
   await writeFile(join(dist, 'ui.html'), html);
 }
