@@ -4,14 +4,15 @@ import { actionValues } from '../internal/actions';
 import { errorSummary } from '../internal/items';
 import type { LabelSource } from '../types';
 import { isActionDisabled } from '../visibility';
+import type { StaticAction } from './types';
 import { type Child, type Html, html } from './markup';
 
-export function actions(engine: FormEngine, labels?: LabelSource): Html {
+export function actions(engine: FormEngine, labels: LabelSource | undefined, secondary: readonly StaticAction[]): Html {
   const { submit } = engine.definition;
   return html(
     'div',
     { class: 'fh-form-actions', 'data-fh': 'actions' },
-    html('div', { class: 'fh-form-actions__secondary' }),
+    secondary.length === 0 && html('div', { class: 'fh-form-actions__secondary' }),
     html(
       'button',
       {
@@ -21,6 +22,24 @@ export function actions(engine: FormEngine, labels?: LabelSource): Html {
       },
       submit.label ?? engineLabel(engine, 'submit', {}, labels),
     ),
+    secondary.length > 0 &&
+      html(
+        'div',
+        { class: 'fh-form-actions__secondary' },
+        secondary.map((action) =>
+          html(
+            'button',
+            {
+              type: 'submit',
+              class: 'fh-form-actions__button fh-form-actions__button--secondary',
+              name: action.name,
+              value: action.value,
+              formnovalidate: action.novalidate === true,
+            },
+            action.label,
+          ),
+        ),
+      ),
   );
 }
 

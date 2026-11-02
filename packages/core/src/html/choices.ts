@@ -11,6 +11,9 @@ type OptionVariant = 'radio' | 'multiselect';
 
 const optionsOf = ({ field }: FieldContext): FieldOption[] => (Array.isArray(field.options) ? field.options : []);
 
+const firstOpen = (context: FieldContext): number =>
+  optionsOf(context).findIndex((option) => !optionLocked(option, context.value, context.readOnly));
+
 const picture = (option: FieldOption): Html | false => {
   const source = imageSource(option.image);
   return (
@@ -34,7 +37,7 @@ function optionLabel(option: FieldOption, id: string, variant: OptionVariant): C
   ];
 }
 
-function optionInput(context: FieldContext, option: FieldOption, id: string, type: 'radio' | 'checkbox'): Html {
+function optionInput(context: FieldContext, option: FieldOption, id: string, type: 'radio' | 'checkbox', first: boolean): Html {
   const { field, value, readOnly } = context;
   return html('input', {
     id,
@@ -46,6 +49,7 @@ function optionInput(context: FieldContext, option: FieldOption, id: string, typ
     checked: optionChecked(value, option),
     disabled: optionLocked(option, value, readOnly),
     required: type === 'radio' && !!field.validation?.required,
+    autofocus: first && context.autofocus,
     'aria-describedby': option.description ? optionDescriptionId(id) : undefined,
     ...readonlyAttrs(context),
   });
@@ -61,7 +65,7 @@ export function radio(context: FieldContext): Html {
       return html(
         'div',
         { class: 'fh-field__radio-option' },
-        optionInput(context, option, optionId, 'radio'),
+        optionInput(context, option, optionId, 'radio', index === firstOpen(context)),
         optionLabel(option, optionId, 'radio'),
       );
     }),
@@ -81,7 +85,7 @@ export function multiselect(context: FieldContext): Html {
         html(
           'div',
           { class: 'fh-field__multiselect-option' },
-          optionInput(context, option, optionId, 'checkbox'),
+          optionInput(context, option, optionId, 'checkbox', index === firstOpen(context)),
           optionLabel(option, optionId, 'multiselect'),
         ),
       ];
@@ -90,12 +94,12 @@ export function multiselect(context: FieldContext): Html {
 }
 
 export function scale(context: FieldContext): Html {
-  const { id, field, value, readOnly } = context;
+  const { id, field, value, readOnly, autofocus } = context;
   const { points, anchors } = scaleView(field);
   return shell(
     context,
     field.type === 'rating' ? 'rating' : 'scale',
-    points.map((point) => {
+    points.map((point, index) => {
       const anchor = anchors.findIndex((item) => item?.point === point);
       const locked = readOnly && String(value) !== String(point);
       return html(
@@ -110,6 +114,7 @@ export function scale(context: FieldContext): Html {
           checked: String(value) === String(point),
           disabled: locked,
           required: !!field.validation?.required,
+          autofocus: autofocus && index === 0,
           'aria-describedby': anchor < 0 ? undefined : `${id}-anchor-${anchor}`,
         }),
         html('label', { class: 'fh-field__scale-label', for: `${id}-${point}` }, point),
