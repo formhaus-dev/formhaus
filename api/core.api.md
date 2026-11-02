@@ -871,7 +871,7 @@ export interface LabelI18n {
 }
 
 // @public (undocumented)
-export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'fileCount' | 'moveUp' | 'moveDown' | 'itemMoved' | 'or' | 'select';
+export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'fileCount' | 'moveUp' | 'moveDown' | 'itemMoved' | 'readOnly' | 'or' | 'select';
 
 // @public (undocumented)
 export type LabelSource = LabelCatalog | LabelFn;

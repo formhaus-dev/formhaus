@@ -20,6 +20,65 @@ const unusual: FormDefinition = {
   fields: KEYS.map((key) => ({ key, type: 'text', label: `Label ${key}` })),
 };
 
+const lookalikes: FormDefinition = {
+  id: 'lookalikes',
+  formatVersion: '1.8',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    {
+      key: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      helperText: 'Pick one',
+      options: [
+        { value: 'a', label: 'A', description: 'First' },
+        { value: 'b', label: 'B', description: 'Second' },
+      ],
+    },
+    { key: 'plan-note', type: 'text', label: 'Plan note', show: [{ field: 'plan', eq: 'a' }] },
+    { key: 'plan-helper', type: 'text', label: 'Plan helper', helperText: 'Helper' },
+    { key: 'plan-0', type: 'text', label: 'Plan zero' },
+    { key: 'plan-1', type: 'text', label: 'Plan one', helperText: 'One' },
+    { key: 'plan-1-description', type: 'text', label: 'Plan one description' },
+    { key: 'plan-0-label', type: 'text', label: 'Plan zero label' },
+    { key: 'city', type: 'autocomplete', label: 'City', options: [{ value: 'p', label: 'Paris' }] },
+    { key: 'city-list', type: 'text', label: 'City list' },
+    {
+      key: 'nps',
+      type: 'scale',
+      label: 'NPS',
+      validation: { min: 0, max: 3 },
+      options: [
+        { value: '0', label: 'Low' },
+        { value: '3', label: 'High' },
+      ],
+    },
+    { key: 'nps-2', type: 'text', label: 'NPS two' },
+    { key: 'nps-anchor', type: 'radio', label: 'NPS anchor', options: [{ value: 'x', label: 'X' }] },
+    { key: 'docs', type: 'file', label: 'Documents', multiple: true },
+    { key: 'docs-notice', type: 'text', label: 'Docs notice' },
+    { key: 'docs-label', type: 'text', label: 'Docs label' },
+    {
+      key: 'billing',
+      type: 'section',
+      title: 'Billing',
+      description: 'Where we send invoices',
+      fields: [{ key: 'billing-description', type: 'text', label: 'Billing description' }],
+    },
+    {
+      key: 'crew',
+      type: 'group',
+      label: 'Crew',
+      reorderable: true,
+      helperText: 'People',
+      fields: [{ key: 'remove', type: 'text', label: 'Remove' }],
+    },
+    { key: 'crew-helper', type: 'text', label: 'Crew helper' },
+    { key: 'crew-confirm', type: 'text', label: 'Crew confirm' },
+  ],
+};
+
 export function idScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const input = (name: RegExp) => screen.getByRole('textbox', { name }) as HTMLInputElement;
   const byKey = (key: string) => input(new RegExp(`^Label ${key.replace(/\./g, '\\.')}`));
@@ -82,6 +141,21 @@ export function idScenarios(harness: RendererHarness, { it, expect, waitFor, scr
     await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
     await harness.click(links[1]);
     await waitFor(() => expect(document.activeElement).toBe(home));
+  });
+
+  it('keeps generated ids apart from field ids that look like them', () => {
+    harness.mount({ definition: lookalikes, initialValues: { crew: [{}, {}], plan: 'a' }, onSubmit: fn() });
+    const ids = [...document.querySelectorAll('[id]')].map((node) => node.id);
+    expect(ids.length).toBeGreaterThan(30);
+    expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
+    const names = ['aria-describedby', 'aria-labelledby', 'aria-controls', 'for', 'list'];
+    const references = [...document.querySelectorAll(names.map((name) => `[${name}]`).join(', '))].flatMap((node) =>
+      names.flatMap((name) => node.getAttribute(name)?.split(' ').filter(Boolean) ?? []),
+    );
+    expect(references.length).toBeGreaterThan(10);
+    expect(references.filter((id) => !document.getElementById(id))).toEqual([]);
+    expect(screen.getByRole('textbox', { name: 'Plan note' }).id).toMatch(/-plan-note$/);
+    expect(screen.getByRole('textbox', { name: 'Docs label' }).id).toMatch(/-docs-label-[0-9a-z]+$/);
   });
 
   it('keeps section ids apart from field ids', () => {

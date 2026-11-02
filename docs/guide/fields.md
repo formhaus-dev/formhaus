@@ -695,7 +695,7 @@ Vue, Angular, Handlebars, Jinja and Liquid also read `{{ }}`. A definition inlin
 
 Submitted values use each field's key exactly as written. A key such as `contact.email` stays one flat key and is never split into nested objects. Errors from `validateSubmission()` and the `errors` prop use the same keys.
 
-Each field control gets the element id `<form id>-<key>`, and its error message gets the same id plus `-error`. The form id is generated per renderer, so match the end of the id, such as `[id$="-email"]`. In the key part, each character other than `A-Z`, `a-z`, `0-9`, `_` and `-` becomes `-`, so `contact.email` gets `<form id>-contact-email`.
+Each field control gets the element id `<form id>-<key>`, and its error message gets the same id plus `-error`. The form id is generated per renderer, so match the end of the id, such as `[id$="-email"]`. In the key part, each character other than `A-Z`, `a-z`, `0-9`, `_` and `-` becomes `-`, so `contact.email` gets `<form id>-contact-email`. A field whose id would equal an id the renderer generates for another field, such as the helper text id of `plan` for a field keyed `plan-helper`, gets a short stable suffix instead, such as `<form id>-plan-helper-1x2y3z`. When the other field is a group, the group id gets the suffix.
 
 When two keys in one form escape to the same id, such as `contact.email` and `contact-email`, the key that needs no escaping keeps the plain id. If both need escaping, the key that sorts first keeps it. The other key gets `-` and a short hash of the key added, such as `<form id>-contact-email-1k2j3h4`. The hash depends only on the key, so reordering fields does not change ids.
 

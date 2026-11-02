@@ -77,6 +77,35 @@ describe('renderer labels', () => {
     });
   });
 
+  it('asks for readOnly and the move labels only from format 1.8', () => {
+    const definition: FormDefinition = {
+      id: 'f',
+      title: 'F',
+      formatVersion: '1.8',
+      submit: { label: 'Send' },
+      fields: [
+        {
+          key: 'people',
+          type: 'group',
+          label: 'People',
+          reorderable: true,
+          fields: [{ key: 'name', type: 'text', label: 'Name', readOnly: true }],
+        },
+      ],
+    };
+    expect(labelSlots(definition)).toMatchObject({
+      readOnly: ['Read only', []],
+      moveUp: ['Move up', []],
+      moveDown: ['Move down', []],
+      itemMoved: ['{item} moved to position {position}', ['item', 'position']],
+    });
+    const older = labelSlots({ ...definition, formatVersion: '1.7' });
+    for (const key of ['readOnly', 'moveUp', 'moveDown', 'itemMoved']) expect(older).not.toHaveProperty(key);
+    const never = { ...definition, fields: [{ key: 'name', type: 'text', label: 'Name', readOnly: [] }] } as FormDefinition;
+    expect(labelSlots(never)).not.toHaveProperty('readOnly');
+    expect(labelFor('readOnly')).toBe('Read only');
+  });
+
   it('formats the step title and the error mark with their params', () => {
     expect(labelFor('stepTitle', { index: 3 })).toBe('Step 3');
     expect(labelFor('stepErrors', { count: 2 })).toBe('Errors: 2');
