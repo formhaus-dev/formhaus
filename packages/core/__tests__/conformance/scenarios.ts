@@ -98,7 +98,7 @@ export class ScenarioRun {
       case 'start':
         return engine.start();
       case 'setValue':
-        return engine.setValue(action.key, action.value);
+        return engine.setValue(action.key, action.number === undefined ? action.value : Number(action.number));
       case 'setItemValue':
         return engine.setItemValue(action.key, action.index, action.field, action.value);
       case 'addItem':
