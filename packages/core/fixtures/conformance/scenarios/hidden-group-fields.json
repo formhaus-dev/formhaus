@@ -200,6 +200,288 @@
       ]
     },
     {
+      "name": "gives items written with setValue their defaults and start values",
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "members",
+          "value": [
+            {
+              "id": "a1",
+              "name": "Ann",
+              "role": "admin",
+              "grant": "g2"
+            },
+            {
+              "name": "Bob",
+              "role": "viewer"
+            }
+          ]
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "a1",
+                  "name": "Ann",
+                  "role": "admin",
+                  "grant": "g2",
+                  "note": "hi"
+                },
+                {
+                  "id": "new",
+                  "name": "Bob",
+                  "role": "viewer"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setItemValue",
+          "key": "members",
+          "index": 0,
+          "field": "role",
+          "value": "viewer"
+        },
+        {
+          "do": "setItemValue",
+          "key": "members",
+          "index": 1,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "a1",
+                  "name": "Ann",
+                  "role": "viewer"
+                },
+                {
+                  "id": "new",
+                  "name": "Bob",
+                  "role": "admin",
+                  "grant": "basic",
+                  "note": "hi"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setItemValue",
+          "key": "members",
+          "index": 0,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "a1",
+                  "name": "Ann",
+                  "role": "admin",
+                  "grant": "g2",
+                  "note": "hi"
+                },
+                {
+                  "id": "new",
+                  "name": "Bob",
+                  "role": "admin",
+                  "grant": "basic",
+                  "note": "hi"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "gives an initial item without the hidden key its defaultValue",
+      "values": {
+        "members": [
+          {
+            "name": "Ann"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "new",
+                  "name": "Ann"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "gives items reset by Skip the defaults of their hidden fields",
+      "definition": {
+        "formatVersion": "1.9",
+        "id": "team",
+        "title": "Team",
+        "submit": {
+          "label": "Save"
+        },
+        "steps": [
+          {
+            "id": "members",
+            "title": "Members",
+            "fields": [
+              {
+                "key": "members",
+                "type": "group",
+                "label": "Members",
+                "reorderable": true,
+                "validation": {
+                  "maxLength": 4
+                },
+                "fields": [
+                  {
+                    "key": "id",
+                    "type": "hidden",
+                    "label": "Member id",
+                    "defaultValue": "new",
+                    "validation": {
+                      "pattern": "^[a-z0-9]+$",
+                      "patternMessage": "Unknown member"
+                    }
+                  },
+                  {
+                    "key": "name",
+                    "type": "text",
+                    "label": "Name",
+                    "validation": {
+                      "required": true
+                    }
+                  },
+                  {
+                    "key": "role",
+                    "type": "radio",
+                    "label": "Role",
+                    "options": [
+                      {
+                        "value": "admin",
+                        "label": "Admin"
+                      },
+                      {
+                        "value": "viewer",
+                        "label": "Viewer"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "grant",
+                    "type": "hidden",
+                    "label": "Grant",
+                    "defaultValue": "basic",
+                    "show": [
+                      {
+                        "field": "role",
+                        "eq": "admin"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "note",
+                    "type": "text",
+                    "label": "Note",
+                    "defaultValue": "hi",
+                    "show": [
+                      {
+                        "field": "role",
+                        "eq": "admin"
+                      }
+                    ]
+                  }
+                ],
+                "defaultItems": 1
+              }
+            ],
+            "skip": {
+              "label": "Skip"
+            }
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "fields": [
+              {
+                "key": "comment",
+                "type": "textarea",
+                "label": "Comment"
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "members": [
+          {
+            "id": "a1",
+            "name": "Ann",
+            "role": "admin",
+            "grant": "full"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "skip",
+          "returns": true
+        },
+        {
+          "do": "back",
+          "returns": true
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "new"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setItemValue",
+          "key": "members",
+          "index": 0,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "id": "new",
+                  "role": "admin",
+                  "grant": "basic",
+                  "note": "hi"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "gives items from defaultItems the default of their hidden fields",
       "definition": {
         "formatVersion": "1.9",
