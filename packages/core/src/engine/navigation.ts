@@ -7,11 +7,11 @@ import {
   clearError,
   clearFormErrors,
   dropServerErrors,
-  errorKeys,
   fieldsErrors,
   getSubmitValues,
   pruneOffPathErrors,
 } from './validation-state';
+import { errorKeys, hiddenErrorKeys } from './error-keys';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
@@ -20,7 +20,6 @@ import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 import type { FormNode } from '../types';
-import { valueFields } from '../visibility/nodes';
 
 function stepErrors(engine: EngineInternals): Record<string, string> | null {
   const step = engine.currentStep;
@@ -40,8 +39,9 @@ function hasStepErrors(engine: EngineInternals): boolean {
 
 function clearPassedErrors(engine: EngineInternals, nodes: FormNode[]): string[] {
   const { errors, state } = engine;
-  const hidden = valueFields(nodes).flatMap((field) => (field.type === 'hidden' && errors[field.key] !== undefined ? [field.key] : []));
-  const keys = [...errorKeys(nodes, errors, state.values), ...hidden].filter((key) => errors[key] !== state.serverErrors[key]);
+  const keys = [...errorKeys(nodes, errors, state.values), ...hiddenErrorKeys(nodes, errors, state.values)].filter(
+    (key) => errors[key] !== state.serverErrors[key],
+  );
   for (const key of keys) clearError(engine, key);
   return keys;
 }

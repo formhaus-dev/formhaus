@@ -78,6 +78,33 @@ describe('deeply nested definitions', () => {
     return form(fields as FormNode[]);
   };
 
+  it('allows a hidden field in a group from format 1.9 and names the version below it', () => {
+    const fields = [group('people', [{ key: 'id', type: 'hidden', label: 'Id' }, text('name')])];
+    const hints = (formatVersion?: string) =>
+      checkDefinition({ ...form(fields), formatVersion })
+        .filter(({ severity }) => severity === 'error')
+        .map(({ code, path, hint }) => [code, path, hint]);
+    expect(hints('1.9')).toEqual([]);
+    for (const version of ['1.8', undefined])
+      expect(hints(version)).toEqual([
+        ['invalid-nesting', '/fields/0/fields/0/type', 'Set "formatVersion": "1.9" or move it to the fields of the step.'],
+      ]);
+    expect(checkDefinition(form([group('people', [{ key: 'doc', type: 'file', label: 'Doc' }])]))[0].hint).toBe(
+      'Move it to the fields of the step.',
+    );
+  });
+
+  it('rejects a source on a hidden field in a group', () => {
+    const fields = [group('people', [{ key: 'ref', type: 'hidden', label: 'Ref', source: 'referrer' }, text('name')])];
+    expect(checkDefinition({ ...form(fields), formatVersion: '1.9' }).map(({ code, path, message }) => [code, path, message])).toEqual([
+      [
+        'source-in-group',
+        '/fields/0/fields/0/source',
+        '/fields/0/fields/0/source: a hidden field inside the group "people" cannot read a source. Remove "source" and pass the value in the initial values of each item, or move the field out of the group.',
+      ],
+    ]);
+  });
+
   it('reports invalid nesting at depth 5000 instead of overflowing the stack', () => {
     for (const type of ['section', 'group'] as const) {
       const definition = nested(type, 5000);

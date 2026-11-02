@@ -518,6 +518,8 @@ A value sent with the answers that the user never sees. It renders `<input type=
 
 `label` is optional. Editors and error messages use it, and fall back to the key without one.
 
+A hidden field in a group item keeps a value per item, such as a stored id. See [Hidden item fields](/guide/groups#hidden-item-fields).
+
 ### Value sources
 
 `source` fills a hidden field from where the respondent came from. The React and Vue renderers read it in the browser after mount.

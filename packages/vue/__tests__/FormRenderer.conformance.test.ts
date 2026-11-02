@@ -20,6 +20,7 @@ import { fileListScenarios } from '../../core/__tests__/renderers/file-list.scen
 import { optionRuleScenarios } from '../../core/__tests__/renderers/option-rules.scenarios';
 import { readOnlyScenarios } from '../../core/__tests__/renderers/read-only.scenarios';
 import { reorderScenarios } from '../../core/__tests__/renderers/reorder.scenarios';
+import { hiddenInGroupsScenarios } from '../../core/__tests__/renderers/hidden-in-groups.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
@@ -205,6 +206,7 @@ describe('renderer conformance: file lists', () => fileListScenarios(harness, ki
 describe('renderer conformance: option rules', () => optionRuleScenarios(harness, kit));
 describe('renderer conformance: read-only fields', () => readOnlyScenarios(harness, kit));
 describe('renderer conformance: reorder', () => reorderScenarios(harness, kit));
+describe('renderer conformance: hidden fields in groups', () => hiddenInGroupsScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: custom controls', () => controlScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));

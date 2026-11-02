@@ -4,9 +4,10 @@ import type { DefinitionIssue } from './issues';
 import { error, warning } from './issues';
 import { isEntry } from './shape';
 
-function sourceIssue({ field, path }: FieldEntry): DefinitionIssue[] {
+function sourceIssue({ field, path, group }: FieldEntry): DefinitionIssue[] {
   const source: unknown = field.source;
   const at = `${path}/source`;
+  if (group && field.type === 'hidden' && source !== undefined) return [error('source-in-group', at, group.key)];
   const names = SOURCE_NAMES as string[];
   if (typeof source === 'string') {
     return names.includes(source) ? [] : [error('unknown-source', at, source, names)];

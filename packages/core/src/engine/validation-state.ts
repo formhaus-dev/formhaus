@@ -4,23 +4,12 @@ import { customRules, itemHolds, validateShown } from '../validation/validate-st
 import type { ValidateOptions } from '../validation/validate-field';
 import { withPatternBudget } from '../validation/validate-field';
 import { isPlainEntry, trimValue } from '../validation/type-checks';
-import { createValues, getChangedKeys, initialState, keptValues, shownError } from './engine-utils';
+import { createValues, getChangedKeys, initialState, keptValues } from './engine-utils';
 import type { FormField, FormNode } from '../types';
 import { cleanItems, isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
+import { errorKeys } from './error-keys';
 import type { EngineInternals } from './runtime-internals';
 import type { ItemField } from './visibility-state';
-
-export function errorKeys(nodes: FormNode[], errors: Record<string, string>, values: Record<string, unknown>): string[] {
-  if (Object.keys(errors).length === 0) return [];
-  return valueFields(nodes).flatMap((field) => [
-    ...(shownError(errors, field) ? [field.key] : []),
-    ...(isGroup(field)
-      ? itemsOf(values[field.key])
-          .flatMap((_, index) => field.fields.map(({ key }) => itemPath(field.key, index, key)))
-          .filter((key) => errors[key] !== undefined)
-      : []),
-  ]);
-}
 
 function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
   const version = engine.getSnapshot();

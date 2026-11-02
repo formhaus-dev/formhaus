@@ -3,6 +3,7 @@ import type { CheckContext, NodeEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
 import { reachableSteps } from './paths';
+import { formatAtLeast } from './format';
 
 const RESERVED = new Set([...Object.getOwnPropertyNames(Object.prototype), 'prototype']);
 
@@ -71,10 +72,11 @@ function keyIssues({ definition, nodes }: CheckContext): DefinitionIssue[] {
   return issues;
 }
 
-function nestingIssues({ nodes }: CheckContext): DefinitionIssue[] {
+function nestingIssues({ definition, nodes }: CheckContext): DefinitionIssue[] {
+  const hidden = formatAtLeast(definition, 9);
   return nodes.flatMap(({ node, path, group, parent }) =>
-    (isSection(node) && parent) || (group && ['group', 'file', 'hidden'].includes(node.type))
-      ? [error('invalid-nesting', `${path}/type`, node.type, parent!.type)]
+    (isSection(node) && parent) || (group && ['group', 'file', ...(hidden ? [] : ['hidden'])].includes(node.type))
+      ? [error('invalid-nesting', `${path}/type`, node.type, parent!.type, !hidden && node.type === 'hidden')]
       : [],
   );
 }

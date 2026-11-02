@@ -89,9 +89,9 @@ export const ISSUE_TEXTS = {
   ],
   'reserved-key': (key: string): IssueText => [`"${key}" is a built-in object property name`, 'Rename the field key'],
   'duplicate-key': duplicateKey,
-  'invalid-nesting': (type: string, parent: string): IssueText => [
+  'invalid-nesting': (type: string, parent: string, version?: boolean): IssueText => [
     `a ${type} cannot be inside a ${parent}`,
-    'Move it to the fields of the step',
+    version ? 'Set "formatVersion": "1.9" or move it to the fields of the step' : 'Move it to the fields of the step',
   ],
   'unknown-operator': (key: string): IssueText => [`"${key}" is not a condition operator`, suggest(key, [...OPERATORS])],
   'condition-operator-count': (count: number): IssueText => [
@@ -126,6 +126,10 @@ export const ISSUE_TEXTS = {
   'unknown-source': (source: string, names: string[]): IssueText => [
     `"${source}" is not a source`,
     source === 'query' ? QUERY : suggest(source, names),
+  ],
+  'source-in-group': (group: string): IssueText => [
+    `a hidden field inside the group "${group}" cannot read a source`,
+    'Remove "source" and pass the value in the initial values of each item, or move the field out of the group',
   ],
   'i18n-key-without-text': (slot: string): IssueText => [
     `"${slot}" has a translation key but no source text`,

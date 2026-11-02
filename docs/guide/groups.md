@@ -71,7 +71,31 @@ Each item holds the `defaultValue` of its fields, also an item from the initial 
 - A field outside the group cannot test an item field. That is a `group-scope` error. Test the group itself instead, such as `{ "field": "participants", "notEmpty": true }`.
 - `matchField` follows the same scope, so `"matchField": "email"` inside an item compares with the email of that item.
 
-Item keys must be unique in the group and must not repeat a key outside it. No other key may start with `participants.`. Groups do not nest, and `file` and `hidden` fields are not allowed in a group.
+Item keys must be unique in the group and must not repeat a key outside it. No other key may start with `participants.`. Groups do not nest, and `file` fields are not allowed in a group.
+
+## Hidden item fields
+
+A `hidden` field keeps item data the user does not edit, such as a stored id. Requires `"formatVersion": "1.9"`.
+
+```json
+{
+  "key": "members",
+  "type": "group",
+  "label": "Members",
+  "fields": [
+    { "key": "id", "type": "hidden", "label": "Member id" },
+    { "key": "name", "type": "text", "label": "Name" }
+  ]
+}
+```
+
+```ts
+const engine = new FormEngine(definition, { members: [{ id: 'm_1', name: 'Ada' }] });
+engine.addItem('members');
+engine.getSubmitValues();
+```
+
+The value comes from the item in the initial values, or from `defaultValue` in a new item. It moves and is removed with its item and is submitted in it. It renders no control, and its errors show at form level. `source` is not allowed in a group. A client can change any hidden value, so check ids against your data on the server. See the [specification](/spec#hidden-fields-in-groups).
 
 ## Error paths
 

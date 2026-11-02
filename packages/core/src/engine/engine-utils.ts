@@ -3,8 +3,6 @@ import type { EngineInternals, EngineState } from './runtime-internals';
 import { isPlainEntry, maxItems } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
 
-export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
-
 export function getAllFields(definition: FormDefinition): FormField[] {
   return valueFields(topNodes(definition));
 }
