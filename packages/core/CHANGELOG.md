@@ -1,5 +1,26 @@
 # @formhaus/core
 
+## 1.9.0
+
+### Minor Changes
+
+- Format 1.8: options take `description` and `disabled`, fields take `readOnly`, groups take `reorderable`. `disabled` and `readOnly` are `true` or a list of conditions that must all match.
+- The format 1.8 properties are ignored below `"formatVersion": "1.8"`.
+- A disabled option fails validation unless the stored answer already holds it.
+- A disabled `defaultValue` stays valid. `checkDefinition()` warns about it with `default-disabled-option`.
+- New `previousValues` option on `validateSubmission()`, `validateFieldValue()` and `validateFields()` passes the stored answers.
+- New `engine.moveItem(key, from, to)` moves a group item with its values, id, errors and loading state.
+- New `engine.resetCount` counts `reset()` calls.
+- New `@formhaus/core/dirty` entry: `trackDirty(engine)` reports `dirty` and `dirtyKeys`, and `markClean()` moves the baseline. `reset()` moves it too.
+- New `schemaParse(schema)` in `@formhaus/core/schema` passes the parsed schema output to the submit handler.
+- New `optionAttrs`, `optionDescriptionId`, `readOnlyAttrs` and `optionLocked` in `@formhaus/core/fields`.
+- Option descriptions are translatable under `fields.<key>.optionDescriptions.<value>`.
+- New `moveUp`, `moveDown` and `itemMoved` labels in every bundled locale.
+- `validateSubmission()` with `previousValues` checks disabled options in large groups in linear time.
+- `checkDefinition()` reports `invalid-type` for the format 1.8 properties, `disabled-not-applicable` for `disabled` on an option of a field type without options, and `outdated-format-version` below format 1.8.
+- The `unknown-property` warning for a property from a newer format names the version it needs.
+- The functions returned by `trackDirty` and `schemaParse` are typed as properties, so they pass `@typescript-eslint/unbound-method`.
+
 ## 1.8.1
 
 ### Patch Changes
