@@ -1,5 +1,14 @@
 # @formhaus/core
 
+## 1.11.0
+
+### Minor Changes
+
+- New `@formhaus/core/html` entry with `renderToStaticMarkup()`. It renders a single-page form to an HTML string with the React and Vue markup and class names. The form posts without JavaScript. It throws for steps, groups and file fields.
+- `parseFormData()` in `@formhaus/core/html` reads a post into typed values.
+- New `@formhaus/core/html.iife.js` bundle sets the global `FormhausHtml`.
+- Option image sources are checked without the `URL` global. A source with a user name is still rejected.
+
 ## 1.10.0
 
 ### Minor Changes
