@@ -12,6 +12,7 @@ export interface FieldContext {
   error?: string;
   readOnly: boolean;
   text: StaticLabel;
+  autofocus: boolean;
   state: FieldState;
 }
 
@@ -41,6 +42,7 @@ export function controlAttrs(context: FieldContext): Attrs {
     name: field.key,
     autocomplete: field.autocomplete,
     required: !!state.required,
+    autofocus: context.autofocus,
     ...readonlyAttrs(context),
     ...state.aria,
   };

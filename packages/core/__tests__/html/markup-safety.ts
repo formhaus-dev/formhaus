@@ -38,6 +38,8 @@ const ATTRIBUTES = [
   'checked',
   'selected',
   'disabled',
+  'autofocus',
+  'formnovalidate',
   'hidden',
   'required',
   'readonly',

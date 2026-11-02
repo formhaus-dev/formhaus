@@ -26,7 +26,7 @@ For an engine without ES modules, load `@formhaus/core/html.iife.js`. It sets th
 
 One page of fields: every field type except `file`, sections, conditions at the initial values, `recall` tokens, read-only fields and the error summary. It throws for a definition with `steps`, a `group` or a `file` field, and for an invalid definition.
 
-The form posts without JavaScript. The primary button submits, and there are no back, skip or cancel buttons.
+The form posts without JavaScript. The primary button submits, and there are no back, skip or cancel buttons. To post a named choice such as Cancel, use `secondaryActions` and read `name` from the post.
 
 ## Options
 
@@ -40,6 +40,8 @@ The form posts without JavaScript. The primary button submits, and there are no 
 | `hiddenInputs` | Hidden inputs, for example a CSRF token. A field key cannot have the same name |
 | `errorSummary` | `'bottom'` (default), `'top'` or `false` |
 | `readOnly`, `novalidate` | Lock every field, or turn off native validation |
+| `autofocus` | Field key to focus on load. Writes the native `autofocus` attribute on its control, or on the first control of a choice field. Ignored for a field that is not visible, hidden or read-only |
+| `secondaryActions` | Extra submit buttons as `{ label, name, value, novalidate? }`. They follow the primary button in the markup so Enter submits the primary action, and show before it. `novalidate` skips native validation for that button. A name cannot match a field key |
 | `options` | Options for fields with `optionsFrom`, by field key |
 | `labels`, `locale`, `messages`, `lang`, `seed`, `research`, `hiddenValues` | As on `FormEngine` |
 

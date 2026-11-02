@@ -17,7 +17,7 @@ import { type Child, html } from './markup';
 import { assertNames, pageFields } from './support';
 import { fieldContext } from './shell';
 import type { StaticLabel, StaticMarkupOptions } from './types';
-import { plainErrors, plainTexts, plainValues } from './values';
+import { plainActions, plainErrors, plainTexts, plainValues } from './values';
 
 interface Page {
   engine: FormEngine;
@@ -36,6 +36,7 @@ function renderField({ engine, options, text }: Page, field: FormField): Child {
       value: engine.values[field.key],
       error: engine.errors[field.key],
       readOnly: !!options.readOnly || rules.readOnly,
+      autofocus: options.autofocus === field.key && field.type !== 'hidden' && !options.readOnly && !rules.readOnly,
       text,
     }),
   );
@@ -48,7 +49,12 @@ function renderNodes(page: Page, nodes: readonly FormNode[]): Child[] {
 }
 
 export function renderToStaticMarkup(definition: FormDefinition, options: StaticMarkupOptions = {}): string {
-  assertNames(pageFields(definition), options.hiddenInputs);
+  const secondary = plainActions(options.secondaryActions);
+  assertNames(
+    pageFields(definition),
+    options.hiddenInputs,
+    secondary.map(({ name }) => name),
+  );
   if (!parsed.get(definition)) trustDefinition(validDefinition(definition));
   const { locale, messages, lang, seed, research, hiddenValues } = options;
   const engine = new FormEngine(definition, plainValues(options.values), { locale, messages, lang, seed, research, hiddenValues });
@@ -72,6 +78,6 @@ export function renderToStaticMarkup(definition: FormDefinition, options: Static
     html('div', { class: 'fh-form__fields', 'data-fh': 'fields' }, renderNodes(page, engine.visibleNodes)),
     formErrors([...engine.topLevelErrors, ...plainTexts(options.formErrors)]),
     !top && alert,
-    actions(engine, options.labels),
+    actions(engine, options.labels, secondary),
   ).value;
 }
