@@ -3,6 +3,15 @@ import type { FieldOption, LabelKey, LabelSource } from '../types';
 
 export type StaticLabel = (key: LabelKey, params?: Record<string, unknown>) => string;
 
+export interface StaticAction {
+  label: string;
+  name: string;
+  value: string;
+  novalidate?: boolean;
+  autofocus?: string;
+  secondaryActions?: readonly StaticAction[];
+}
+
 export interface StaticMarkupOptions
   extends Pick<FormEngineOptions, 'locale' | 'messages' | 'lang' | 'seed' | 'research' | 'hiddenValues'> {
   values?: Record<string, unknown>;

@@ -298,6 +298,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fh-space-3); padding-top: var(--fh-space-1); }
 .fh-form-actions__secondary { display: flex; gap: var(--fh-space-3); margin-right: auto; }
 .fh-form-actions__secondary:empty { display: none; }
+.fh-form-actions__button--primary ~ .fh-form-actions__secondary { order: -1; }
 
 .fh-form-actions__button { min-height: var(--fh-control-height); padding: 0 var(--fh-space-9); border: 1px solid transparent; border-radius: var(--fh-radius); background: transparent; color: inherit; font: inherit; font-size: var(--fh-font-size); font-weight: 600; line-height: 1.2; cursor: pointer; transition: background-color 140ms, border-color 140ms, color 140ms; }
 

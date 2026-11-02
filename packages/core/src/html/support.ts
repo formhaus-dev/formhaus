@@ -19,9 +19,15 @@ export function pageFields(definition: FormDefinition): FormField[] {
   return fields;
 }
 
-export function assertNames(fields: readonly FormField[], hiddenInputs: Record<string, string> | undefined): void {
-  if (hiddenInputs)
-    for (const { key } of fields)
-      if (hasOwn(hiddenInputs, key))
-        throw new Error(`The field key "${key}" has the same name as a hidden input. Rename the field or the hidden input.`);
+export function assertNames(
+  fields: readonly FormField[],
+  hiddenInputs: Record<string, string> | undefined,
+  actionNames: readonly string[] = [],
+): void {
+  for (const { key } of fields) {
+    if (hiddenInputs && hasOwn(hiddenInputs, key))
+      throw new Error(`The field key "${key}" has the same name as a hidden input. Rename the field or the hidden input.`);
+    if (actionNames.includes(key))
+      throw new Error(`The field key "${key}" has the same name as a secondary action. Rename the field or the action.`);
+  }
 }

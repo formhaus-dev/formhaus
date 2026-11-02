@@ -1,4 +1,5 @@
 import { isEntry } from '../visibility/nodes';
+import type { StaticAction } from './types';
 
 type Values = Record<string, unknown>;
 
@@ -19,6 +20,18 @@ export function plainErrors(errors: unknown): Record<string, string> {
   if (isEntry(errors))
     for (const key of Object.keys(errors)) if (typeof errors[key] === 'string' && key !== '__proto__') kept[key] = errors[key] as string;
   return kept;
+}
+
+export function plainActions(actions: unknown): StaticAction[] {
+  if (!Array.isArray(actions)) return [];
+  return actions.filter(
+    (action): action is StaticAction =>
+      isEntry(action) &&
+      typeof action.label === 'string' &&
+      typeof action.name === 'string' &&
+      action.name !== '' &&
+      typeof action.value === 'string',
+  );
 }
 
 export const plainTexts = (texts: unknown): string[] => (Array.isArray(texts) ? texts.filter((text) => typeof text === 'string') : []);
