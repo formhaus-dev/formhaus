@@ -16,7 +16,6 @@
 - New `optionAttrs`, `optionDescriptionId`, `readOnlyAttrs` and `optionLocked` in `@formhaus/core/fields`.
 - Option descriptions are translatable under `fields.<key>.optionDescriptions.<value>`.
 - New `moveUp`, `moveDown` and `itemMoved` labels in every bundled locale.
-- `validateSubmission()` with `previousValues` checks disabled options in large groups in linear time.
 - `checkDefinition()` reports `invalid-type` for the format 1.8 properties, `disabled-not-applicable` for `disabled` on an option of a field type without options, and `outdated-format-version` below format 1.8.
 - The `unknown-property` warning for a property from a newer format names the version it needs.
 - The functions returned by `trackDirty` and `schemaParse` are typed as properties, so they pass `@typescript-eslint/unbound-method`.
