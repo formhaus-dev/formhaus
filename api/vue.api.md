@@ -44,6 +44,7 @@ import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
 import { LocaleSource } from '@formhaus/core';
+import { MaybeRefOrGetter } from 'vue';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
@@ -719,6 +720,18 @@ export const sectionComponentProps: {
 export const SelectField: FieldComponent;
 
 // @public (undocumented)
+export interface SubmitState {
+    // (undocumented)
+    canSubmit: ComputedRef<boolean>;
+    // (undocumented)
+    ref: (handle: unknown) => void;
+    // (undocumented)
+    submitting: ComputedRef<boolean>;
+    // (undocumented)
+    validating: ComputedRef<boolean>;
+}
+
+// @public (undocumented)
 export const SwitchField: FieldComponent;
 
 // @public (undocumented)
@@ -783,6 +796,9 @@ export interface UseFormEngineReturn {
     // (undocumented)
     visibleSteps: ComputedRef<FormStep[]>;
 }
+
+// @public (undocumented)
+export function useSubmitState(target?: MaybeRefOrGetter<EngineSource>): SubmitState;
 
 // (No @packageDocumentation comment for this package)
 

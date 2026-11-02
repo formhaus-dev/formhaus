@@ -359,6 +359,44 @@ Put a ref on `FormRenderer` or `HeadlessFormRenderer` to drive the form from app
 
 On a multi-step form the button runs Continue until the last step, like the built-in primary button.
 
+`useSubmitState` keeps such a button in sync. Pass its `ref` to the renderer, or pass an engine or handle: `useSubmitState(engine)`. It works for a renderer that mounts later, such as in a dialog body. Added in 1.9.0.
+
+::: code-group
+```tsx [React]
+import { FormRenderer, useSubmitState } from '@formhaus/react';
+
+const status = useSubmitState();
+
+<Dialog footer={<button type="submit" form="settings" disabled={!status.canSubmit}>{status.submitting ? 'Saving' : 'Save'}</button>}>
+  <FormRenderer ref={status.ref} id="settings" definition={definition} layout={{ actions: () => null }} onSubmit={save} />
+</Dialog>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { FormRenderer, useSubmitState } from '@formhaus/vue';
+
+const { canSubmit, submitting, ref: formRef } = useSubmitState();
+</script>
+
+<template>
+  <FormRenderer :ref="formRef" id="settings" :definition="definition" @submit="save" />
+  <button type="submit" form="settings" :disabled="!canSubmit">{{ submitting ? 'Saving' : 'Save' }}</button>
+</template>
+```
+:::
+
+| `useSubmitState` | Description |
+|---|---|
+| `submitting` | `true` while a submit runs |
+| `validating` | `true` while async step validation or a step hook runs |
+| `canSubmit` | `true` on the last step, or in a single-step form, when no submit or validation runs and `submit.disabled` does not match |
+| `ref` | Callback ref for the renderer |
+
+In Vue the values are computed refs. The handle keeps one identity for each engine, so storing it in state does not re-render in a loop.
+
+The renderer puts `noValidate` on the `<form>`, so the browser never shows its own validation bubbles. In React, `className`, `style`, `aria-*` and `data-*` props go to the `<form>`. In Vue, attributes fall through to it.
+
 `onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value-changing operation, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
 
 ## How it works

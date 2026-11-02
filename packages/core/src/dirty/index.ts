@@ -9,9 +9,9 @@ type Values = Record<string, unknown>;
 export interface DirtyTracker {
   readonly dirty: boolean;
   readonly dirtyKeys: readonly string[];
-  markClean(): void;
-  subscribe(listener: () => void): () => void;
-  stop(): void;
+  markClean: () => void;
+  subscribe: (listener: () => void) => () => void;
+  stop: () => void;
 }
 
 interface Baseline {
@@ -84,7 +84,7 @@ export function trackDirty(engine: FormEngine<object>): DirtyTracker {
       return keys;
     },
     markClean,
-    subscribe(listener) {
+    subscribe: (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },

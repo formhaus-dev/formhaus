@@ -7,9 +7,9 @@
 // @public (undocumented)
 export interface SchemaParse<Output> {
     // (undocumented)
-    submit(handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>): SubmitHandler;
+    submit: (handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>) => SubmitHandler;
     // (undocumented)
-    validate(values: Record<string, unknown>, context?: ValidateContext): Promise<Record<string, string>>;
+    validate: (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>>;
 }
 
 // @public (undocumented)

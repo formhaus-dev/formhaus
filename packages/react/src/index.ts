@@ -23,6 +23,7 @@ export { TextField } from './fields/TextField';
 export { TimeField } from './fields/TimeField';
 export { FormStepProgress } from './FormStepProgress';
 export { useFormEngine, type UseFormEngineOptions } from './hooks/useFormEngine';
+export { useSubmitState, type SubmitState } from './hooks/useSubmitState';
 export type {
   FieldComponentMap,
   FieldComponentProps,

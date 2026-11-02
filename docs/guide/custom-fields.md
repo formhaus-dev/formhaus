@@ -270,7 +270,7 @@ Pick a point with `f.commit(point)`, as a number, so that [autoAdvance](#autoadv
 
 `LayoutComponentMap` types the whole map. Every slot gets the values the field components need from [Value types](#value-types): the slots only place the fields, they never change the values.
 
-The `<form class="fh-form">` element stays. Add a design-system class to it with `className` in React. In Vue, `class` and other attributes on `FormRenderer` or `HeadlessFormRenderer` fall through to the `<form>`.
+The `<form class="fh-form">` element stays. Add a design-system class to it with `className` in React; `style`, `aria-*` and `data-*` props go to it too. In Vue, `class` and other attributes on `FormRenderer` or `HeadlessFormRenderer` fall through to the `<form>`.
 
 ::: code-group
 ```vue [Vue]

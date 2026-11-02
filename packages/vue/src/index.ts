@@ -1,5 +1,6 @@
 export * from './components';
 export { useFormEngine } from './composables/useFormEngine';
+export { useSubmitState, type SubmitState } from './composables/useSubmitState';
 export { useFieldProps, type FieldAttrs, type FieldEmit, type FieldProps } from './composables/useFieldProps';
 export { useFileText } from './composables/useLabel';
 export type { UseFormEngineOptions, UseFormEngineReturn } from './composables/useFormEngine';

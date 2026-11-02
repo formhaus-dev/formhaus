@@ -183,4 +183,21 @@ describe('property checks', () => {
     expect(known(PROPERTIES.route)).toEqual(names(definitions.StepRoute.properties));
     expect(known(PROPERTIES.validation)).toEqual(names(definitions.FieldValidation.properties));
   });
+
+  it('names the format version that a newer property needs', () => {
+    const onWarning = vi.fn();
+    const options = [{ value: 's', label: 'S', disabled: true }];
+    new FormEngine({ ...base, formatVersion: '1.7', fields: [{ ...field, type: 'radio', readOnly: true, options }] }, {}, { onWarning });
+    const hints = onWarning.mock.calls.map(([issue]) => `${issue.code} ${issue.path} ${issue.hint}`);
+    expect(hints).toContain('unknown-property /fields/0/readOnly Set "formatVersion": "1.8" to use it.');
+    expect(hints).toContain('unknown-property /fields/0/options/0/disabled Set "formatVersion": "1.8" to use it.');
+    expect(hints[0]).toMatch(/^outdated-format-version \/formatVersion Set "formatVersion": "1\.8"/);
+  });
+
+  it('names no format version for a property the entity never takes', () => {
+    const onWarning = vi.fn();
+    new FormEngine({ ...base, formatVersion: '1.7', fields: [{ ...field, disabled: true } as never] }, {}, { onWarning });
+    const hints = onWarning.mock.calls.map(([issue]) => `${issue.code} ${issue.path} ${issue.hint}`);
+    expect(hints.find((hint) => hint.includes('/fields/0/disabled'))).not.toContain('formatVersion');
+  });
 });
