@@ -13,6 +13,7 @@
 ### Patch Changes
 
 - `trackDirty` counts `NaN` as equal to `NaN`.
+- A field in a group item written with `setValue` gets its `defaultValue` when it is shown again.
 - Field ids no longer collide with the helper, error, label, option or group button ids of another field. A field keyed `plan-helper` next to `plan` gets a short stable suffix.
 
 ## 1.9.0
