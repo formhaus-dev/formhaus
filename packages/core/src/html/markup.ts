@@ -17,14 +17,18 @@ const UNSAFE_ALL = /[&<>"'\0]/g;
 
 const escapeHtml = (text: string): string => (UNSAFE.test(text) ? text.replace(UNSAFE_ALL, (char) => ESCAPES[char]) : text);
 
-function content(children: readonly Child[]): string {
-  let text = '';
+function collect(children: readonly Child[], parts: string[]): void {
   for (const child of children) {
-    if (child instanceof Html) text += child.value;
-    else if (Array.isArray(child)) text += content(child);
-    else if (typeof child === 'string' || typeof child === 'number') text += escapeHtml(String(child));
+    if (child instanceof Html) parts.push(child.value);
+    else if (Array.isArray(child)) collect(child, parts);
+    else if (typeof child === 'string' || typeof child === 'number') parts.push(escapeHtml(String(child)));
   }
-  return text;
+}
+
+function content(children: readonly Child[]): string {
+  const parts: string[] = [];
+  collect(children, parts);
+  return parts.join('');
 }
 
 export function html(name: string, attrs: Attrs, ...children: Child[]): Html {
