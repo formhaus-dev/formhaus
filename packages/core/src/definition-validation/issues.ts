@@ -57,6 +57,7 @@ export type DefinitionIssueCode =
   | 'unknown-label-key'
   | 'i18n-unsafe-identifier'
   | 'unknown-source'
+  | 'source-in-group'
   | 'source-not-applicable'
   | 'columns-not-applicable'
   | 'unknown-autocomplete-token'
