@@ -40,6 +40,20 @@ describe('autofocus', () => {
     expect(markup).toMatch(new RegExp(`<input[^>]*id="fh-${key}-[01]"[^>]* autofocus`));
   });
 
+  it('skips a disabled first option', () => {
+    const locked = form([
+      {
+        key: 'pick',
+        type: 'radio',
+        label: 'Pick',
+        options: [{ value: 'a', label: 'A', disabled: true }, ...options.slice(1)],
+      },
+    ]);
+    const markup = renderToStaticMarkup(locked, { autofocus: 'pick' });
+    expect(count(markup)).toBe(1);
+    expect(markup).toMatch(/id="fh-pick-1"[^>]* autofocus/);
+  });
+
   it('ignores a key that is not visible, unknown, hidden or read-only', () => {
     for (const key of ['shown', 'missing', 'secret', '', '__proto__', 'code" onfocus="x'])
       expect(renderToStaticMarkup(fields, { autofocus: key })).not.toContain('autofocus');
@@ -85,6 +99,21 @@ describe('secondary actions', () => {
     const markup = renderToStaticMarkup(fields, { secondaryActions: bad as never });
     expect(markup.match(/<button/g)).toHaveLength(1);
     expect(renderToStaticMarkup(fields, { secondaryActions: 'x' as never })).toBe(renderToStaticMarkup(fields));
+  });
+
+  it('rejects blank labels and names', () => {
+    const blank = [
+      { label: '', name: 'n', value: 'v' },
+      { label: '  ', name: 'n', value: 'v' },
+      { label: 'L', name: '   ', value: 'v' },
+    ];
+    expect(renderToStaticMarkup(fields, { secondaryActions: blank })).toBe(renderToStaticMarkup(fields));
+  });
+
+  it('throws when an action has the same name as a hidden input', () => {
+    expect(() =>
+      renderToStaticMarkup(fields, { hiddenInputs: { csrf: 'tok' }, secondaryActions: [{ label: 'L', name: 'csrf', value: 'v' }] }),
+    ).toThrow(/hidden input/);
   });
 
   it('throws when a field has the same name', () => {
