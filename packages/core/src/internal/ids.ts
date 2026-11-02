@@ -1,10 +1,42 @@
-import type { FormDefinition } from '../types';
+import type { FormDefinition, FormNode } from '../types';
 import { isGroup, isSection, topNodes } from '../visibility/nodes';
 import { fnv1a } from './hash';
 
 const clean = (value: string) => value.replace(/[^\w-]/g, '-');
 const base = (key: string) => clean(key).replace(/-{2,}reveal/g, '-reveal');
 const cache = new WeakMap<FormDefinition, Map<string, Map<string, string>>>();
+
+const PARTS: Record<string, RegExp> = {
+  radio: /^-\d+(-description)?$/,
+  multiselect: /^-\d+(-description)?$/,
+  scale: /^-(-?\d+|anchor(-\d+)?)$/,
+  rating: /^-(-?\d+|anchor(-\d+)?)$/,
+  autocomplete: /^-list$/,
+  file: /^-notice$/,
+  group: /^-(confirm(-title|-description)?)?$/,
+};
+
+const claims = (nodes: FormNode[], rest: string) =>
+  /^-(helper|error|label|description)$/.test(rest) || nodes.some((node) => PARTS[node.type]?.test(rest));
+
+function separate(ids: Map<string, string>, nodes: Map<string, FormNode[]>): Map<string, string> {
+  const owners = new Map<string, string>();
+  const others = new Set(ids.values());
+  const order = [...ids].sort(([, a], [, b]) => a.length - b.length || (a < b ? -1 : 1));
+  const claimed = (id: string) =>
+    [...id.matchAll(/-/g)].some(({ index }) => {
+      const owner = owners.get(id.slice(0, index));
+      return owner !== undefined && claims(nodes.get(owner) ?? [], id.slice(index));
+    });
+  for (const [key, first] of order) {
+    let id = first;
+    for (let seed = key; owners.has(id) || claimed(id) || (id !== first && others.has(id)); seed = id)
+      id = `${base(key)}-${fnv1a(seed).toString(36)}`;
+    owners.set(id, key);
+    ids.set(key, id);
+  }
+  return ids;
+}
 
 function assign(names: Set<string>, groups = new Set<string>()): Map<string, string> {
   const ids = new Map<string, string>();
@@ -26,16 +58,19 @@ function assign(names: Set<string>, groups = new Set<string>()): Map<string, str
 function idsOf(definition: FormDefinition): Map<string, Map<string, string>> {
   let scopes = cache.get(definition);
   if (scopes) return scopes;
-  const names = new Map<string, Set<string>>([['', new Set()]]);
+  const names = new Map<string, Map<string, FormNode[]>>([['', new Map()]]);
   const groups = new Set<string>();
-  const add = (scope: string, key: string) => names.set(scope, (names.get(scope) ?? new Set()).add(key));
+  const add = (scope: string, node: FormNode) => {
+    const keys = names.get(scope) ?? names.set(scope, new Map()).get(scope)!;
+    keys.set(node.key, [...(keys.get(node.key) ?? []), node]);
+  };
   for (const node of topNodes(definition).flatMap((node) => (isSection(node) ? [node, ...node.fields] : [node]))) {
-    add('', node.key);
+    add('', node);
     if (!isGroup(node)) continue;
     groups.add(node.key);
-    for (const field of node.fields) add(`.${node.key}`, field.key);
+    for (const field of node.fields) add(`.${node.key}`, field);
   }
-  scopes = new Map([...names].map(([scope, keys]) => [scope, assign(keys, scope ? undefined : groups)]));
+  scopes = new Map([...names].map(([scope, keys]) => [scope, separate(assign(new Set(keys.keys()), scope ? undefined : groups), keys)]));
   cache.set(definition, scopes);
   return scopes;
 }

@@ -20,6 +20,45 @@ describe('fieldDomId', () => {
     expect(fieldDomId(undefined, 'a--reveal')).toBe('fh-a-reveal');
   });
 
+  it('keeps the ids of a form whose keys only look alike', () => {
+    const definition = form(['address', 'address-2', 'name', 'name-error-free', 'plan-helpers']);
+    expect(['address', 'address-2', 'name', 'name-error-free', 'plan-helpers'].map((key) => fieldDomId('f', key, definition))).toEqual([
+      'f-address',
+      'f-address-2',
+      'f-name',
+      'f-name-error-free',
+      'f-plan-helpers',
+    ]);
+  });
+
+  it('moves a field id off the generated ids of another node', () => {
+    const node = (key: string, type: string, extra = {}): FormField => ({ key, type, label: key, ...extra }) as FormField;
+    const options = [{ value: 'a', label: 'A' }];
+    const fields = [
+      node('plan', 'radio', { options }),
+      node('plan-helper', 'text'),
+      node('plan-1', 'text'),
+      node('plan-0-description', 'text'),
+      node('nps', 'scale', { validation: { min: 0, max: 10 } }),
+      node('nps-anchor', 'text'),
+      node('nps-7', 'text'),
+      node('city', 'autocomplete', { options }),
+      node('city-list', 'text'),
+      node('docs', 'file'),
+      node('docs-notice', 'text'),
+      { key: 'crew', type: 'group', label: 'Crew', fields: [node('name', 'text'), node('name-error', 'text')] } as FormField,
+      node('crew-confirm', 'text'),
+      node('crew-error', 'text'),
+    ];
+    const definition: FormDefinition = { id: 'f', title: '', formatVersion: '1.1', submit: { label: 'Send' }, fields };
+    const ids = fields.map(({ key }) => fieldDomId('f', key, definition));
+    expect(ids.filter((id, index) => id === `f-${fields[index].key}`)).toEqual(['f-plan', 'f-nps', 'f-city', 'f-docs', 'f-crew']);
+    for (const [index, id] of ids.entries()) expect(id).toMatch(new RegExp(`^f-${fields[index].key}(-[0-9a-z]+)?$`));
+    expect(itemDomId('f', 'crew', 0, 'name', definition)).toBe('f-crew--0--name');
+    expect(itemDomId('f', 'crew', 0, 'name-error', definition)).toMatch(/^f-crew--0--name-error-[0-9a-z]+$/);
+    expect(fieldDomId('f', 'plan-helper', definition)).toBe(fieldDomId('f', 'plan-helper', { ...definition, fields: [...fields] }));
+  });
+
   it('keeps the id of keys that collide with no other key', () => {
     const definition = form(['email', 'first_name', 'contact.email', 'Ünit', 'a-b']);
     expect(['email', 'first_name', 'contact.email', 'Ünit', 'a-b'].map((key) => fieldDomId('form', key, definition))).toEqual([
