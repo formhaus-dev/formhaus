@@ -1,8 +1,13 @@
-import type { FormDefinition } from '@formhaus/core';
+import type { FormDefinition, SubmitResult } from '@formhaus/core';
+import { HeadlessFormRenderer, type FormRendererHandle } from '@formhaus/vue';
+import { computed, createApp, h, nextTick, ref, shallowRef } from 'vue';
 import type { AiSettings } from '../../ai-keys';
 import { countFields } from '../../parse';
-import { byId, iconButton, selectSegment } from '../dom';
+import { byId } from '../dom';
 import { icon } from '../icons';
+import { aiComponents } from './ai-controls';
+import { aiDefinition, type AiValues } from './ai-definition';
+import { createAiLayout } from './ai-layout';
 import { generateDefinition, messageOf } from './generate';
 import type { ProviderId } from './providers';
 
@@ -14,119 +19,112 @@ export interface AiHost {
 }
 
 const NO_KEY = 'Bring your own key. It stays in Figma on this machine and requests go straight to the provider.';
+const SAVED_KEY = 'Key saved in Figma on this machine.';
+const CANCELLED = 'Cancelled.';
 
 export function createAiPanel(post: Post, host: AiHost) {
   const panel = byId('aiPanel');
-  const prompt = byId<HTMLTextAreaElement>('aiPrompt');
-  const providerSelect = byId<HTMLSelectElement>('aiProvider');
-  const keyInput = byId<HTMLInputElement>('aiKey');
-  const hint = byId('aiHint');
-  const forget = byId<HTMLButtonElement>('aiForget');
-  const output = byId('aiOutput');
-  const generate = byId<HTMLButtonElement>('aiGenerate');
-  const cancel = byId<HTMLButtonElement>('aiCancel');
-  const targets = [...panel.querySelectorAll<HTMLButtonElement>('[data-target]')];
-  let keys: AiSettings['keys'] = {};
-  let target: 'new' | 'edit' = 'new';
-  let running: AbortController | null = null;
+  const form = ref<FormRendererHandle>();
+  const values = shallowRef<AiValues>({});
+  const keys = shallowRef<AiSettings['keys']>({});
+  const editable = ref(false);
+  const running = shallowRef<AbortController | null>(null);
+  const cancelled = ref(false);
 
-  const provider = () => providerSelect.value as ProviderId;
-  const say = (text: string, tone?: 'error' | 'info') => {
-    output.textContent = text;
-    output.className = tone ? `output ${tone}` : 'output';
-  };
+  const target = computed(() => values.value.target);
+  const editing = computed(() => editable.value && target.value === 'edit');
+  const definition = computed(() => aiDefinition(editable.value, editing.value));
+  const provider = computed(() => (values.value.provider ?? 'anthropic') as ProviderId);
+  const saved = computed(() => Boolean(keys.value[provider.value]));
+
+  const layout = createAiLayout({
+    hint: computed(() => (saved.value ? SAVED_KEY : NO_KEY)),
+    saved,
+    running: computed(() => Boolean(running.value)),
+    cancelled,
+    forget: () => post({ type: 'forgetAiKey', provider: provider.value }),
+    close,
+    cancel: () => running.value?.abort(),
+  });
 
   function showKey(): void {
-    keyInput.value = keys[provider()] ?? '';
-    const saved = Boolean(keys[provider()]);
-    hint.textContent = saved ? 'Key saved in Figma on this machine.' : NO_KEY;
-    forget.hidden = !saved;
+    form.value?.setValue('apiKey', keys.value[provider.value] ?? '');
   }
 
-  function setTarget(next: 'new' | 'edit'): void {
-    target = next;
-    selectSegment(targets, 'target', next);
-    prompt.placeholder = next === 'edit' ? 'Describe the change…' : 'Describe the form…';
-  }
-
-  function setRunning(controller: AbortController | null): void {
-    running = controller;
-    generate.disabled = Boolean(controller);
-    generate.textContent = controller ? 'Generating…' : 'Generate';
-    cancel.hidden = !controller;
-    for (const control of [prompt, providerSelect, keyInput, forget, ...targets]) control.disabled = Boolean(controller);
-  }
-
-  function open(): void {
-    const draft = host.draft();
-    const editable = Boolean(draft && countFields(draft) > 0);
-    byId('aiTargets').hidden = !editable;
-    setTarget(editable ? 'edit' : 'new');
-    panel.hidden = false;
-    say('');
-    prompt.focus();
-  }
-
-  function close(): void {
-    running?.abort();
-    panel.hidden = true;
-  }
-
-  async function run(): Promise<void> {
-    const description = prompt.value.trim();
-    const key = keyInput.value.trim();
-    if (!description) return say('Describe the form first.', 'error');
-    if (!key) {
-      keyInput.focus();
-      return say('Add your API key first.', 'error');
-    }
-    if (key !== keys[provider()]) post({ type: 'saveAiKey', provider: provider(), key });
-    const current = target === 'edit' ? (host.draft() ?? undefined) : undefined;
+  async function generate(input: AiValues): Promise<SubmitResult> {
+    const key = (input.apiKey ?? '').trim();
+    const selected = (input.provider ?? 'anthropic') as ProviderId;
+    if (key !== keys.value[selected]) post({ type: 'saveAiKey', provider: selected, key });
+    const current = editing.value ? (host.draft() ?? undefined) : undefined;
     const controller = new AbortController();
-    setRunning(controller);
-    say('');
+    running.value = controller;
+    cancelled.value = false;
     try {
-      const { definition, warnings } = await generateDefinition({
-        provider: provider(),
+      const { definition: result, warnings } = await generateDefinition({
+        provider: selected,
         key,
-        description,
+        description: (input.prompt ?? '').trim(),
         current,
         signal: controller.signal,
       });
       panel.hidden = true;
-      host.apply(definition, ['Review the form, then generate it.', ...warnings].join(' '));
+      host.apply(result, ['Review the form, then generate it.', ...warnings].join(' '));
+      return { ok: true };
     } catch (error) {
-      if (controller.signal.aborted) say('Cancelled.', 'info');
-      else say(messageOf(error), 'error');
+      cancelled.value = controller.signal.aborted;
+      return { ok: false, formErrors: [controller.signal.aborted ? CANCELLED : messageOf(error)] };
     } finally {
-      setRunning(null);
+      running.value = null;
     }
   }
 
+  async function open(): Promise<void> {
+    const draft = host.draft();
+    editable.value = Boolean(draft && countFields(draft) > 0);
+    panel.hidden = false;
+    await nextTick();
+    form.value?.engine.setErrors({});
+    if (editable.value) form.value?.setValue('target', 'edit');
+    panel.querySelector('textarea')?.focus();
+  }
+
+  function close(): void {
+    running.value?.abort();
+    panel.hidden = true;
+  }
+
+  createApp({
+    render: () =>
+      h(HeadlessFormRenderer, {
+        ref: form,
+        definition: definition.value,
+        components: aiComponents,
+        layout,
+        keepValues: true,
+        errorSummary: false,
+        onSubmit: (input: Record<string, unknown>) => generate(input as AiValues),
+        onValuesChange: (next: Readonly<Record<string, unknown>>) => (values.value = next as AiValues),
+        onFieldChange: (key: string) => key === 'provider' && showKey(),
+      }),
+  }).mount(panel);
+
   byId('aiOpen').prepend(icon('wand'));
-  byId('aiOpen').onclick = () => (panel.hidden ? open() : close());
-  byId('aiHead').appendChild(iconButton('close', 'Close', close));
-  for (const item of targets) item.onclick = () => setTarget(item.dataset.target as 'new' | 'edit');
-  providerSelect.onchange = showKey;
-  forget.onclick = () => post({ type: 'forgetAiKey', provider: provider() });
-  generate.onclick = () => void run();
-  cancel.onclick = () => running?.abort();
+  byId('aiOpen').onclick = () => (panel.hidden ? void open() : close());
   panel.onkeydown = (event) => {
     if (event.key === 'Escape') {
       event.stopPropagation();
       close();
       byId('aiOpen').focus();
+    } else if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.target instanceof HTMLTextAreaElement) {
+      void form.value?.submit();
     }
-  };
-  prompt.onkeydown = (event) => {
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) void run();
   };
   post({ type: 'getAiSettings' });
 
   return {
     setSettings(settings: AiSettings) {
-      keys = settings.keys;
-      if (!running) providerSelect.value = settings.provider;
+      keys.value = settings.keys;
+      if (!running.value) form.value?.setValue('provider', settings.provider);
       showKey();
     },
   };

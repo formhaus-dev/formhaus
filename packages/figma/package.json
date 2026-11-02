@@ -12,7 +12,9 @@
     "build:harness": "node build.mjs --harness"
   },
   "dependencies": {
-    "@formhaus/core": "workspace:*"
+    "@formhaus/core": "workspace:*",
+    "@formhaus/vue": "workspace:*",
+    "vue": "^3.5.44"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.142.0",
