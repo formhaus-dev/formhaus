@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. Set "1.7" when a file field has multiple; below 1.7 multiple is ignored and the field keeps one file. Set "1.8" when an option has description or disabled, a field has readOnly or a group has reorderable; below 1.8 they are ignored. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize, pinned, multiple, option description, disabled, readOnly and reorderable.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. Set "1.7" when a file field has multiple; below 1.7 multiple is ignored and the field keeps one file. Set "1.8" when an option has description or disabled, a field has readOnly or a group has reorderable; below 1.8 they are ignored. Set "1.9" when a group has a hidden field; below 1.9 it is invalid-nesting. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize, pinned, multiple, option description, disabled, readOnly and reorderable.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -45,7 +45,8 @@ export const capabilities = {
       'itemLabel is the item heading; {index} is the 1-based item number and {label} the group label.',
       'Item keys are unique in the item and must not repeat a key outside the group (duplicate-key). No other key may start with "<group key>.".',
       'Item conditions and matchField may use fields of the same item and fields outside the group. Conditions outside the group cannot use item fields (group-scope); they may test the group itself with notEmpty.',
-      'No sections, groups, file or hidden fields inside a group (invalid-nesting).',
+      'No sections, groups or file fields inside a group (invalid-nesting).',
+      'A hidden field inside a group keeps a value per item that the user does not edit, such as a stored id, from the item in the initial values or defaultValue. It moves, is removed and is submitted with its item, and its errors show as form errors. source is not allowed on it (source-in-group). Needs "formatVersion": "1.9".',
       'Errors of item fields use the 0-based path "<group>.<index>.<field>", such as participants.1.email. Count errors use the group key.',
       '"reorderable": true lets the user move items up and down; values, errors and item ids move with the item. In React and Vue the Move buttons come from the reorder entry; without it the group works without them. Needs "formatVersion": "1.8".',
     ],

@@ -11,12 +11,14 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
   const memory = new Map<string, unknown>();
   let itemSeeds = new WeakMap<object, Values>();
   let itemMemory = new WeakMap<object, Values>();
+  let itemHidden = new WeakMap<object, Set<string>>();
   const forgetItems = () => {
     itemSeeds = new WeakMap();
     itemMemory = new WeakMap();
+    itemHidden = new WeakMap();
   };
   const seedItems = (value: unknown) => {
-    for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemKey(item), item);
+    for (const item of itemsOf(value)) if (isEntry(item) && !itemSeeds.has(itemKey(item))) itemSeeds.set(itemKey(item), item);
   };
 
   return {
@@ -44,7 +46,15 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
     remember(key: string, value: unknown, written = false): void {
       if (!remembering) return;
       memory.set(key, value);
-      if (written) writes?.add(key);
+      if (!written) return;
+      writes?.add(key);
+      const group = groups.find((candidate) => candidate.key === key);
+      for (const item of group ? itemsOf(value) : []) {
+        if (!isEntry(item) || itemSeeds.has(itemKey(item))) continue;
+        const seed: Values = Object.fromEntries(group!.fields.map((field) => [field.key, field.defaultValue]));
+        for (const name of Object.keys(item)) if (item[name] !== undefined) seed[name] = item[name];
+        itemSeeds.set(itemKey(item), seed);
+      }
     },
 
     watchWrites(): () => Set<string> {
@@ -66,6 +76,16 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       if (!isEntry(item)) return;
       itemSeeds.delete(itemKey(item));
       itemMemory.delete(itemKey(item));
+      itemHidden.delete(itemKey(item));
+    },
+
+    hideItem(item: Values, key: string): void {
+      const id = itemKey(item);
+      itemHidden.set(id, (itemHidden.get(id) ?? new Set()).add(key));
+    },
+
+    revealItem(item: Values, key: string): boolean {
+      return !!itemHidden.get(itemKey(item))?.delete(key);
     },
 
     reseed(keys: string[], values: Values): (kept: Set<string>) => void {
@@ -101,9 +121,9 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       return remembered ? memory.get(key) : seeds[key];
     },
 
-    itemStartValue(item: unknown, key: string): unknown {
+    itemStartValue(item: unknown, { key, type }: FormField): unknown {
       if (!isEntry(item)) return undefined;
-      const remembered = itemMemory.get(itemKey(item));
+      const remembered = type !== 'hidden' && itemMemory.get(itemKey(item));
       return remembered && hasOwn(remembered, key) ? remembered[key] : itemSeeds.get(itemKey(item))?.[key];
     },
   };

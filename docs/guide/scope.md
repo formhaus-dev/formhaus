@@ -33,7 +33,7 @@ What the definition format, the engine and the renderers do, what they leave to 
 |---|---|
 | Calculated values or scoring inside the definition | Add a `hidden` field and set it from app code with `setValue`. Compute it again on the server: `validateSubmission()` checks only its type and rules. See [Derived values](/recipes/derived-values). |
 | Nested groups | A group cannot contain a group or a section (`invalid-nesting`). Use two top-level groups, or a [custom field type](/guide/fields#custom-field-types) inside the item that holds the inner list. |
-| Files inside groups | A group cannot contain a `file` or `hidden` field (`invalid-nesting`). Put the `file` field outside the group, or use a custom field type in the item that uploads the file and stores its reference as text. |
+| Files inside groups | A group cannot contain a `file` field (`invalid-nesting`). Put the `file` field outside the group, or use a custom field type in the item that uploads the file and stores its reference as text. |
 | Payment card fields | There is no card field type. Use the payment provider's own elements next to the form. Formhaus Cloud refuses hosted forms with `cc-*` autocomplete tokens. |
 | Signatures, rich text, address autocomplete with maps | Write a [custom field type](/guide/fields#custom-field-types) and pass its component through `components`. See also [custom components](/guide/custom-components). |
 | Offline drafts with sync | Save `onValuesChange` values in your own storage, pass them back as `initialValues`, and queue the submit in app code. `FormhausForm` keeps a draft in `sessionStorage` of the tab by default, with no sync. See [Drafts](/guide/endpoint#drafts). |
