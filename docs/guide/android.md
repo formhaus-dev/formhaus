@@ -15,9 +15,9 @@ Releases are published to Maven Central. Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("dev.formhaus:formhaus-core:0.8.1")
-    implementation("dev.formhaus:formhaus-compose:0.8.1")
-    implementation("dev.formhaus:formhaus-research:0.8.1")
+    implementation("dev.formhaus:formhaus-core:0.9.0")
+    implementation("dev.formhaus:formhaus-compose:0.9.0")
+    implementation("dev.formhaus:formhaus-research:0.9.0")
 }
 ```
 
@@ -27,12 +27,13 @@ dependencies {
 | `formhaus-compose` | The Jetpack Compose renderer. See [Compose components](/guide/integrations/compose). |
 | `formhaus-research` | [Random option order](#random-option-order) for `randomize` fields. |
 
-`formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
+`formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. Your project needs Kotlin 2.3 or later, because the libraries are built with Kotlin 2.4. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
 
 Both ports are 0.x previews. The [compatibility table](/guide/stability#native-ports) lists the core version of every port release.
 
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.9.0 | 1.9.0 | 1.8 |
 | 0.8.1 | 1.8.0 | 1.7 |
 | 0.8.0 | 1.8.0 | 1.7 |
 | 0.7.0 | 1.6.1 | 1.6 |

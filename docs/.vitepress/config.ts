@@ -105,6 +105,7 @@ export default defineConfig({
           { text: 'Flat API', link: '/recipes/flat-api' },
           { text: 'Conditional fields', link: '/recipes/conditional-fields' },
           { text: 'Derived values', link: '/recipes/derived-values' },
+          { text: 'Group server errors', link: '/recipes/group-server-errors' },
           { text: 'Nested sections', link: '/recipes/nested-sections' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Question timing', link: '/recipes/question-timing' },

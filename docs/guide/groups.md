@@ -84,7 +84,7 @@ Item errors use `<group>.<index>.<field>` with a 0-based index. Count errors use
 }
 ```
 
-`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed or moved, the errors of the other items move with them.
+`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed or moved, the errors of the other items move with them. To map a server path such as `participants[1].email` or a schema issue path, see [Server errors on group items](/recipes/group-server-errors).
 
 ## Engine API
 

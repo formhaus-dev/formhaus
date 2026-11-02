@@ -81,7 +81,7 @@ Zod `.refine()` with a `when` option and Valibot `partialCheck()` run a check on
 
 ## Group items
 
-Issue paths map to group item keys: `['players', 1, 'name']` shows on `players.1.name`. The schema validates the group as an array of objects, as in the examples above. An issue on an item field that a condition hides is dropped.
+Issue paths map to group item keys: `['players', 1, 'name']` shows on `players.1.name`. The schema validates the group as an array of objects, as in the examples above. An issue on an item field that a condition hides is dropped. A server that returns issue paths needs them converted first. See [Server errors on group items](/recipes/group-server-errors).
 
 ## Async server check
 
@@ -95,7 +95,7 @@ Zod runs the whole schema twice when a refinement is async: its Standard Schema 
 
 ## On the server
 
-Call the function with the values alone. Each issue maps to the top-level key of its path, so `['players', 1, 'name']` shows on `players`, and an issue without a path comes back under the empty key `''`. Run it on the `values` that [`validateSubmission()`](/guide/server-validation) returns, which hold only the fields on the active path:
+Call the function with the values alone. Each issue maps to the top-level key of its path, so `['players', 1, 'name']` shows on `players`, and an issue without a path comes back under the empty key `''`. To show an item error on the item field, send the full path instead, as in [Server errors on group items](/recipes/group-server-errors). Run it on the `values` that [`validateSubmission()`](/guide/server-validation) returns, which hold only the fields on the active path:
 
 ```ts
 import { validateSubmission } from '@formhaus/core/server';
