@@ -200,7 +200,7 @@
       ]
     },
     {
-      "name": "stores items written with setValue as given and restores their start values",
+      "name": "stores items written with setValue as given and gives back their written values or defaults on reveal",
       "steps": [
         {
           "do": "setValue",
@@ -298,7 +298,8 @@
                   "id": "a1",
                   "name": "Ann",
                   "role": "admin",
-                  "grant": "g2"
+                  "grant": "g2",
+                  "note": "hi"
                 },
                 {
                   "name": "Bob",

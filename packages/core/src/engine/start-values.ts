@@ -11,9 +11,11 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
   const memory = new Map<string, unknown>();
   let itemSeeds = new WeakMap<object, Values>();
   let itemMemory = new WeakMap<object, Values>();
+  let itemHidden = new WeakMap<object, Set<string>>();
   const forgetItems = () => {
     itemSeeds = new WeakMap();
     itemMemory = new WeakMap();
+    itemHidden = new WeakMap();
   };
   const seedItems = (value: unknown) => {
     for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemKey(item), item);
@@ -41,17 +43,17 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       for (const key of Object.keys(seeds)) memory.set(key, undefined);
     },
 
-    remember(key: string, value: unknown, written = false, shown?: (group: FormGroup, item: Values) => FormField[]): void {
+    remember(key: string, value: unknown, written = false): void {
       if (!remembering) return;
       memory.set(key, value);
       if (!written) return;
       writes?.add(key);
-      const group = shown && groups.find((candidate) => candidate.key === key);
+      const group = groups.find((candidate) => candidate.key === key);
       for (const item of group ? itemsOf(value) : []) {
         if (!isEntry(item) || itemSeeds.has(itemKey(item))) continue;
-        const visible = shown!(group!, item);
-        const defaults = group!.fields.filter((field) => !visible.includes(field) && field.defaultValue !== undefined);
-        itemSeeds.set(itemKey(item), { ...Object.fromEntries(defaults.map((field) => [field.key, field.defaultValue])), ...item });
+        const seed: Values = Object.fromEntries(group!.fields.map((field) => [field.key, field.defaultValue]));
+        for (const name of Object.keys(item)) if (item[name] !== undefined) seed[name] = item[name];
+        itemSeeds.set(itemKey(item), seed);
       }
     },
 
@@ -74,6 +76,16 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
       if (!isEntry(item)) return;
       itemSeeds.delete(itemKey(item));
       itemMemory.delete(itemKey(item));
+      itemHidden.delete(itemKey(item));
+    },
+
+    hideItem(item: Values, key: string): void {
+      const id = itemKey(item);
+      itemHidden.set(id, (itemHidden.get(id) ?? new Set()).add(key));
+    },
+
+    revealItem(item: Values, key: string): boolean {
+      return !!itemHidden.get(itemKey(item))?.delete(key);
     },
 
     reseed(keys: string[], values: Values): (kept: Set<string>) => void {

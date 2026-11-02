@@ -117,10 +117,11 @@ export function createVisibility(definition: FormDefinition, keep = false) {
           const entry: Values = result;
           const shown = itemFields(group, entry, values);
           const hidden = group.fields.filter((field) => !shown.includes(field) && entry[field.key] !== undefined);
+          for (const field of group.fields) if (!shown.includes(field)) starts.hideItem(entry, field.key);
           const restored: Values = {};
           for (const field of shown) {
             const { key } = field;
-            const value = entry[key] === undefined ? starts.itemStartValue(item, field) : undefined;
+            const value = entry[key] === undefined && starts.revealItem(entry, key) ? starts.itemStartValue(item, field) : undefined;
             if (value !== undefined) restored[key] = value;
           }
           if (!hidden.length && !Object.keys(restored).length) break;
