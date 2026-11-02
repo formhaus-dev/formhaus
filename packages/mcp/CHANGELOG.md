@@ -1,5 +1,15 @@
 # @formhaus/mcp
 
+## 0.14.0
+
+### Minor Changes
+
+- `capabilities` describes option `description` and `disabled`, field `readOnly` and group `reorderable`.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.9.0.
+
 ## 0.13.3
 
 ### Patch Changes

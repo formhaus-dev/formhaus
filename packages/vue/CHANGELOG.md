@@ -1,5 +1,24 @@
 # @formhaus/vue
 
+## 1.9.0
+
+### Minor Changes
+
+- Option descriptions render under the label with `aria-describedby`. Disabled options render `disabled`.
+- Read-only fields stay focusable: `readonly` on inputs, `aria-readonly` on other controls.
+- New `readOnly` prop on `FormRenderer` and `HeadlessFormRenderer` makes every field read-only and hides the group Add, Remove and Move buttons.
+- `FieldComponentProps` gets `readOnly`. Group item views get `move(to)` and `count`.
+- New `@formhaus/vue/reorder` entry exports `ReorderGroupItem` with Move up and Move down buttons. A reorderable group without it shows no Move buttons and logs a `missing-component` warning in development.
+- New `useFormDirty` in `@formhaus/vue/dirty` takes an engine or a renderer handle, or returns a `ref` for the renderer.
+- New `useSubmitState` returns `submitting`, `validating` and `canSubmit` for buttons outside the form. It takes an engine or a renderer handle, or returns a `ref`.
+- The renderer handle has `submit()`, `reset(values)`, `submitting` and `engine`.
+- The `id` prop goes on the `<form>` element, so a button outside the form can submit it.
+- The rendered `<form>` has `noValidate`, so browser validation bubbles no longer replace field messages.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.9.0.
+
 ## 1.8.1
 
 ### Patch Changes
