@@ -492,6 +492,182 @@
       ]
     },
     {
+      "name": "keeps the start values of items when their group is hidden and shown again",
+      "definition": {
+        "formatVersion": "1.9",
+        "id": "crew",
+        "title": "Crew",
+        "submit": {
+          "label": "Save"
+        },
+        "fields": [
+          {
+            "key": "on",
+            "type": "checkbox",
+            "label": "On"
+          },
+          {
+            "key": "crew",
+            "type": "group",
+            "label": "Crew",
+            "show": [
+              {
+                "field": "on",
+                "eq": true
+              }
+            ],
+            "fields": [
+              {
+                "key": "kind",
+                "type": "radio",
+                "label": "Kind",
+                "options": [
+                  {
+                    "value": "x",
+                    "label": "X"
+                  },
+                  {
+                    "value": "y",
+                    "label": "Y"
+                  }
+                ]
+              },
+              {
+                "key": "id",
+                "type": "hidden",
+                "label": "Id",
+                "defaultValue": "new",
+                "show": [
+                  {
+                    "field": "kind",
+                    "eq": "x"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "on": true,
+        "crew": [
+          {
+            "kind": "x",
+            "id": "m_1"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "setItemValue",
+          "key": "crew",
+          "index": 0,
+          "field": "kind",
+          "value": "y"
+        },
+        {
+          "do": "setValue",
+          "key": "crew",
+          "value": [
+            {
+              "kind": "x",
+              "id": "m_1"
+            },
+            {
+              "kind": "y"
+            }
+          ]
+        },
+        {
+          "do": "setValue",
+          "key": "on",
+          "value": false
+        },
+        {
+          "expect": {
+            "values": {
+              "on": false
+            }
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "on",
+          "value": true
+        },
+        {
+          "expect": {
+            "values": {
+              "on": true,
+              "crew": [
+                {
+                  "kind": "x",
+                  "id": "m_1"
+                },
+                {
+                  "kind": "y"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setItemValue",
+          "key": "crew",
+          "index": 0,
+          "field": "kind",
+          "value": "y"
+        },
+        {
+          "do": "setItemValue",
+          "key": "crew",
+          "index": 1,
+          "field": "kind",
+          "value": "x"
+        },
+        {
+          "expect": {
+            "values": {
+              "on": true,
+              "crew": [
+                {
+                  "kind": "y"
+                },
+                {
+                  "kind": "x",
+                  "id": "new"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setItemValue",
+          "key": "crew",
+          "index": 0,
+          "field": "kind",
+          "value": "x"
+        },
+        {
+          "expect": {
+            "values": {
+              "on": true,
+              "crew": [
+                {
+                  "kind": "x",
+                  "id": "m_1"
+                },
+                {
+                  "kind": "x",
+                  "id": "new"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "gives items from defaultItems the default of their hidden fields",
       "definition": {
         "formatVersion": "1.9",

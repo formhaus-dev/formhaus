@@ -18,7 +18,7 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
     itemHidden = new WeakMap();
   };
   const seedItems = (value: unknown) => {
-    for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemKey(item), item);
+    for (const item of itemsOf(value)) if (isEntry(item) && !itemSeeds.has(itemKey(item))) itemSeeds.set(itemKey(item), item);
   };
 
   return {
