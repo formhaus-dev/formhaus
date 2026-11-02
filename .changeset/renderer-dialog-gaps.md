@@ -10,4 +10,4 @@
 - The React renderer handle keeps one identity for each engine. Storing it in state no longer re-renders in a loop.
 - React `useFormDirty` also takes a renderer handle.
 - The functions on `useFormDirty`, `trackDirty` and `schemaParse` results are typed as properties, so passing them unbound passes `@typescript-eslint/unbound-method`.
-- An `unknown-property` warning for a format 1.8 property below format 1.8 names the format version it needs.
+- An `unknown-property` warning for a property from a newer format version names the version it needs.

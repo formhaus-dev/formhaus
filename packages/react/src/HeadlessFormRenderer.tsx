@@ -191,7 +191,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           focusReturn.current = event.target;
         }}
         className={props.className ? `fh-form ${props.className}` : 'fh-form'}
-        data-testid={testId?.('form')}
+        data-testid={testId?.('form') ?? props['data-testid']}
         tabIndex={-1}
         aria-busy={busy}
         onSubmit={(event) => {

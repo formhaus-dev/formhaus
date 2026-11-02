@@ -22,11 +22,12 @@ describe('renderer in a dialog', () => {
   it('turns off browser validation and passes attributes through to the form', () => {
     render(HeadlessFormRenderer, {
       props: { definition, onSubmit: () => {} },
-      attrs: { 'aria-label': 'Invite a member', 'data-dialog': 'invite', class: 'dialog' },
+      attrs: { 'aria-label': 'Invite a member', 'data-dialog': 'invite', 'data-testid': 'invite', class: 'dialog' },
     });
     const form = screen.getByRole('form', { name: 'Invite a member' }) as HTMLFormElement;
     expect(form.noValidate).toBe(true);
     expect(form.dataset.dialog).toBe('invite');
+    expect(form.dataset.testid).toBe('invite');
     expect(form.className).toBe('fh-form dialog');
   });
 

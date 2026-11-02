@@ -52,6 +52,7 @@ describe('renderer in a dialog', () => {
         onSubmit={() => {}}
         aria-label="Invite a member"
         data-dialog="invite"
+        data-testid="invite"
         style={{ gap: 4 }}
         className="dialog"
       />,
@@ -59,6 +60,7 @@ describe('renderer in a dialog', () => {
     const form = screen.getByRole('form', { name: 'Invite a member' }) as HTMLFormElement;
     expect(form.noValidate).toBe(true);
     expect(form.dataset.dialog).toBe('invite');
+    expect(form.dataset.testid).toBe('invite');
     expect(form.style.gap).toBe('4px');
     expect(form.className).toBe('fh-form dialog');
     expect(form.hasAttribute('onSubmit')).toBe(false);

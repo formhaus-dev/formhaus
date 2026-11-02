@@ -32,8 +32,8 @@ const SINCE: [number, string][] = [
 const known = (list: string, definition: FormDefinition) =>
   SINCE.reduce((text, [minor, key]) => (formatAtLeast(definition, minor) ? text : text.replace(` ${key} `, ' ')), list);
 
-const newer = (definition: FormDefinition) => (key: string) => {
-  const since = SINCE.find(([minor, name]) => name === key && !formatAtLeast(definition, minor));
+const newer = (definition: FormDefinition, list: string) => (key: string) => {
+  const since = list.split(' ').includes(key) && SINCE.find(([minor, name]) => name === key && !formatAtLeast(definition, minor));
   return since && `Set "formatVersion": "1.${since[0]}" to use it`;
 };
 
@@ -119,11 +119,11 @@ function fieldWarnings({ field, path, parent }: FieldEntry, definition: FormDefi
       field,
       path,
       known(field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, definition),
-      (key) => misplaced(key) ?? newer(definition)(key),
+      (key) => misplaced(key) ?? newer(definition, field.type === 'group' ? PROPERTIES.group : PROPERTIES.field)(key),
     ),
     ...(field.options ?? []).flatMap((option, index) => [
       ...labeled(option, `${path}/options/${index}`),
-      ...unknown(option, `${path}/options/${index}`, known(PROPERTIES.option, definition), newer(definition)),
+      ...unknown(option, `${path}/options/${index}`, known(PROPERTIES.option, definition), newer(definition, PROPERTIES.option)),
       ...(option.disabled !== undefined && !RANDOMIZED_TYPES.includes(field.type) && formatAtLeast(definition, 8)
         ? [
             warning(
