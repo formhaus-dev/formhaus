@@ -167,7 +167,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
   );
   add(fields.some(isFileList), ['removeItem', 'removeItemNamed', 'itemAdded', 'itemRemoved', 'fileCount']);
   add(formatAtLeast(definition, 8) && nodes.some((node) => isGroup(node) && node.reorderable), ['moveUp', 'moveDown', 'itemMoved']);
-  add(formatAtLeast(definition, 8) && fields.some((field) => field.readOnly), ['readOnly']);
+  add(
+    formatAtLeast(definition, 8) && fields.some(({ readOnly }) => readOnly === true || (Array.isArray(readOnly) && readOnly.length > 0)),
+    ['readOnly'],
+  );
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

@@ -262,7 +262,7 @@ type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
   | 'select' // Empty select prompt added in 0.21.0
   | 'fileCount' // File list count added in 1.7.0
   | 'moveUp' | 'moveDown' | 'itemMoved' // Reorder labels added in 1.9.0
-  | 'readOnly'; // Read-only state added in 1.9.1
+  | 'readOnly'; // Read-only state added in 1.10.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"

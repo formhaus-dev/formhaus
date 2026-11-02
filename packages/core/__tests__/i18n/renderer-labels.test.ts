@@ -101,6 +101,8 @@ describe('renderer labels', () => {
     });
     const older = labelSlots({ ...definition, formatVersion: '1.7' });
     for (const key of ['readOnly', 'moveUp', 'moveDown', 'itemMoved']) expect(older).not.toHaveProperty(key);
+    const never = { ...definition, fields: [{ key: 'name', type: 'text', label: 'Name', readOnly: [] }] } as FormDefinition;
+    expect(labelSlots(never)).not.toHaveProperty('readOnly');
     expect(labelFor('readOnly')).toBe('Read only');
   });
 
