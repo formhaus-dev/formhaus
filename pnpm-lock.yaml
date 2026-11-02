@@ -222,6 +222,12 @@ importers:
       '@formhaus/core':
         specifier: workspace:*
         version: link:../core
+      '@formhaus/vue':
+        specifier: workspace:*
+        version: link:../vue
+      vue:
+        specifier: ^3.5.44
+        version: 3.5.44(typescript@5.9.3)
     devDependencies:
       '@figma/plugin-typings':
         specifier: ^1.142.0
