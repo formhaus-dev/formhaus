@@ -321,6 +321,65 @@ async function changed(key: string, value: unknown) {
 
 A field keeps its value when the new definition has a field with the same key and type. New fields start from their defaults. The user stays on the same step when it still exists, and steps added before it are checked on submit. Without `keepValues`, a new definition resets the form as before. The `useFormEngine` hook and composable take `keepValues` in their options, and `engine.replaceDefinition()` does the same on a bare engine. See [Replacing the definition](/spec#replacing-the-definition).
 
+### Build the definition from app values
+
+A definition that reads app data, such as helper text built from saved settings, changes whenever that data does. Build it in `useMemo` or `computed` and set `keepValues`. A refetch of the settings then updates the text without resetting the answers, and the [unsaved-changes](/guide/unsaved-changes) baseline survives.
+
+```ts
+import type { FormDefinition } from '@formhaus/core';
+
+type Limits = { dailyLimit: number };
+
+function withSaved(definition: FormDefinition, saved: Limits): FormDefinition {
+  return {
+    ...definition,
+    fields: definition.fields?.map((field) =>
+      field.key === 'dailyLimit' ? { ...field, helperText: `Saved: ${saved.dailyLimit} per day` } : field,
+    ),
+  };
+}
+```
+
+::: code-group
+```tsx [React]
+function LimitsForm({ saved, save }: { saved: Limits; save: (values: Record<string, unknown>) => Promise<void> }) {
+  const definition = useMemo(() => withSaved(base, saved), [saved]);
+  const { markClean, ref } = useFormDirty();
+  return (
+    <FormRenderer
+      ref={ref}
+      definition={definition}
+      initialValues={saved}
+      keepValues
+      onSubmit={async (values) => {
+        await save(values);
+        markClean();
+      }}
+    />
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+const props = defineProps<{ saved: Limits; save: (values: Record<string, unknown>) => Promise<void> }>();
+const definition = computed(() => withSaved(base, props.saved));
+const { markClean, ref: formRef } = useFormDirty();
+
+async function submit(values: Record<string, unknown>) {
+  await props.save(values);
+  markClean();
+}
+</script>
+
+<template>
+  <FormRenderer :ref="formRef" :definition="definition" :initial-values="saved" keep-values @submit="submit" />
+</template>
+```
+:::
+
+`base` is the parsed definition. `initialValues` is read once, so `saved` does not overwrite what the user typed. Without `keepValues`, every new `saved` object resets the form.
+
 ### Renderer handle
 
 Put a ref on `FormRenderer` or `HeadlessFormRenderer` to drive the form from app code. The ref is typed as `FormRendererHandle`.
