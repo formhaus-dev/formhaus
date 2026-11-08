@@ -13,13 +13,13 @@ importers:
         version: 11.91.0(react@19.3.1)
       '@carbon/react':
         specifier: ^1.119.0
-        version: 1.119.0(react-dom@19.3.1(react@19.3.1))(react-is@18.3.1)(react@19.3.1)(sass@1.106.1)
+        version: 1.119.0(react-dom@19.3.1(react@19.3.1))(react-is@18.3.1)(react@19.3.1)(sass@1.107.1)
       '@formhaus/core':
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.1
+        version: 1.8.1
       '@formhaus/react':
-        specifier: ^1.7.0
-        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
+        specifier: ^1.8.1
+        version: 1.8.1(@formhaus/core@1.8.1)(react@19.3.1)
       '@ibm/plex-mono':
         specifier: 2.5.0
         version: 2.5.0
@@ -34,8 +34,8 @@ importers:
         version: 19.3.1(react@19.3.1)
     devDependencies:
       '@types/node':
-        specifier: ^26.6.5
-        version: 26.6.5
+        specifier: ^26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: ^19.0.0
         version: 19.3.0
@@ -44,16 +44,16 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.2
-        version: 6.1.2(vite@8.3.5(@types/node@26.6.5)(sass@1.106.1))
+        version: 6.1.2(vite@8.3.5(@types/node@26.6.6)(sass@1.107.1))
       sass:
-        specifier: ^1.106.1
-        version: 1.106.1
+        specifier: ^1.107.1
+        version: 1.107.1
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
       vite:
         specifier: ^8.3.5
-        version: 8.3.5(@types/node@26.6.5)(sass@1.106.1)
+        version: 8.3.5(@types/node@26.6.6)(sass@1.107.1)
 
 packages:
 
@@ -137,15 +137,15 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@formhaus/core@1.7.0':
-    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
+  '@formhaus/core@1.8.1':
+    resolution: {integrity: sha512-9yjbR1pMg9cPm2ZsUCJsMJ7g3yHMNNYgBwIIG4yaQkrc1qC6qlWokygDGuKJSdEeROCej6lubzN/rKmA0B6bJg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.7.0':
-    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
+  '@formhaus/react@1.8.1':
+    resolution: {integrity: sha512-89muOUUg4cHVdxPK6iCHjk2W5XHFG8jsadkj7By9s8oPUWG/Tk0Ir46g21RNR7Nx08oPc59gg1iHb0LFVXaMxQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.7.0
+      '@formhaus/core': ~1.8.1
       react: ^18.0.0 || ^19.0.0
 
   '@ibm/plex-mono@2.5.0':
@@ -369,8 +369,8 @@ packages:
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
 
-  '@types/node@26.6.5':
-    resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
+  '@types/node@26.6.6':
+    resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
 
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
@@ -634,8 +634,8 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
-  sass@1.106.1:
-    resolution: {integrity: sha512-kD+Gi66vycZcbJt+42NC4z4PXNMcCajVrJPhqoKKXy5cOBMmJQt052CxIBcRjwYXeImHYOpu/ydWWGZQIenl7A==}
+  sass@1.107.1:
+    resolution: {integrity: sha512-aJ1/LvxOOb04YhmiBjzZn3jVwdHKol+OVhoMV6fFl02fF9T3i+5Mg9l/CnzqtM+NX5Jn5o3lAbs/ZJivTCLHfQ==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -757,14 +757,14 @@ snapshots:
     dependencies:
       '@ibm/telemetry-js': 1.12.0
 
-  '@carbon/react@1.119.0(react-dom@19.3.1(react@19.3.1))(react-is@18.3.1)(react@19.3.1)(sass@1.106.1)':
+  '@carbon/react@1.119.0(react-dom@19.3.1(react@19.3.1))(react-is@18.3.1)(react@19.3.1)(sass@1.107.1)':
     dependencies:
       '@babel/runtime': 8.0.7
       '@carbon/feature-flags': 1.11.0
       '@carbon/icons-react': 11.91.0(react@19.3.1)
       '@carbon/layout': 11.62.0
       '@carbon/motion': 11.55.0
-      '@carbon/styles': 1.118.0(sass@1.106.1)
+      '@carbon/styles': 1.118.0(sass@1.107.1)
       '@carbon/utilities': 0.28.0
       '@floating-ui/react': 0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@ibm/telemetry-js': 1.12.0
@@ -782,9 +782,9 @@ snapshots:
       react-is: 18.3.1
       tabbable: 6.5.0
     optionalDependencies:
-      sass: 1.106.1
+      sass: 1.107.1
 
-  '@carbon/styles@1.118.0(sass@1.106.1)':
+  '@carbon/styles@1.118.0(sass@1.107.1)':
     dependencies:
       '@carbon/colors': 11.61.0
       '@carbon/feature-flags': 1.11.0
@@ -804,7 +804,7 @@ snapshots:
       '@ibm/plex-serif': 2.0.0
       '@ibm/telemetry-js': 1.12.0
     optionalDependencies:
-      sass: 1.106.1
+      sass: 1.107.1
 
   '@carbon/themes@11.84.0':
     dependencies:
@@ -851,11 +851,11 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@formhaus/core@1.7.0': {}
+  '@formhaus/core@1.8.1': {}
 
-  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
+  '@formhaus/react@1.8.1(@formhaus/core@1.8.1)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.7.0
+      '@formhaus/core': 1.8.1
       react: 19.3.1
 
   '@ibm/plex-mono@2.5.0':
@@ -1010,7 +1010,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@types/node@26.6.5':
+  '@types/node@26.6.6':
     dependencies:
       undici-types: 8.9.0
 
@@ -1022,10 +1022,10 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.5)(sass@1.106.1))':
+  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.6)(sass@1.107.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.5(@types/node@26.6.5)(sass@1.106.1)
+      vite: 8.3.5(@types/node@26.6.6)(sass@1.107.1)
 
   chokidar@5.0.0:
     dependencies:
@@ -1230,7 +1230,7 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.2.14
       '@rolldown/binding-win32-x64-msvc': 1.2.14
 
-  sass@1.106.1:
+  sass@1.107.1:
     dependencies:
       chokidar: 5.0.0
       immutable: 5.1.9
@@ -1268,7 +1268,7 @@ snapshots:
 
   undici-types@8.9.0: {}
 
-  vite@8.3.5(@types/node@26.6.5)(sass@1.106.1):
+  vite@8.3.5(@types/node@26.6.6)(sass@1.107.1):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -1276,6 +1276,6 @@ snapshots:
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.6.5
+      '@types/node': 26.6.6
       fsevents: 2.3.3
-      sass: 1.106.1
+      sass: 1.107.1
