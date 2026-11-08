@@ -43,10 +43,10 @@
   },
   "devDependencies": {
     "@formhaus/core": "workspace:*",
-    "@microsoft/api-extractor": "^7.59.4",
+    "@microsoft/api-extractor": "^7.60.1",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^6.0.10",
-    "@vue/language-core": "^3.3.13",
+    "@vue/language-core": "^3.3.14",
     "jsdom": "^29.0.2",
     "typescript": "^5.7.3",
     "vite": "^8.3.5",
@@ -54,7 +54,7 @@
     "vitest": "^5.0.5",
     "vue": "^3.5.44",
     "vue-i18n": "^11.4.16",
-    "vue-tsc": "^3.3.13"
+    "vue-tsc": "^3.3.14"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev",
