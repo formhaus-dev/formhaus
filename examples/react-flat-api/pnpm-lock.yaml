@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.1
+        version: 1.8.1
       '@formhaus/react':
-        specifier: ^1.7.0
-        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
+        specifier: ^1.8.1
+        version: 1.8.1(@formhaus/core@1.8.1)(react@19.3.1)
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -39,15 +39,15 @@ importers:
 
 packages:
 
-  '@formhaus/core@1.7.0':
-    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
+  '@formhaus/core@1.8.1':
+    resolution: {integrity: sha512-9yjbR1pMg9cPm2ZsUCJsMJ7g3yHMNNYgBwIIG4yaQkrc1qC6qlWokygDGuKJSdEeROCej6lubzN/rKmA0B6bJg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.7.0':
-    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
+  '@formhaus/react@1.8.1':
+    resolution: {integrity: sha512-89muOUUg4cHVdxPK6iCHjk2W5XHFG8jsadkj7By9s8oPUWG/Tk0Ir46g21RNR7Nx08oPc59gg1iHb0LFVXaMxQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.7.0
+      '@formhaus/core': ~1.8.1
       react: ^18.0.0 || ^19.0.0
 
   '@oxc-project/types@0.155.0':
@@ -362,11 +362,11 @@ packages:
 
 snapshots:
 
-  '@formhaus/core@1.7.0': {}
+  '@formhaus/core@1.8.1': {}
 
-  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
+  '@formhaus/react@1.8.1(@formhaus/core@1.8.1)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.7.0
+      '@formhaus/core': 1.8.1
       react: 19.3.1
 
   '@oxc-project/types@0.155.0': {}

@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.1
+        version: 1.8.1
       '@formhaus/react':
-        specifier: ^1.7.0
-        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
+        specifier: ^1.8.1
+        version: 1.8.1(@formhaus/core@1.8.1)(react@19.3.1)
       govuk-frontend:
         specifier: ^6.0.0
         version: 6.6.0
@@ -25,8 +25,8 @@ importers:
         version: 19.3.1(react@19.3.1)
     devDependencies:
       '@types/node':
-        specifier: ^26.6.5
-        version: 26.6.5
+        specifier: ^26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: ^19.0.0
         version: 19.3.0
@@ -35,31 +35,31 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.2
-        version: 6.1.2(vite@8.3.5(@types/node@26.6.5)(sass-embedded@1.105.2)(sass@1.106.1))
+        version: 6.1.2(vite@8.3.5(@types/node@26.6.6)(sass-embedded@1.105.2)(sass@1.107.1))
       sass:
-        specifier: ^1.106.1
-        version: 1.106.1
+        specifier: ^1.107.1
+        version: 1.107.1
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
       vite:
         specifier: ^8.3.5
-        version: 8.3.5(@types/node@26.6.5)(sass-embedded@1.105.2)(sass@1.106.1)
+        version: 8.3.5(@types/node@26.6.6)(sass-embedded@1.105.2)(sass@1.107.1)
 
 packages:
 
   '@bufbuild/protobuf@2.16.0':
     resolution: {integrity: sha512-FWa0sPlqYGJgpTs6OxBRcL/AW4JT0OIO+W1ajerluoTVh8CV0B7XM1qsNCRgnkSCkRCgOICKHRQlY17jrsm0+Q==}
 
-  '@formhaus/core@1.7.0':
-    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
+  '@formhaus/core@1.8.1':
+    resolution: {integrity: sha512-9yjbR1pMg9cPm2ZsUCJsMJ7g3yHMNNYgBwIIG4yaQkrc1qC6qlWokygDGuKJSdEeROCej6lubzN/rKmA0B6bJg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.7.0':
-    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
+  '@formhaus/react@1.8.1':
+    resolution: {integrity: sha512-89muOUUg4cHVdxPK6iCHjk2W5XHFG8jsadkj7By9s8oPUWG/Tk0Ir46g21RNR7Nx08oPc59gg1iHb0LFVXaMxQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.7.0
+      '@formhaus/core': ~1.8.1
       react: ^18.0.0 || ^19.0.0
 
   '@oxc-project/types@0.154.0':
@@ -246,8 +246,8 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
-  '@types/node@26.6.5':
-    resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
+  '@types/node@26.6.6':
+    resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
 
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
@@ -556,8 +556,8 @@ packages:
     engines: {node: '>=20.19.0'}
     hasBin: true
 
-  sass@1.106.1:
-    resolution: {integrity: sha512-kD+Gi66vycZcbJt+42NC4z4PXNMcCajVrJPhqoKKXy5cOBMmJQt052CxIBcRjwYXeImHYOpu/ydWWGZQIenl7A==}
+  sass@1.107.1:
+    resolution: {integrity: sha512-aJ1/LvxOOb04YhmiBjzZn3jVwdHKol+OVhoMV6fFl02fF9T3i+5Mg9l/CnzqtM+NX5Jn5o3lAbs/ZJivTCLHfQ==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -572,8 +572,8 @@ packages:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
     engines: {node: '>=10'}
 
-  sync-child-process@1.1.0:
-    resolution: {integrity: sha512-1LMf/x0kU0CKFSesh5DfYktvj1KhiqYi5LAh5HU2G4SkKk1TGDhsMFBOL47g/E+mNfYpgs365pVNlIYOIHPvlQ==}
+  sync-child-process@1.1.1:
+    resolution: {integrity: sha512-54zMOnH5qgjdKW8SGpCx3daSP+v+TtTfOxgPdhUE3P0hytMMpknZfP67S4JeRcx5IQRWJERz6890yO4dkTywww==}
     engines: {node: '>=16.0.0'}
 
   sync-message-port@1.2.0:
@@ -584,8 +584,8 @@ packages:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
 
-  tslib@2.8.1:
-    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+  tslib@2.9.1:
+    resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
@@ -646,11 +646,11 @@ snapshots:
   '@bufbuild/protobuf@2.16.0':
     optional: true
 
-  '@formhaus/core@1.7.0': {}
+  '@formhaus/core@1.8.1': {}
 
-  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
+  '@formhaus/react@1.8.1(@formhaus/core@1.8.1)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.7.0
+      '@formhaus/core': 1.8.1
       react: 19.3.1
 
   '@oxc-project/types@0.154.0': {}
@@ -759,7 +759,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@types/node@26.6.5':
+  '@types/node@26.6.6':
     dependencies:
       undici-types: 8.9.0
 
@@ -771,10 +771,10 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.5)(sass-embedded@1.105.2)(sass@1.106.1))':
+  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.6)(sass-embedded@1.105.2)(sass@1.107.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.5(@types/node@26.6.5)(sass-embedded@1.105.2)(sass@1.106.1)
+      vite: 8.3.5(@types/node@26.6.6)(sass-embedded@1.105.2)(sass@1.107.1)
 
   chokidar@5.0.0:
     dependencies:
@@ -905,7 +905,7 @@ snapshots:
 
   rxjs@7.8.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   sass-embedded-all-unknown@1.105.2:
@@ -973,7 +973,7 @@ snapshots:
       immutable: 5.1.9
       rxjs: 7.8.2
       supports-color: 8.1.1
-      sync-child-process: 1.1.0
+      sync-child-process: 1.1.1
       varint: 6.0.0
     optionalDependencies:
       sass-embedded-all-unknown: 1.105.2
@@ -1005,7 +1005,7 @@ snapshots:
       '@parcel/watcher': 2.6.0
     optional: true
 
-  sass@1.106.1:
+  sass@1.107.1:
     dependencies:
       chokidar: 5.0.0
       immutable: 5.1.9
@@ -1022,7 +1022,7 @@ snapshots:
       has-flag: 4.0.0
     optional: true
 
-  sync-child-process@1.1.0:
+  sync-child-process@1.1.1:
     dependencies:
       sync-message-port: 1.2.0
     optional: true
@@ -1035,7 +1035,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.7)
       picomatch: 4.0.7
 
-  tslib@2.8.1:
+  tslib@2.9.1:
     optional: true
 
   typescript@6.0.3: {}
@@ -1045,7 +1045,7 @@ snapshots:
   varint@6.0.0:
     optional: true
 
-  vite@8.3.5(@types/node@26.6.5)(sass-embedded@1.105.2)(sass@1.106.1):
+  vite@8.3.5(@types/node@26.6.6)(sass-embedded@1.105.2)(sass@1.107.1):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -1053,7 +1053,7 @@ snapshots:
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.6.5
+      '@types/node': 26.6.6
       fsevents: 2.3.3
-      sass: 1.106.1
+      sass: 1.107.1
       sass-embedded: 1.105.2

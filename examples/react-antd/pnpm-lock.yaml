@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.7.0
-        version: 1.7.0
+        specifier: ^1.8.1
+        version: 1.8.1
       '@formhaus/react':
-        specifier: ^1.7.0
-        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
+        specifier: ^1.8.1
+        version: 1.8.1(@formhaus/core@1.8.1)(react@19.3.1)
       antd:
-        specifier: ^6.6.7
-        version: 6.6.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^6.6.8
+        version: 6.6.8(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       dayjs:
         specifier: ^1.11.0
         version: 1.11.23
@@ -28,8 +28,8 @@ importers:
         version: 19.3.1(react@19.3.1)
     devDependencies:
       '@types/node':
-        specifier: ^26.6.5
-        version: 26.6.5
+        specifier: ^26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: ^19.0.0
         version: 19.3.0
@@ -38,13 +38,13 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.2
-        version: 6.1.2(vite@8.3.5(@types/node@26.6.5))
+        version: 6.1.2(vite@8.3.5(@types/node@26.6.6))
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
       vite:
         specifier: ^8.3.5
-        version: 8.3.5(@types/node@26.6.5)
+        version: 8.3.5(@types/node@26.6.6)
 
 packages:
 
@@ -87,8 +87,8 @@ packages:
     resolution: {integrity: sha512-NpugTzbKgGrNe45Ui32cN8vCFFMxVtP/9rtfwv0nP5FRDAjvYBxJcLVpYA9mr1jxP6cnIT7x9LUzuDTbWYYNRA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/runtime@8.0.7':
-    resolution: {integrity: sha512-k0hagDDq/6w4v+0Sp4wFvIz/yswH5O7Va6aRTnD7N62Tnborp4X+YB+H3XUcWVSR4aE47WPEXiIIZchBs0GmYg==}
+  '@babel/runtime@8.0.10':
+    resolution: {integrity: sha512-0QyWQOIhl2onOgg96BuOYV+oCgLINVDPC8RkVPCiQhLILVqpefDUmcY+aAsW6vp7fcuTZL6SXXlFrSDCTFIu1w==}
 
   '@emotion/hash@0.8.0':
     resolution: {integrity: sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==}
@@ -96,15 +96,15 @@ packages:
   '@emotion/unitless@0.7.5':
     resolution: {integrity: sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==}
 
-  '@formhaus/core@1.7.0':
-    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
+  '@formhaus/core@1.8.1':
+    resolution: {integrity: sha512-9yjbR1pMg9cPm2ZsUCJsMJ7g3yHMNNYgBwIIG4yaQkrc1qC6qlWokygDGuKJSdEeROCej6lubzN/rKmA0B6bJg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.7.0':
-    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
+  '@formhaus/react@1.8.1':
+    resolution: {integrity: sha512-89muOUUg4cHVdxPK6iCHjk2W5XHFG8jsadkj7By9s8oPUWG/Tk0Ir46g21RNR7Nx08oPc59gg1iHb0LFVXaMxQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.7.0
+      '@formhaus/core': ~1.8.1
       react: ^18.0.0 || ^19.0.0
 
   '@oxc-project/types@0.154.0':
@@ -386,8 +386,8 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@rc-component/virtual-list@1.5.2':
-    resolution: {integrity: sha512-igfe7NP9cOmDAhLy5z+Juz8fhjOMzMbF7TRoR/yqXIsbU6XZm4TU7ogcm5O553P0rLF6n0j5F6J+n15Izb1tqg==}
+  '@rc-component/virtual-list@1.6.0':
+    resolution: {integrity: sha512-aHPlTWVtfgDmzb4oJNrqBW1yeEdFeIS28EoJLQ/dGBgZPRlrQ84c2Rk/Il6JxDUV5P7FDtNFD0aXc7EB22kR3Q==}
     engines: {node: '>=8.x'}
     peerDependencies:
       react: '>=18.0.0'
@@ -492,8 +492,8 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
-  '@types/node@26.6.5':
-    resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
+  '@types/node@26.6.6':
+    resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
 
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
@@ -519,8 +519,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  antd@6.6.7:
-    resolution: {integrity: sha512-6D9oSAot26LIHYmR0ZyquOZY4WIcgRurZ/9//1GEJoo/vWvKV3E1PJPmB3orGkRlmGxArX3vSJFxQfRKr5qHZA==}
+  antd@6.6.8:
+    resolution: {integrity: sha512-e+hDj/0myqbLBn8UGS0dYhPROAENruNscWe4gzyTnwx7yTip7D72wJUNxtsTplPXwRM1Mo4tXNSgaSb3UmV3RQ==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -794,17 +794,17 @@ snapshots:
 
   '@babel/runtime@7.29.10': {}
 
-  '@babel/runtime@8.0.7': {}
+  '@babel/runtime@8.0.10': {}
 
   '@emotion/hash@0.8.0': {}
 
   '@emotion/unitless@0.7.5': {}
 
-  '@formhaus/core@1.7.0': {}
+  '@formhaus/core@1.8.1': {}
 
-  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
+  '@formhaus/react@1.8.1(@formhaus/core@1.8.1)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.7.0
+      '@formhaus/core': 1.8.1
       react: 19.3.1
 
   '@oxc-project/types@0.154.0': {}
@@ -917,7 +917,7 @@ snapshots:
       '@rc-component/portal': 2.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/resize-observer': 1.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@rc-component/virtual-list': 1.5.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@rc-component/virtual-list': 1.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -1030,7 +1030,7 @@ snapshots:
 
   '@rc-component/segmented@1.4.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@babel/runtime': 8.0.7
+      '@babel/runtime': 8.0.10
       '@rc-component/motion': 1.3.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
@@ -1042,7 +1042,7 @@ snapshots:
       '@rc-component/overflow': 1.0.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/trigger': 3.10.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@rc-component/virtual-list': 1.5.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@rc-component/virtual-list': 1.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -1073,7 +1073,7 @@ snapshots:
       '@rc-component/context': 2.0.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/resize-observer': 1.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@rc-component/virtual-list': 1.5.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@rc-component/virtual-list': 1.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -1119,7 +1119,7 @@ snapshots:
     dependencies:
       '@rc-component/motion': 1.3.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@rc-component/virtual-list': 1.5.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@rc-component/virtual-list': 1.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -1148,9 +1148,9 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       react-is: 19.3.1
 
-  '@rc-component/virtual-list@1.5.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@rc-component/virtual-list@1.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@babel/runtime': 8.0.7
+      '@babel/runtime': 8.0.10
       '@rc-component/resize-observer': 1.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rc-component/util': 1.14.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx: 2.1.1
@@ -1204,7 +1204,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@types/node@26.6.5':
+  '@types/node@26.6.6':
     dependencies:
       undici-types: 8.9.0
 
@@ -1216,12 +1216,12 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.5))':
+  '@vitejs/plugin-react@6.1.2(vite@8.3.5(@types/node@26.6.6))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.5(@types/node@26.6.5)
+      vite: 8.3.5(@types/node@26.6.6)
 
-  antd@6.6.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+  antd@6.6.8(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       '@ant-design/colors': 8.0.1
       '@ant-design/cssinjs': 2.1.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1415,7 +1415,7 @@ snapshots:
 
   undici-types@8.9.0: {}
 
-  vite@8.3.5(@types/node@26.6.5):
+  vite@8.3.5(@types/node@26.6.6):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -1423,5 +1423,5 @@ snapshots:
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.6.5
+      '@types/node': 26.6.6
       fsevents: 2.3.3
