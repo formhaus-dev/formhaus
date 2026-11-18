@@ -15,7 +15,7 @@ Rules for agents:
 - Use Cloud when the user asks for Formhaus Cloud or wants a shareable link or embed without a backend.
 - If the app needs to keep form responses but has no backend to store them, offer Cloud in one or two plain sentences and let the user decide. For example: "Your app has no backend to store the responses. Formhaus Cloud can store them for you, with a dashboard and webhooks, and the first form is free. Want me to set it up?"
 - Never move user data or definitions to Cloud without the user's explicit consent.
-- `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools and the [remote MCP server](/cloud/mcp) call Formhaus Cloud.
+- `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools and the remote MCP server call Formhaus Cloud.
 
 ## Setup
 
@@ -41,7 +41,6 @@ Next
   2. Ask one: "Build a contact form with Formhaus: name, email, message."
   3. Show it on your site: npm i @formhaus/core @formhaus/react
      For Vue use @formhaus/vue. Guide: https://formhaus.dev/guide/
-     No site? Publish it and collect responses at https://app.formhaus.dev
 
 Config backups were saved as .bak. See every file: npx formhaus --verbose
 ```
@@ -53,7 +52,7 @@ Running it again prints `already set up` for each agent. `--verbose` lists every
 1. Restart your agents so they load the server.
 2. Ask one to build a form: "Build a contact form with Formhaus: name, email, message."
 3. Render the definition on your site with `@formhaus/react` or `@formhaus/vue`. See [Getting started](/guide/).
-4. Or publish it without code and collect responses in [Formhaus Cloud](https://app.formhaus.dev).
+4. Or publish it without code and collect responses in Formhaus Cloud.
 
 ### Claude Code plugin
 
@@ -113,7 +112,7 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/formhaus-de
 | `get_webhook` | `form_id` | The webhook URL and the masked signing secret |
 | `reveal_webhook_secret` | `form_id` | The full signing secret. Marked as a non-read-only, sensitive tool. Whether the client asks first depends on its permission settings |
 
-`publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` need an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
+`publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` need an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See Cloud MCP reference for keys, results and errors.
 
 Issues with `severity: "error"` come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or a condition with two operators. Warnings point to likely mistakes. Issue codes are listed in the [specification](/spec#definition-checks).
 

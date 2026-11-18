@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 export const siteUrl = 'https://formhaus.dev';
 export const siteName = 'Formhaus';
 export const repoUrl = 'https://github.com/formhaus-dev/formhaus';
-export const authorUrl = 'https://github.com/ignsm';
 
 const packageVersion = (name: string): string =>
   JSON.parse(readFileSync(new URL(`../../../${name}/package.json`, import.meta.url), 'utf8')).version;
