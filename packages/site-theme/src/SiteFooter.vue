@@ -158,7 +158,6 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
   .fh-footer__link {
     min-height: 32px;
   }
-
 }
 
 @media (min-width: 1440px) {

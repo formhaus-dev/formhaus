@@ -1,6 +1,6 @@
 import type { GatedLink } from './gated';
 
-export const footerRepo = 'https://github.com/formhaus-dev/formhaus';
+const footerRepo = 'https://github.com/formhaus-dev/formhaus';
 
 interface FooterLink extends GatedLink {
   text: string;
