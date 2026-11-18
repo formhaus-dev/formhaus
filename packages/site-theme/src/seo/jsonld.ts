@@ -1,6 +1,4 @@
-import { authorUrl, coreVersion, repoUrl, siteName, siteUrl } from './site';
-
-const author = { '@type': 'Person', name: 'Ignat', url: authorUrl };
+import { coreVersion, repoUrl, siteName, siteUrl } from './site';
 
 const keywords = [
   'form definition',
@@ -82,7 +80,6 @@ export function frameworkJsonLd(description: string, url: string) {
     programmingLanguage: 'TypeScript',
     license: 'https://opensource.org/licenses/MIT',
     version: coreVersion,
-    author,
     publisher: { '@id': `${siteUrl}/#organization` },
     keywords: keywords.join(', '),
     sameAs: [
@@ -111,7 +108,6 @@ export function articleJsonLd(headline: string, description: string, url: string
     description,
     url,
     ...(lastUpdated ? { dateModified: new Date(lastUpdated).toISOString() } : {}),
-    author,
     isPartOf: { '@type': 'WebSite', name: siteName, url: `${siteUrl}/` },
   };
 }
