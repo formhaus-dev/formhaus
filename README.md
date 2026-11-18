@@ -51,7 +51,7 @@ Two independent ways to use it:
   claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
   ```
 
-  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/cloud#pricing)
+  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard)
 
 ![An agent publishes a waitlist form, the hosted form takes a response, and the agent reads it back](docs/public/media/agent-publishes-a-form.gif)
 
