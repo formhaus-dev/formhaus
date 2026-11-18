@@ -29,7 +29,6 @@ export function siteJsonLd() {
         '@type': 'Organization',
         '@id': `${siteUrl}/#organization`,
         name: siteName,
-        legalName: 'Fabrique-Futur LLC',
         url: `${siteUrl}/`,
         logo: `${siteUrl}/brand/icon-512.png`,
         sameAs: [repoUrl],
