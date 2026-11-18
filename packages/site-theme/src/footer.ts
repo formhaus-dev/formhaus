@@ -17,8 +17,8 @@ export interface FooterColumn {
 
 const columns: FooterColumn[] = [
   {
-    id: 'product',
-    title: 'Product',
+    id: 'resources',
+    title: 'Resources',
     links: [
       { text: 'Cloud', href: '/cloud' },
       { text: 'Pricing', href: '/cloud#pricing' },
@@ -40,15 +40,14 @@ const columns: FooterColumn[] = [
     ],
   },
   {
-    id: 'company',
-    title: 'Company',
+    id: 'project',
+    title: 'Project',
     links: [
       { text: 'Blog', href: '/blog/', blog: true },
       { text: 'Changelog', href: '/changelog' },
       { text: 'Legal', href: '/legal/' },
       { text: 'Privacy', href: '/legal/privacy' },
       { text: 'Terms', href: '/legal/terms' },
-      { text: 'Contact', href: 'mailto:hello@formhaus.dev' },
     ],
   },
 ];
