@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import type { Plugin } from 'vite';
+import { cloudPromotionEnabled, hiddenMarketingPath } from './visibility';
 
 export interface SearchEntry {
   id: string;
@@ -62,6 +63,7 @@ function buildSearchIndex(root: string): SearchEntry[] {
     const title = /^title:\s*["']?(.+?)["']?\s*$/m.exec(frontmatter?.[1] ?? '')?.[1] ?? /^#\s+(.+)$/m.exec(body)?.[1] ?? '';
     if (!title) return [];
     const url = urlOf(file, root);
+    if (!cloudPromotionEnabled && hiddenMarketingPath(url)) return [];
     const parts = body.split(/^#{2,3}\s+(.+)$/m);
     const entries: SearchEntry[] = [{ id: url, url, title, section: '', text: plain(parts[0]).slice(0, 400) }];
     const used = new Map<string, number>();

@@ -1,3 +1,4 @@
+import { cloudPromotionEnabled, hiddenMarketingPath } from './visibility';
 import type { GatedLink } from './gated';
 
 export const footerRepo = 'https://github.com/formhaus-dev/formhaus';
@@ -14,7 +15,7 @@ export interface FooterColumn {
   links: FooterLink[];
 }
 
-export const footerColumns: FooterColumn[] = [
+const columns: FooterColumn[] = [
   {
     id: 'product',
     title: 'Product',
@@ -51,3 +52,8 @@ export const footerColumns: FooterColumn[] = [
     ],
   },
 ];
+
+export const footerColumns = columns.map((column) => ({
+  ...column,
+  links: column.links.filter((link) => cloudPromotionEnabled || !hiddenMarketingPath(link.href)),
+}));

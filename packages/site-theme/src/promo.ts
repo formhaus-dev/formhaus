@@ -1,9 +1,10 @@
 import type { HeadConfig } from 'vitepress';
+import { cloudPromotionEnabled } from './visibility';
 
 export type PromoVariant = 'cloud' | 'framework';
 
 export function promoVariant(relativePath: string): PromoVariant | null {
-  if (relativePath === 'index.md') return 'framework';
+  if (relativePath === 'index.md') return cloudPromotionEnabled ? 'framework' : null;
   if (relativePath === 'cloud.md' || relativePath.startsWith('cloud/')) return 'cloud';
   return null;
 }

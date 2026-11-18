@@ -1,3 +1,5 @@
+import { cloudPromotionEnabled } from './visibility';
+
 interface NavLink {
   label: string;
   href: string;
@@ -10,7 +12,7 @@ export interface NavGroup {
   links: NavLink[];
 }
 
-export const navGroups: NavGroup[] = [
+const groups: NavGroup[] = [
   {
     id: 'framework',
     label: 'Framework',
@@ -41,6 +43,8 @@ export const navGroups: NavGroup[] = [
     ],
   },
 ];
+
+export const navGroups = groups.filter((group) => cloudPromotionEnabled || group.id !== 'cloud');
 
 export const navLinks = [
   { label: 'Playground', href: '/playground', match: /^\/play/ },
