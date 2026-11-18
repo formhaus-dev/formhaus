@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from 'vue';
 import { useData, withBase } from 'vitepress';
-import { track } from '@formhaus/site-theme';
+import { cloudPromotionEnabled, track } from '@formhaus/site-theme';
 import { formatJson, tokenize } from '../landing/json-format';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { categoryLabel, cloudUrl, counts, type TemplatePage } from './catalog';
@@ -45,7 +45,7 @@ async function copy(kind: 'JSON' | 'Prompt') {
     <h1 class="tpl-detail__title">{{ template.title }}</h1>
     <p class="tpl-detail__summary">{{ template.summary }}</p>
     <div class="tpl-detail__actions">
-      <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)" data-umami-event="template-action" data-umami-event-action="launch" :data-umami-event-slug="template.slug">
+      <a v-if="cloudPromotionEnabled" class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)" data-umami-event="template-action" data-umami-event-action="launch" :data-umami-event-slug="template.slug">
         Launch for free <LucideIcon name="arrow-right" />
       </a>
     </div>

@@ -17,6 +17,7 @@ import './docs-menu.css';
 import { startAnalytics } from './analytics';
 
 export { track } from './analytics';
+export { cloudPromotionEnabled } from './visibility';
 export { promoHead } from './promo';
 
 function stayInOwnBuild({ router }: EnhanceAppContext) {
