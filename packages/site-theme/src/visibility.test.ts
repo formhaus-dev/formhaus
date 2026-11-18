@@ -12,6 +12,13 @@ describe('temporary Cloud visibility', () => {
     expect(promoVariant('index.md')).toBeNull();
     expect(promoVariant('cloud.md')).toBe('cloud');
   });
+  it('presents open-source resources rather than a company', () => {
+    expect(footerColumns.map((column) => column.title)).toEqual(['Product', 'Developers']);
+    expect(footerColumns.map((column) => column.links.map((link) => link.text))).toEqual([
+      ['Templates', 'Examples', 'Form builder', 'Playground'],
+      ['Docs', 'API reference', 'MCP server', 'GitHub', 'npm'],
+    ]);
+  });
   it('matches only Cloud and legal paths', () => {
     for (const path of ['/cloud', '/cloud/plans', '/cloud#pricing', '/legal/', '/legal/privacy'])
       expect(hiddenMarketingPath(path)).toBe(true);

@@ -1,7 +1,6 @@
-import { cloudPromotionEnabled, hiddenMarketingPath } from './visibility';
 import type { GatedLink } from './gated';
 
-export const footerRepo = 'https://github.com/formhaus-dev/formhaus';
+const footerRepo = 'https://github.com/formhaus-dev/formhaus';
 
 interface FooterLink extends GatedLink {
   text: string;
@@ -15,13 +14,11 @@ export interface FooterColumn {
   links: FooterLink[];
 }
 
-const columns: FooterColumn[] = [
+export const footerColumns: FooterColumn[] = [
   {
     id: 'product',
     title: 'Product',
     links: [
-      { text: 'Cloud', href: '/cloud' },
-      { text: 'Pricing', href: '/cloud#pricing' },
       { text: 'Templates', href: '/templates/' },
       { text: 'Examples', href: '/guide/examples' },
       { text: 'Form builder', href: '/build' },
@@ -39,21 +36,4 @@ const columns: FooterColumn[] = [
       { text: 'npm', href: 'https://www.npmjs.com/package/@formhaus/core', dest: 'npm' },
     ],
   },
-  {
-    id: 'company',
-    title: 'Company',
-    links: [
-      { text: 'Blog', href: '/blog/', blog: true },
-      { text: 'Changelog', href: '/changelog' },
-      { text: 'Legal', href: '/legal/' },
-      { text: 'Privacy', href: '/legal/privacy' },
-      { text: 'Terms', href: '/legal/terms' },
-      { text: 'Contact', href: 'mailto:hello@formhaus.dev' },
-    ],
-  },
 ];
-
-export const footerColumns: FooterColumn[] = columns.map((column) => ({
-  ...column,
-  links: column.links.filter((link) => cloudPromotionEnabled || !hiddenMarketingPath(link.href)),
-}));
