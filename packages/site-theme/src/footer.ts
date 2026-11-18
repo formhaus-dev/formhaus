@@ -53,7 +53,7 @@ const columns: FooterColumn[] = [
   },
 ];
 
-export const footerColumns = columns.map((column) => ({
+export const footerColumns: FooterColumn[] = columns.map((column) => ({
   ...column,
   links: column.links.filter((link) => cloudPromotionEnabled || !hiddenMarketingPath(link.href)),
 }));

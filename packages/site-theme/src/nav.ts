@@ -44,7 +44,7 @@ const groups: NavGroup[] = [
   },
 ];
 
-export const navGroups = groups.filter((group) => cloudPromotionEnabled || group.id !== 'cloud');
+export const navGroups: NavGroup[] = groups.filter((group) => cloudPromotionEnabled || group.id !== 'cloud');
 
 export const navLinks = [
   { label: 'Playground', href: '/playground', match: /^\/play/ },
