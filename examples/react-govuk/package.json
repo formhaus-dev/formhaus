@@ -8,19 +8,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^1.7.0",
-    "@formhaus/react": "^1.7.0",
+    "@formhaus/core": "^1.12.1",
+    "@formhaus/react": "^1.12.1",
     "govuk-frontend": "^6.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.1.2",
-    "sass": "^1.106.1",
+    "@vitejs/plugin-react": "^6.3.0",
+    "sass": "^1.108.2",
     "typescript": "~6.0.2",
-    "vite": "^8.3.5"
+    "vite": "^8.3.8"
   }
 }
