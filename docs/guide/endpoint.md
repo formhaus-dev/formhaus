@@ -5,7 +5,7 @@ description: "Publish a Formhaus definition to Formhaus Cloud and put the form o
 
 # Get an endpoint
 
-Formhaus Cloud hosts the submission endpoint for a definition. Full documentation is in the Cloud section.
+Formhaus Cloud hosts the submission endpoint for a definition. Full documentation is in the [Cloud](/cloud/overview) section.
 
 ## Publish
 
@@ -21,7 +21,7 @@ Ask the agent:
 Create a waitlist form with an email field and publish it.
 ```
 
-`publish_form` returns `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet` and, without an account key, `claim_url` and `agent_key`. See Quickstart for the local server, the plugin and every result field.
+`publish_form` returns `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet` and, without an account key, `claim_url` and `agent_key`. See [Quickstart](/cloud/quickstart) for the local server, the plugin and every result field.
 
 ## Put the form on a site
 
@@ -37,13 +37,13 @@ Create a waitlist form with an email field and publish it.
 
 `FormhausForm` and `@formhaus/core/cloud` call `https://api.formhaus.cc` by default. If your site sets a Content-Security-Policy `connect-src` allowlist, add `https://api.formhaus.cc`. Pass `apiBase` to use another origin.
 
-Props, status codes, `Idempotency-Key` and validation rules are in Collecting submissions.
+Props, status codes, `Idempotency-Key` and validation rules are in [Collecting submissions](/cloud/submissions).
 
 `FormhausForm` and submitters from `createSubmitter` send `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` from the page address as `attribution`. Cloud stores them apart from the values. Other parameters of the address are not sent.
 
 ## Files
 
-`FormhausForm` uploads the file of each `file` field before it submits and sends the upload id as the value. For a field with [`multiple`](/guide/fields#several-files), it uploads each file and sends the list of ids. Files go straight from the browser to Cloud storage, up to 10 MB each. A field with `multiple` takes up to 5 files, and Cloud serves it with `maxLength` 5 when the definition allows more. A refused file, such as one too large or of a type the form does not accept, shows its message on the field.
+`FormhausForm` uploads the file of each `file` field before it submits and sends the upload id as the value. For a field with [`multiple`](/guide/fields#several-files), it uploads each file and sends the list of ids. Files go straight from the browser to Cloud storage, up to 10 MB each. A field with `multiple` takes up to 5 files, and Cloud serves it with `maxLength` 5 when the definition allows more. A refused file, such as one too large or of a type the form does not accept, shows its message on the field. See [Files](https://formhaus.dev/cloud/submissions#files) for the types and for uploads from your own client.
 
 `createSubmitter` sends values as they are. Upload files yourself before you call it.
 

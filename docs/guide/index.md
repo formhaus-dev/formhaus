@@ -11,7 +11,7 @@ This guide covers the open-source library: MIT, no account, and `onSubmit` sends
 The same definition renders natively on iOS and macOS with SwiftUI, and runs on Android and the JVM with Kotlin. See [iOS and macOS](/guide/ios) and [Android and JVM](/guide/android).
 
 ::: tip Hosted form without a backend
-Formhaus Cloud is a separate, optional service. Run `claude mcp add --transport http formhaus https://api.formhaus.dev/mcp` and ask: "Make me a waitlist form and give me the link." See the Cloud quickstart.
+[Formhaus Cloud](/cloud/overview) is a separate, optional service. Run `claude mcp add --transport http formhaus https://api.formhaus.dev/mcp` and ask: "Make me a waitlist form and give me the link." See the [Cloud quickstart](/cloud/quickstart).
 :::
 
 ## Install
