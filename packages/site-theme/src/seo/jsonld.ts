@@ -13,12 +13,6 @@ const keywords = [
   'JSON Schema',
 ];
 
-const plans = [
-  { name: 'Free', price: '0' },
-  { name: 'Pro', price: '19' },
-  { name: 'Team', price: '49' },
-];
-
 export function siteJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -53,18 +47,7 @@ export function cloudJsonLd(description: string, url: string) {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     publisher: { '@id': `${siteUrl}/#organization` },
-    offers: plans.map(({ name, price }) => ({
-      '@type': 'Offer',
-      name,
-      price,
-      priceCurrency: 'USD',
-      url: `${siteUrl}/cloud/plans`,
-      ...(price === '0'
-        ? {}
-        : {
-            priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
-          }),
-    })),
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', url: `${siteUrl}/cloud` },
   };
 }
 
