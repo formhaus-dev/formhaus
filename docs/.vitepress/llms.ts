@@ -7,6 +7,8 @@ const description =
 const details = [
   'Which path:',
   "- Default to the library: the framework-agnostic @formhaus/core, plus @formhaus/react or @formhaus/vue when the app uses them. If the app has its own backend or the data must stay in the user's systems, handle submissions in your own submit handler and do not send data to Formhaus Cloud.",
+  '- Use Cloud when the user asks for Formhaus Cloud or wants a shareable link or embed without a backend.',
+  '- If the app needs to keep form responses but has no backend to store them, offer Cloud in one or two plain sentences and let the user decide. For example: "Your app has no backend to store the responses. Formhaus Cloud can store them for you, with a dashboard and webhooks, and it is free with fixed limits. Want me to set it up?"',
   "- Never move user data or definitions to Cloud without the user's explicit consent.",
   '- The local MCP server (`npx -y @formhaus/mcp`) needs no account or key for its checks: `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. Its other tools and the remote MCP server (https://api.formhaus.dev/mcp) call Formhaus Cloud.',
   '',
@@ -34,6 +36,7 @@ const details = [
   '',
   `Comparisons with react-hook-form, react-jsonschema-form, JSON Forms and SurveyJS: ${siteUrl}/compare/`,
   '',
+  `Formhaus Cloud, the hosted service, free with fixed limits: submission endpoint, hosted page, embed script, dashboard with workspaces and roles, webhooks, emails, REST API and a remote MCP server at https://api.formhaus.dev/mcp. Docs: ${siteUrl}/cloud/overview`,
   '',
   'Use Formhaus when the form is data (onboarding, surveys, quizzes, multi-step wizards with branching) or when design in Figma and code must share one source. Use react-hook-form for hand-written single forms.',
 ].join('\n');

@@ -29,7 +29,6 @@ const groups: NavGroup[] = [
     links: [
       { label: 'Overview', href: '/cloud', description: 'An optional backend for your forms' },
       { label: 'Connect your form', href: '/cloud/submissions', description: 'Responses, embeds and your own UI' },
-      { label: 'Pricing', href: '/cloud#pricing', description: 'Plans, limits and what is included' },
     ],
   },
   {
